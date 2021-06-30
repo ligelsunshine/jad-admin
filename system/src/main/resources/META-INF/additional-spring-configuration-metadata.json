@@ -1,0 +1,33 @@
+{
+  "properties": [
+    {
+      "name": "jad.jwt.expire-milliseconds",
+      "type": "java.lang.String",
+      "description": "Description for jad.jwt.expire-milliseconds."
+    },
+    {
+      "name": "jad.system.info.app-name",
+      "type": "java.lang.String",
+      "description": "Description for jad.system.info.app-name."
+    },
+    {
+      "name": "jad.system.info.version",
+      "type": "java.lang.String",
+      "description": "Description for jad.system.info.version."
+    },
+    {
+      "name": "jad.system.info.uri",
+      "type": "java.lang.String",
+      "description": "Description for jad.system.info.uri."
+    },
+    {
+      "name": "jad.system.info.email",
+      "type": "java.lang.String",
+      "description": "Description for jad.system.info.email."
+    },
+    {
+      "name": "spring.devtools.restart.enabled",
+      "type": "java.lang.String",
+      "description": "Description for spring.devtools.restart.enabled."
+    }
+  ] }
