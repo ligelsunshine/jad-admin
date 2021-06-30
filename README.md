@@ -1,11 +1,11 @@
-# jad-admin
+# JADAdmin 通用后台管理系统
 
 #### 介绍
-jad admin
+JADAdmin是一套简单通用的后台管理系统，这套JADAdmin是一套简单通用的后台管理系统，主要功能有：权限管理、菜单管理、用户管理，系统设置、实时日志，实时监控，API加密，以及登录用户修改密码、配置个性菜单等
 
 #### 软件架构
-软件架构说明
-
+- 前端：Ant Design
+- Java后端：SpringBoot + WebSocket + Spring Security + MyBatis-Plus + PostgreSql / MySQL
 
 #### 安装教程
 
