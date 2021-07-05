@@ -2,17 +2,22 @@
  * Copyright (C), 2021-2021, jad
  */
 package com.jad.system.modules.system.controller;
+import com.google.common.collect.Lists;
 
 import com.jad.common.base.controller.BaseController;
+import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.Result;
 import com.jad.common.service.UserService;
+import com.jad.system.modules.system.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 系统用户相关接口
@@ -32,6 +37,11 @@ public class UserController extends BaseController {
     @GetMapping("/currentUser")
     public Result currentUser() {
         final User user = userService.getCurrentAuthUser();
-        return Result.success(user);
+        final List<Role> roles = userService.getRoles(user.getId());
+        final UserVo userInfo = new UserVo();
+        userInfo.setUser(user);
+        userInfo.setRoles(roles);
+
+        return Result.success(userInfo);
     }
 }

@@ -182,7 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final String username = authentication.getName();
         final User user = this.getByUsername(username);
-        user.setPassword("");
+        user.setPassword(null);
         return user;
     }
 }

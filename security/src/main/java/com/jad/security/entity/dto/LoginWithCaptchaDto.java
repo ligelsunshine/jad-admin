@@ -3,7 +3,7 @@
  */
 package com.jad.security.entity.dto;
 
-import com.jad.common.enums.LoginEnum;
+import com.jad.common.enums.LoginTypeEnum;
 import lombok.Data;
 
 /**
@@ -22,7 +22,7 @@ public class LoginWithCaptchaDto {
     private String password;
 
     // 登录类型
-    private LoginEnum type;
+    private LoginTypeEnum type;
 
     // 验证码key
     private String codeKey;
