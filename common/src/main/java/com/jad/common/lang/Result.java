@@ -19,8 +19,20 @@ public class Result implements Serializable {
     private String msg;
     private Object data;
 
+    public static Result success() {
+        return success(200, "操作成功", null);
+    }
+
+    public static Result success(String msg) {
+        return success(200, msg, null);
+    }
+
     public static Result success(Object data) {
         return success(200, "操作成功", data);
+    }
+
+    public static Result success(String msg, Object data) {
+        return success(200, msg, data);
     }
 
     public static Result success(int code, String msg, Object data) {

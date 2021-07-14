@@ -44,7 +44,7 @@ public class User extends BaseEntity {
     /**
      * 性别
      */
-    private String sex;
+    private Integer sex;
 
     /**
      * 年龄
