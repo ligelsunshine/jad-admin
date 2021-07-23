@@ -8,14 +8,14 @@ import com.jad.common.base.controller.BaseController;
 import com.jad.common.entity.Menu;
 import com.jad.common.lang.Result;
 import com.jad.common.service.MenuService;
+import com.jad.common.service.UserService;
 import com.jad.system.modules.system.dto.MenuDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class MenuController extends BaseController {
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private MenuService menuService;
 
     @ApiOperation("添加菜单权限")
@@ -43,5 +46,20 @@ public class MenuController extends BaseController {
             return Result.success("添加成功");
         }
         return Result.failed("添加失败");
+    }
+
+
+    @ApiOperation("获取菜单权限")
+    @GetMapping("/getMenuList")
+    public Result getMenuList() {
+        List<Menu> menus = menuService.getMenuList();
+        return Result.success(menus);
+    }
+
+    @ApiOperation("获取菜单权限树")
+    @GetMapping("/getMenuTree")
+    public Result getMenuTree() {
+        List<Menu> menus = menuService.getMenuTree();
+        return Result.success(menus);
     }
 }

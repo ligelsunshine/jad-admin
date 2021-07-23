@@ -1,26 +1,35 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jad.common.base.entity.BaseEntity;
 import com.jad.common.constant.RedisConst;
-import com.jad.common.entity.*;
+import com.jad.common.entity.Menu;
+import com.jad.common.entity.Role;
+import com.jad.common.entity.RoleMenu;
+import com.jad.common.entity.User;
+import com.jad.common.entity.UserRole;
 import com.jad.common.mapper.UserMapper;
-import com.jad.common.service.*;
+import com.jad.common.service.MenuService;
+import com.jad.common.service.RoleMenuService;
+import com.jad.common.service.RoleService;
+import com.jad.common.service.UserRoleService;
+import com.jad.common.service.UserService;
 import com.jad.common.utils.RedisUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +42,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    // yaml中配置的超级管理员ID
+    @Value("${jad.system.role.administrator-id}")
+    private String administratorId;
 
     @Autowired
     private RoleService roleService;
@@ -69,39 +82,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public List<Role> getRoles(String userId) {
         // 获取roleId
-        final List<String> roleIds = userRoleService.lambdaQuery().select(UserRole::getRoleId).eq(UserRole::getUserId
-            , userId).list().stream().map(UserRole::getRoleId).collect(Collectors.toList());
+        final List<String> roleIds = userRoleService.lambdaQuery()
+            .select(UserRole::getRoleId)
+            .eq(UserRole::getUserId, userId)
+            .list()
+            .stream()
+            .map(UserRole::getRoleId)
+            .collect(Collectors.toList());
         List<Role> roles = new ArrayList<>();
         if (roleIds.size() > 0) {
             // 获取role
             roles = roleService.lambdaQuery().in(Role::getId, roleIds).list();
         }
         return roles;
-    }
-
-    /**
-     * 获取用户菜单权限
-     *
-     * @param userId 用户ID
-     * @return 用户菜单权限
-     */
-    @Override
-    public List<Menu> getMenus(String userId) {
-        List<Menu> menus = new ArrayList<>();
-        // 获取roleId
-        final List<String> roleIds = userRoleService.lambdaQuery().select(UserRole::getRoleId).eq(UserRole::getUserId
-            , userId).list().stream().map(UserRole::getRoleId).collect(Collectors.toList());
-        if (roleIds.size() == 0) {
-            return menus;
-        }
-        // 获取menuId
-        final List<String> menuIds = roleMenuService.lambdaQuery().select(RoleMenu::getMenuId).in(RoleMenu::getRoleId
-            , roleIds).list().stream().map(RoleMenu::getMenuId).collect(Collectors.toList());
-        if (menuIds.size() == 0) {
-            return menus;
-        }
-        // 获取menu
-        return menuService.lambdaQuery().in(Menu::getId, menuIds).list();
     }
 
     /**
@@ -125,14 +118,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return "";
             }
             // 获取菜单权限
-            final List<Menu> menus = this.getMenus(userId);
+            final List<Menu> menus = menuService.getMenuList(userId);
             // 生成security权限列表字符串
-            final String roleAuthority =
-                roles.stream().map(role -> "ROLE_" + role.getCode()).collect(Collectors.joining(
-                    ","));
-            final String menuAuthority =
-                menus.stream().map(Menu::getPermissions).filter(StringUtils::isNotBlank).collect(Collectors.joining(
-                    ","));
+            final String roleAuthority = roles.stream()
+                .map(role -> "ROLE_" + role.getCode())
+                .collect(Collectors.joining(","));
+            final String menuAuthority = menus.stream()
+                .map(Menu::getPermissions)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.joining(","));
             authority = authority.concat(roleAuthority).concat(",").concat(menuAuthority);
 
             redisUtil.hset(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, user.getUsername(), authority);
@@ -158,14 +152,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void clearUserAuthorityByRoleId(String roleId) {
         // 获取userId
-        final List<String> userIds = userRoleService.lambdaQuery().select(UserRole::getUserId).eq(UserRole::getRoleId
-            , roleId).list().stream().map(UserRole::getUserId).collect(Collectors.toList());
+        final List<String> userIds = userRoleService.lambdaQuery()
+            .select(UserRole::getUserId)
+            .eq(UserRole::getRoleId, roleId)
+            .list()
+            .stream()
+            .map(UserRole::getUserId)
+            .collect(Collectors.toList());
         if (userIds.size() == 0) {
             return;
         }
         // 获取username
-        final List<String> usernames = this.lambdaQuery().select(User::getUsername).in(User::getId, userIds).list()
-            .stream().map(User::getUsername).collect(Collectors.toList());
+        final List<String> usernames = this.lambdaQuery()
+            .select(User::getUsername)
+            .in(User::getId, userIds)
+            .list()
+            .stream()
+            .map(User::getUsername)
+            .collect(Collectors.toList());
         // 清除用户授权信息
         usernames.forEach(this::clearUserAuthorityByUsername);
     }
@@ -178,8 +182,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void clearUserAuthorityByMenuId(String menuId) {
         // 根据权限菜单ID获取角色ID
-        final List<String> roleIds = roleMenuService.lambdaQuery().select(RoleMenu::getRoleId).eq(RoleMenu::getMenuId
-            , menuId).list().stream().map(RoleMenu::getRoleId).collect(Collectors.toList());
+        final List<String> roleIds = roleMenuService.lambdaQuery()
+            .select(RoleMenu::getRoleId)
+            .eq(RoleMenu::getMenuId, menuId)
+            .list()
+            .stream()
+            .map(RoleMenu::getRoleId)
+            .collect(Collectors.toList());
         // 清除用户授权信息
         roleIds.forEach(this::clearUserAuthorityByRoleId);
     }
@@ -196,5 +205,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         final User user = this.getByUsername(username);
         user.setPassword(null);
         return user;
+    }
+
+    /**
+     * 是否拥有超级管理员身份
+     *
+     * @return 是否拥有超级管理员身份
+     */
+    @Override
+    public boolean hasAdministrator() {
+        // 当前登录用户
+        final User user = this.getCurrentAuthUser();
+        // 过滤是否拥有超级管理员身份
+        final Optional<Role> administrator = this.getRoles(user.getId())
+            .stream()
+            .filter(role -> role.getId().equalsIgnoreCase(administratorId))
+            .findFirst();
+        return administrator.isPresent();
     }
 }

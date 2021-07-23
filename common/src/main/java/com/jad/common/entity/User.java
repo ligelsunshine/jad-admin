@@ -6,21 +6,33 @@ package com.jad.common.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.BaseEntity;
 import java.time.LocalDateTime;
+
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+
+
+
+
+
+
+
+
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author cxxwl96
  * @since 2021-06-29
  */
+@ApiModel("系统用户")
 @Data
-@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
 @TableName("sys_user")
 public class User extends BaseEntity {
 

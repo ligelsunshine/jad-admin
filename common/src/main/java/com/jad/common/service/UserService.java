@@ -37,14 +37,6 @@ public interface UserService extends IService<User> {
     List<Role> getRoles(String userId);
 
     /**
-     * 获取用户菜单权限
-     *
-     * @param userId 用户ID
-     * @return 用户菜单权限
-     */
-    List<Menu> getMenus(String userId);
-
-    /**
      * 获取用户权限列表
      *
      * @param userId 用户id
@@ -79,4 +71,11 @@ public interface UserService extends IService<User> {
      * @return 用户
      */
     User getCurrentAuthUser();
+
+    /**
+     * 是否拥有超级管理员身份
+     *
+     * @return 是否拥有超级管理员身份
+     */
+    boolean hasAdministrator();
 }

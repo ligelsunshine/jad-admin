@@ -17,4 +17,26 @@ import java.util.List;
  * @since 2021-06-18
  */
 public interface MenuService extends IService<Menu> {
+
+    /**
+     * 获取用户菜单权限列表
+     *
+     * @param userId 用户ID
+     * @return 用户菜单权限
+     */
+    List<Menu> getMenuList(String userId);
+
+    /**
+     * 获取当前登录用户菜单权限列表
+     *
+     * @return 用户菜单权限
+     */
+    List<Menu> getMenuList();
+
+    /**
+     * 获取当前登录用户菜单权限树
+     *
+     * @return 用户菜单权限
+     */
+    List<Menu> getMenuTree();
 }

@@ -1,11 +1,20 @@
 package com.jad.common.entity;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.jad.common.base.entity.BaseEntity;
+import com.jad.common.enums.MenuType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import org.apache.ibatis.type.EnumOrdinalTypeHandler;
+import org.apache.ibatis.type.MappedTypes;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,6 +27,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel("菜单")
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
 @TableName("sys_menu")
 public class Menu extends BaseEntity {
 
@@ -27,7 +37,7 @@ public class Menu extends BaseEntity {
     private String pId;
 
     @ApiModelProperty(value = "类型 [0：目录 1：菜单 2：按钮]")
-    private Integer type;
+    private MenuType type;
 
     @ApiModelProperty(value = "授权(多个用逗号分隔，如：user:list,user:create)")
     private String permissions;
@@ -82,4 +92,8 @@ public class Menu extends BaseEntity {
 
     @ApiModelProperty(value = "是否在子级菜单的完整path中忽略本级path")
     private Boolean hidePathForChildren;
+
+    @ApiModelProperty(value = "子菜单")
+    @TableField(exist = false)
+    private List<Menu> children;
 }

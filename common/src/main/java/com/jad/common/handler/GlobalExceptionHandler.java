@@ -1,22 +1,27 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.handler;
 
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.lang.Result;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import javax.servlet.http.HttpServletResponse;
 import java.nio.file.AccessDeniedException;
+
+import javax.servlet.http.HttpServletResponse;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 全局异常处理
@@ -25,7 +30,7 @@ import java.nio.file.AccessDeniedException;
  * @since 2021/6/18 23:56
  */
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
@@ -58,6 +63,21 @@ public class GlobalExceptionHandler {
         return Result.failed(e.getMessage());
     }
 
+
+    /**
+     * 错误请求异常
+     *
+     * @param e 异常
+     * @return 响应结果 400
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = BadRequestException.class)
+    public Result handler(BadRequestException e) {
+        log.error("错误请求异常：----------{}", e.getResult().getMsg());
+        e.printStackTrace();
+        return Result.failed(e.getResult().getCode(), e.getResult().getMsg(), null);
+    }
+
     /**
      * 权限不足
      *
@@ -78,23 +98,24 @@ public class GlobalExceptionHandler {
      * @return 响应结果 404
      */
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public Result handler(HttpRequestMethodNotSupportedException e) {
+        String msg = String.format("不支持的请求方式 %s", e.getMessage());
+        log.error("404异常：----------{}", msg);
+        return Result.failed(HttpStatus.NOT_FOUND.value(), msg, null);
+    }
+
+    /**
+     * 404异常
+     *
+     * @param e 异常
+     * @return 响应结果 404
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
     public Result handler(NoHandlerFoundException e) {
         log.error("404异常：----------{}", e.getMessage());
         return Result.failed(HttpStatus.NOT_FOUND.value(), "您访问的资源不存在", null);
-    }
-
-    /**
-     * 错误请求异常
-     *
-     * @param e 异常
-     * @return 响应结果
-     */
-    @ExceptionHandler(value = BadRequestException.class)
-    public Result handler(HttpServletResponse response, BadRequestException e) {
-        log.error("错误请求异常：----------{}", e.getResult().getMsg());
-        e.printStackTrace();
-        return Result.failed(e.getResult().getCode(), e.getResult().getMsg(), null);
     }
 
     /**

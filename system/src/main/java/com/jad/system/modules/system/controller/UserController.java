@@ -3,19 +3,18 @@
  */
 package com.jad.system.modules.system.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.jad.common.base.controller.BaseController;
-import com.jad.common.entity.Menu;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.Result;
 import com.jad.common.service.UserService;
-import com.jad.system.modules.system.dto.MenuDto;
 import com.jad.system.modules.system.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -52,14 +51,5 @@ public class UserController extends BaseController {
         final String userAuthority = userService.getUserAuthority(user.getId());
         final String[] permCode = userAuthority.split(",");
         return Result.success(permCode);
-    }
-
-
-    @ApiOperation("获取菜单权限")
-    @GetMapping("/getMenuList")
-    public Result getMenuList() {
-        final User user = userService.getCurrentAuthUser();
-        final List<Menu> menus = userService.getMenus(user.getId());
-        return Result.success(menus);
     }
 }
