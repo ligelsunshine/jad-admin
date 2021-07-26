@@ -1,30 +1,27 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * 菜单类型 [0：目录 1：菜单 2：按钮]
+ * 状态【启用：0,停用：1】
  *
  * @author cxxwl96
- * @since 2021/7/20 23:49
+ * @since 2021/7/26 21:59
  */
-public enum MenuType {
-    // 目录
-    DIRECTORY(0),
-    // 菜单
-    MENU(1),
-    // 按钮
-    BUTTON(2);
+public enum Status {
+    ENABLE(0),
+    DISABLE(1);
 
     @EnumValue
     @JsonValue
     private final int index;
 
-    MenuType(int index) {
+    Status(int index) {
         this.index = index;
     }
 

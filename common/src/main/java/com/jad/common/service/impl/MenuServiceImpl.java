@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,7 +101,29 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @return 用户菜单权限
      */
     public List<Menu> getMenuTree() {
+        // 获取当前登录用户菜单权限列表
         final List<Menu> menuList = this.getMenuList();
-        return TreeUtil.stringTree(menuList);
+        // 生成菜单树
+        final List<Menu> menuTree = TreeUtil.stringTree(menuList);
+        // 排序
+        return sortMenuTree(menuTree);
+    }
+
+    /**
+     * 菜单树排序
+     *
+     * @param menuTree 菜单树
+     * @return 菜单树
+     */
+    private List<Menu> sortMenuTree(List<Menu> menuTree) {
+        final List<Menu> menus = menuTree.stream()
+            .sorted(Comparator.comparingInt(Menu::getOrderNo))
+            .collect(Collectors.toList());
+        menus.forEach(menu -> {
+            if (menu.getChildren() != null && menu.getChildren().size() > 0) {
+                menu.setChildren(sortMenuTree(menu.getChildren()));
+            }
+        });
+        return menus;
     }
 }
