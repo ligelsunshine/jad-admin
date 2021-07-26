@@ -44,7 +44,9 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:com/jad/**/mapper/xml/*.xml # 配置mapper xml文件的路径
   type-aliases-package: com.jad.**.mapper
+  type-enums-package: com.jad.**.enums # 枚举转换
   configuration:
+    default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler # 使用ordinal处理枚举转换
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志
 
 # JAD Configuration
@@ -61,6 +63,8 @@ jad:
       version: 1.0.0
       uri: jad.com
       email: cxxwl96@sina.com
+    role:
+      administrator-id: 8288e8e0fc49ec42a6d83d121963af57 # 超级管理员
   swagger:
     enable: true
     path-mapping: /
