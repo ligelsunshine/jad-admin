@@ -120,14 +120,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             // 获取菜单权限
             final List<Menu> menus = menuService.getMenuList(userId);
             // 生成security权限列表字符串
-            final String roleAuthority = roles.stream()
+            final List<String> roleAuthorities = roles.stream()
                 .map(role -> "ROLE_" + role.getCode())
-                .collect(Collectors.joining(","));
-            final String menuAuthority = menus.stream()
+                .collect(Collectors.toList());
+            final List<String> menuAuthorities = menus.stream()
                 .map(Menu::getPermissions)
                 .filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(","));
-            authority = authority.concat(roleAuthority).concat(",").concat(menuAuthority);
+                .collect(Collectors.toList());
+            roleAuthorities.addAll(menuAuthorities);
+            authority = String.join(",", roleAuthorities);
 
             redisUtil.hset(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, user.getUsername(), authority);
         }
