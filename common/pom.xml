@@ -128,6 +128,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
+        <!--ssh工具-->
+        <dependency>
+            <groupId>com.sshtools</groupId>
+            <artifactId>j2ssh-maverick</artifactId>
+            <version>1.5.5</version>
+        </dependency>
 
         <!--Springboot Test-->
         <dependency>

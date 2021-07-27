@@ -21,13 +21,6 @@
     </properties>
 
     <dependencies>
-        <!-- jad common -->
-        <dependency>
-            <groupId>com.jad</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
         <!-- jad security -->
         <dependency>
             <groupId>com.jad</groupId>
