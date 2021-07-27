@@ -94,7 +94,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public List<Menu> getMenuList() {
         // 当前登录的用户
         User curUser = userService.getCurrentAuthUser();
-        List<Menu> menuList = null;
+        List<Menu> menuList;
         // 在Redis中缓存菜单信息
         if (redisUtil.hHasKey(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername())) {
             final String menuListJson = (String) redisUtil.hget(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername());
