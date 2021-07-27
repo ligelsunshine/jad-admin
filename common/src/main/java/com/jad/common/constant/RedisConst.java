@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.constant;
 
 /**
@@ -19,4 +20,7 @@ public class RedisConst {
 
     // Redis中存放用户认证的jwt
     public static final String SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX = "security-user-authenticate-token-";
+
+    // Redis中存放菜单
+    public static final String SYSTEM_MENU_LIST = "system-menu-list";
 }

@@ -4,7 +4,10 @@
 
 package com.jad.common.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.RoleMenu;
 import com.jad.common.entity.User;
@@ -14,6 +17,7 @@ import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
 import com.jad.common.service.UserRoleService;
 import com.jad.common.service.UserService;
+import com.jad.common.utils.RedisUtil;
 import com.jad.common.utils.TreeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +38,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Autowired
     private UserService userService;
@@ -87,12 +94,23 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public List<Menu> getMenuList() {
         // 当前登录的用户
         User curUser = userService.getCurrentAuthUser();
-        // 如果是超级管理员，则返回所有菜单
-        if (userService.hasAdministrator()) {
-            return this.list();
+        List<Menu> menuList = null;
+        // 在Redis中缓存菜单信息
+        if (redisUtil.hHasKey(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername())) {
+            final String menuListJson = (String) redisUtil.hget(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername());
+            menuList = JSONArray.parseArray(menuListJson, Menu.class);
         } else {
-            return this.getMenuList(curUser.getId());
+            // 如果是超级管理员，则返回所有菜单
+            if (userService.hasAdministrator()) {
+                menuList = this.list();
+            } else {
+                menuList = this.getMenuList(curUser.getId());
+            }
+            // 序列化menuList，缓存在Redis中
+            final String menuListJson = JSONObject.toJSONString(menuList);
+            redisUtil.hset(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername(), menuListJson);
         }
+        return menuList;
     }
 
     /**
