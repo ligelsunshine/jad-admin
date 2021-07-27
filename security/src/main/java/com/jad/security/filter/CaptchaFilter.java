@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.filter;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -9,15 +10,17 @@ import com.jad.common.constant.RedisConst;
 import com.jad.common.exception.CaptchaException;
 import com.jad.common.utils.RedisUtil;
 import com.jad.security.handler.JadAuthenticationFailureHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * 验证码过滤器
@@ -41,7 +44,8 @@ public class CaptchaFilter extends OncePerRequestFilter {
     JadAuthenticationFailureHandler authenticationFailureHandler;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+        throws ServletException, IOException {
         final String uri = request.getRequestURI();
         // 只处理登录请求
         if (UrlConfig.LOGIN_URL.equals(uri)) {
@@ -67,11 +71,11 @@ public class CaptchaFilter extends OncePerRequestFilter {
         final String codeValue = request.getParameter(CODE_VALUE);
         // 从redis获取验证码并验证
         final String redisCodeValue = (String) redisUtil.get(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey);
-        if (StringUtils.isBlank(codeKey) || StringUtils.isBlank(codeValue)
-            || !codeValue.equalsIgnoreCase(redisCodeValue)) {
+        if (StringUtils.isBlank(codeKey) || StringUtils.isBlank(codeValue) || !codeValue.equalsIgnoreCase(
+            redisCodeValue)) {
             throw new CaptchaException("验证码错误");
         }
-        // TODO 删除redis中的验证码
-//        redisUtil.hdel(RedisConst.CAPTCHA_KEY, codeKey);
+        // 删除redis中的验证码
+        redisUtil.del(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey);
     }
 }

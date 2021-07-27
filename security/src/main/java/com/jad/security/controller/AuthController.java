@@ -12,6 +12,7 @@ import com.jad.security.entity.dto.LoginWithCaptchaDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
 
@@ -33,6 +34,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
+
+    // yaml中配置的验证码过期时间
+    @Value("${jad.system.auth-config.captcha-timeout}")
+    private long captchaTimeout;
 
     /**
      * 验证码生成器
@@ -60,7 +65,7 @@ public class AuthController extends BaseController {
         final String base64Img = "data:image/jpeg;base64," + encoder.encode(outputStream.toByteArray());
 
         // 将Base64验证码存入Redis
-        redisUtil.set(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey, codeValue, 120);
+        redisUtil.set(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey, codeValue, captchaTimeout);
 
         final Map<Object, Object> resultMap = MapUtil.builder()
             .put("codeKey", codeKey)

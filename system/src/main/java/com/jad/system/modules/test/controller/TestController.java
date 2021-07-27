@@ -1,29 +1,31 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.system.modules.test.controller;
 
-import cn.hutool.core.map.MapUtil;
 import com.google.code.kaptcha.Producer;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
-import com.jad.common.service.UserRoleService;
-import com.jad.common.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sun.misc.BASE64Encoder;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+import cn.hutool.core.map.MapUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import sun.misc.BASE64Encoder;
 
 /**
  * TestController
@@ -35,12 +37,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/test")
 public class TestController extends BaseController {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserRoleService userRoleService;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -72,24 +68,12 @@ public class TestController extends BaseController {
 
         final Map<Object, Object> resultMap = MapUtil.builder()
             .put("codeKey", codeKey)
-            .put("codeImage", base64Img).build();
+            .put("codeImage", base64Img)
+            .build();
         return Result.success(resultMap);
     }
 
-    @ApiOperation("test")
-    @GetMapping("/test")
-    public Result test() {
-        return Result.success(userService.list());
-    }
-
-    @ApiOperation("test1")
-    @GetMapping("/test1")
-    public Result test1() {
-        String s = null;
-        return Result.success(userRoleService.list());
-    }
-
-    @ApiOperation("encoder")
+    @ApiOperation("密码加密")
     @GetMapping("/encoder")
     public Result encoder(String password) {
         return Result.success(bCryptPasswordEncoder.encode(password));

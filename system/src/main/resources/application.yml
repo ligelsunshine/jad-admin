@@ -58,6 +58,8 @@ jad:
   security:
     url-white-list: /auth/captcha/generator,/test/**,/cxx
   system:
+    auth-config:
+      captcha-timeout: 120 # 验证码过期时间（单位：s）
     info:
       app-name: JADAdmin
       version: 1.0.0

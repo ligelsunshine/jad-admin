@@ -15,11 +15,11 @@ public class RedisConst {
     // Redis中存放验证码的key
     public static final String SECURITY_LOGIN_CAPTCHA_KEY_PREFIX = "security-login-captcha-";
 
-    // Redis中存放用户授权信息的key
-    public static final String SECURITY_USER_GRANTED_AUTHORITY = "security-user-granted-authority";
-
     // Redis中存放用户认证的jwt
     public static final String SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX = "security-user-authenticate-token-";
+
+    // Redis中存放用户授权信息的key
+    public static final String SECURITY_USER_GRANTED_AUTHORITY = "security-user-granted-authority";
 
     // Redis中存放菜单
     public static final String SYSTEM_MENU_LIST = "system-menu-list";
