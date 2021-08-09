@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.util.StrUtil;
+
 /**
  * <p>
  * 服务实现类
@@ -121,8 +123,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public List<Menu> getMenuTree() {
         // 获取当前登录用户菜单权限列表
         final List<Menu> menuList = this.getMenuList();
+        // 若pId为空白，则设置pId为null，使用方便前端在编辑根节点时不展示父级
+        menuList.forEach(menu -> {
+            if (StrUtil.isBlank(menu.getPId())) {
+                menu.setPId(null);
+            }
+        });
         // 生成菜单树
-        final List<Menu> menuTree = TreeUtil.stringTree(menuList);
+        final List<Menu> menuTree = TreeUtil.nullTree(menuList);
         // 排序
         return sortMenuTree(menuTree);
     }

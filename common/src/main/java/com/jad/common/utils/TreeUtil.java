@@ -15,26 +15,69 @@ import java.util.Map;
 import cn.hutool.core.collection.CollUtil;
 
 /**
- * TreeUtil
+ * 生成树形数据工具类
  *
  * @author cxxwl96
  * @since 2021/7/22 22:38
  */
 public class TreeUtil {
-    public static <T> List<T> longTree(List<T> list) {
-        return createTree(list, "id", "pId", "children", 0L);
+    /**
+     * 生成树形数据，根数据为长整型
+     *
+     * @param list 数据源
+     * @param <T> 数据类型
+     * @return 树形数据
+     */
+    public static <T> List<T> longTree(List<T> list, long rootValue) {
+        return createTree(list, "id", "pId", "children", rootValue);
     }
 
-    public static <T> List<T> intTree(List<T> list) {
-        return createTree(list, "id", "pId", "children", 0);
+    /**
+     * 生成树形数据，根数据为整型
+     *
+     * @param list 数据源
+     * @param <T> 数据类型
+     * @return 树形数据
+     */
+    public static <T> List<T> intTree(List<T> list, int rootValue) {
+        return createTree(list, "id", "pId", "children", rootValue);
     }
 
-    public static <T> List<T> stringTree(List<T> list) {
-        return createTree(list, "id", "pId", "children", "0");
+    /**
+     * 生成树形数据，根数据为字符串"0"
+     *
+     * @param list 数据源
+     * @param <T> 数据类型
+     * @return 树形数据
+     */
+    public static <T> List<T> stringTree(List<T> list, String rootValue) {
+        return createTree(list, "id", "pId", "children", rootValue);
     }
 
+    /**
+     * 生成树形数据，根数据为null
+     *
+     * @param list 数据源
+     * @param <T> 数据类型
+     * @return 树形数据
+     */
+    public static <T> List<T> nullTree(List<T> list) {
+        return createTree(list, "id", "pId", "children", null);
+    }
+
+    /**
+     * 生成树形数据
+     *
+     * @param list 数据源
+     * @param idName id名
+     * @param pIdName 父级id名
+     * @param childName 子集名
+     * @param rootValue 根节点的值
+     * @param <T> 数据类型
+     * @return 树形数据
+     */
     public static <T> List<T> createTree(List<T> list, String idName, String pIdName, String childName,
-        Object rootIdValue) {
+        Object rootValue) {
         if (CollUtil.isEmpty(list)) {
             return Collections.emptyList();
         }
@@ -68,7 +111,7 @@ public class TreeUtil {
             objects.add(t);
         }
         List<T> objectList = new ArrayList<>();
-        List<T> topList = map.get(rootIdValue);
+        List<T> topList = map.get(rootValue);
         if (CollUtil.isNotEmpty(topList)) {
             for (T o : topList) {
                 objectList.add(addChildNode(o, map, idField, childField));

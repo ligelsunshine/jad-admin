@@ -80,7 +80,7 @@ public class Menu extends BaseEntity {
     private Boolean hideTab;
 
     @ApiModelProperty(value = "当前路由不再菜单显示")
-    private String hideMenu;
+    private Boolean hideMenu;
 
     @ApiModelProperty(value = "排序")
     private Integer orderNo;
@@ -90,6 +90,9 @@ public class Menu extends BaseEntity {
 
     @ApiModelProperty(value = "是否在子级菜单的完整path中忽略本级path")
     private Boolean hidePathForChildren;
+
+    @ApiModelProperty(value = "是否外链")
+    private Boolean external;
 
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
     private Status status;
