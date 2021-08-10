@@ -8,6 +8,9 @@ import com.jad.common.enums.Status;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,15 +35,18 @@ public class Menu extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "父级菜单ID")
+    @NotBlank(message = "上级菜单不能为空", groups = {ButtonValidGroup.class})
     private String pId;
 
     @ApiModelProperty(value = "菜单类型 [0：目录 1：菜单 2：按钮]")
+    @NotNull(message = "请选择菜单类型")
     private MenuType type;
 
     @ApiModelProperty(value = "授权(多个用逗号分隔，如：user:list,user:create)")
     private String permissions;
 
     @ApiModelProperty(value = "菜单URL")
+    @NotBlank(message = "路由地址不能为空", groups = {DirectoryValidGroup.class, MenuValidGroup.class})
     private String path;
 
     @ApiModelProperty(value = "路由名称")
@@ -53,6 +59,7 @@ public class Menu extends BaseEntity {
     private String redirect;
 
     @ApiModelProperty(value = "菜单标题")
+    @NotBlank(message = "菜单标题不能为空", groups = {DirectoryValidGroup.class, MenuValidGroup.class, ButtonValidGroup.class})
     private String title;
 
     @ApiModelProperty(value = "是否固定标签")
@@ -100,4 +107,23 @@ public class Menu extends BaseEntity {
     @ApiModelProperty(value = "子菜单")
     @TableField(exist = false)
     private List<Menu> children;
+
+    /**
+     * 目录校验分组
+     */
+    public interface DirectoryValidGroup {
+    }
+
+    /**
+     * 菜单校验分组
+     */
+    public interface MenuValidGroup {
+    }
+
+    /**
+     * 按钮校验分组
+     */
+    public interface ButtonValidGroup {
+    }
+
 }
