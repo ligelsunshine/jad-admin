@@ -43,9 +43,6 @@ import io.swagger.annotations.ApiOperation;
 public class MenuController extends BaseController {
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private MenuService menuService;
 
     @ApiOperation("添加菜单权限")

@@ -54,6 +54,42 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     private RoleMenuService roleMenuService;
 
     /**
+     * 添加菜单
+     *
+     * @param menu 菜单
+     * @return 是否添加成功
+     */
+    @Override
+    public boolean save(Menu menu) {
+        clearUserMenuList();
+        return super.save(menu);
+    }
+
+    /**
+     * 删除菜单
+     *
+     * @param id 菜单ID
+     * @return 是否删除成功
+     */
+    @Override
+    public boolean removeById(String id) {
+        clearUserMenuList();
+        return super.removeById(id);
+    }
+
+    /**
+     * 修改菜单
+     *
+     * @param menu 菜单
+     * @return 是否修改成功
+     */
+    @Override
+    public boolean updateById(Menu menu) {
+        clearUserMenuList();
+        return super.updateById(menu);
+    }
+
+    /**
      * 获取用户菜单权限列表
      *
      * @param userId 用户ID
@@ -98,8 +134,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         User curUser = userService.getCurrentAuthUser();
         List<Menu> menuList;
         // 在Redis中缓存菜单信息
-        if (redisUtil.hHasKey(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername())) {
-            final String menuListJson = (String) redisUtil.hget(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername());
+        if (redisUtil.hHasKey(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername())) {
+            final String menuListJson = (String) redisUtil.hget(RedisConst.SYSTEM_USER_MENU_LIST,
+                curUser.getUsername());
             menuList = JSONArray.parseArray(menuListJson, Menu.class);
         } else {
             // 如果是超级管理员，则返回所有菜单
@@ -110,7 +147,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             }
             // 序列化menuList，缓存在Redis中
             final String menuListJson = JSONObject.toJSONString(menuList);
-            redisUtil.hset(RedisConst.SYSTEM_MENU_LIST, curUser.getUsername(), menuListJson);
+            redisUtil.hset(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername(), menuListJson);
         }
         return menuList;
     }
@@ -133,6 +170,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         final List<Menu> menuTree = TreeUtil.nullTree(menuList);
         // 排序
         return sortMenuTree(menuTree);
+    }
+
+    /**
+     * 清除用户缓存的菜单
+     */
+    public void clearUserMenuList() {
+        final User curUser = userService.getCurrentAuthUser();
+        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername());
     }
 
     /**

@@ -22,5 +22,5 @@ public class RedisConst {
     public static final String SECURITY_USER_GRANTED_AUTHORITY = "security-user-granted-authority";
 
     // Redis中存放菜单
-    public static final String SYSTEM_MENU_LIST = "system-menu-list";
+    public static final String SYSTEM_USER_MENU_LIST = "system-user-menu-list";
 }
