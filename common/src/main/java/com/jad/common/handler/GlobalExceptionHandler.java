@@ -117,7 +117,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = RedisConnectionFailureException.class)
     public Result handler(RedisConnectionFailureException e) {
-        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Redis连接失败异常", e);
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"系统错误：Redis连接失败异常", e);
     }
 
     /**
@@ -129,7 +129,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = DuplicateKeyException.class)
     public Result handler(DuplicateKeyException e) {
-        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"数据库添加多个key重复异常", e);
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"系统错误：数据库添加多个key重复异常", e);
     }
 
     /**
@@ -141,7 +141,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = NullPointerException.class)
     public Result handler(NullPointerException e) {
-        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"空指针异常", e);
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"系统错误：空指针异常", e);
     }
 
     /**
@@ -153,13 +153,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
     public Result handler(Exception e) {
-        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"系统异常", e);
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"系统错误", e);
     }
 
     private Result processFailed(int httpStatus, String msg, Exception e) {
         log.error("{}：{}", msg, e.getMessage());
         e.printStackTrace();
-        return Result.failed(httpStatus, "系统错误：" + msg, e.getMessage());
+        return Result.failed(httpStatus, msg, e.getMessage());
     }
 
 }
