@@ -7,6 +7,7 @@ package com.jad.common.handler;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.lang.Result;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
@@ -18,8 +19,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.nio.file.AccessDeniedException;
-
-import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,8 +41,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = IllegalArgumentException.class)
     public Result handler(IllegalArgumentException e) {
-        log.error("非法数据异常：----------{}", e.getMessage());
-        return Result.failed(e.getMessage());
+        return processFailed(HttpStatus.BAD_REQUEST.value(),"非法数据请求", e);
     }
 
     /**
@@ -55,14 +53,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result handler(MethodArgumentNotValidException e) {
-        log.error("实体校验异常：----------{}", e.getMessage());
         ObjectError objectError = e.getBindingResult().getAllErrors().stream().findFirst().orElse(null);
         if (objectError != null) {
-            return Result.failed(objectError.getDefaultMessage());
+            return processFailed(HttpStatus.BAD_REQUEST.value(),objectError.getDefaultMessage(), e);
         }
-        return Result.failed(e.getMessage());
+        return processFailed(HttpStatus.BAD_REQUEST.value(),"实体校验异常", e);
     }
-
 
     /**
      * 错误请求异常
@@ -73,9 +69,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BadRequestException.class)
     public Result handler(BadRequestException e) {
-        log.error("错误请求异常：----------{}", e.getResult().getMsg());
-        e.printStackTrace();
-        return Result.failed(e.getResult().getCode(), e.getResult().getMsg(), null);
+        return processFailed(HttpStatus.BAD_REQUEST.value(),"错误的请求", e);
     }
 
     /**
@@ -87,12 +81,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AccessDeniedException.class)
     public Result handler(AccessDeniedException e) {
-        log.error("权限不足：----------{}", e.getMessage());
-        return Result.failed(HttpStatus.FORBIDDEN.value(), e.getMessage(), null);
+        return processFailed(HttpStatus.FORBIDDEN.value(),"权限不足", e);
     }
 
     /**
-     * 404异常
+     * 不支持的请求方式
      *
      * @param e 异常
      * @return 响应结果 404
@@ -100,9 +93,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Result handler(HttpRequestMethodNotSupportedException e) {
-        String msg = String.format("不支持的请求方式 %s", e.getMessage());
-        log.error("404异常：----------{}", msg);
-        return Result.failed(HttpStatus.NOT_FOUND.value(), msg, null);
+        return processFailed(HttpStatus.NOT_FOUND.value(),"不支持的请求方式", e);
     }
 
     /**
@@ -114,8 +105,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
     public Result handler(NoHandlerFoundException e) {
-        log.error("404异常：----------{}", e.getMessage());
-        return Result.failed(HttpStatus.NOT_FOUND.value(), "您访问的资源不存在", null);
+        return processFailed(HttpStatus.NOT_FOUND.value(),"您访问的资源不存在", e);
     }
 
     /**
@@ -127,9 +117,19 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = RedisConnectionFailureException.class)
     public Result handler(RedisConnectionFailureException e) {
-        log.error("Redis连接失败异常：----------{}", e.getMessage());
-        e.printStackTrace();
-        return Result.failed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误", null);
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Redis连接失败异常", e);
+    }
+
+    /**
+     * 数据库添加多个key重复异常
+     *
+     * @param e 异常
+     * @return 响应结果 500
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = DuplicateKeyException.class)
+    public Result handler(DuplicateKeyException e) {
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"数据库添加多个key重复异常", e);
     }
 
     /**
@@ -141,9 +141,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = NullPointerException.class)
     public Result handler(NullPointerException e) {
-        log.error("空指针异常：----------{}", e.getMessage());
-        e.printStackTrace();
-        return Result.failed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误", null);
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"空指针异常", e);
     }
 
     /**
@@ -155,8 +153,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
     public Result handler(Exception e) {
-        log.error("系统异常：----------{}", e.getMessage());
-        e.printStackTrace();
-        return Result.failed(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null);
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(),"系统异常", e);
     }
+
+    private Result processFailed(int httpStatus, String msg, Exception e) {
+        log.error("{}：{}", msg, e.getMessage());
+        e.printStackTrace();
+        return Result.failed(httpStatus, "系统错误：" + msg, e.getMessage());
+    }
+
 }
