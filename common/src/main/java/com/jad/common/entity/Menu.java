@@ -7,6 +7,7 @@ import com.jad.common.enums.MenuType;
 import com.jad.common.enums.Status;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -50,7 +51,7 @@ public class Menu extends BaseEntity {
     private String path;
 
     @ApiModelProperty(value = "路由名称")
-    private String name;
+    private String name = UUID.randomUUID().toString().replace("-", "");
 
     @ApiModelProperty(value = "前端组件URL")
     private String component;
@@ -63,10 +64,10 @@ public class Menu extends BaseEntity {
     private String title;
 
     @ApiModelProperty(value = "是否固定标签")
-    private Boolean affix;
+    private Boolean affix = false;
 
     @ApiModelProperty(value = "是否忽略KeepAlive缓存")
-    private Boolean ignoreKeepAlive;
+    private Boolean ignoreKeepAlive = false;
 
     @ApiModelProperty(value = "菜单图标")
     private String icon;
@@ -78,31 +79,31 @@ public class Menu extends BaseEntity {
     private String transitionName;
 
     @ApiModelProperty(value = "如果该路由会携带参数，且需要在tab页上面显示。则需要设置为true")
-    private Boolean carryParam;
+    private Boolean carryParam = false;
 
     @ApiModelProperty(value = "是否隐藏所有子菜单")
-    private Boolean hideChildrenInMenu;
+    private Boolean hideChildrenInMenu = false;
 
     @ApiModelProperty(value = "当前路由不再标签页显示")
-    private Boolean hideTab;
+    private Boolean hideTab = false;
 
     @ApiModelProperty(value = "当前路由不再菜单显示")
-    private Boolean hideMenu;
+    private Boolean hideMenu = false;
 
     @ApiModelProperty(value = "排序")
-    private Integer orderNo;
+    private Integer orderNo = 0;
 
     @ApiModelProperty(value = "本路由仅用于菜单生成，不会在实际的路由表中出现")
-    private Boolean ignoreRoute;
+    private Boolean ignoreRoute = false;
 
     @ApiModelProperty(value = "是否在子级菜单的完整path中忽略本级path")
-    private Boolean hidePathForChildren;
+    private Boolean hidePathForChildren = false;
 
     @ApiModelProperty(value = "是否外链")
-    private Boolean external;
+    private Boolean external = false;
 
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
-    private Status status;
+    private Status status = Status.ENABLE;
 
     @ApiModelProperty(value = "子菜单")
     @TableField(exist = false)
