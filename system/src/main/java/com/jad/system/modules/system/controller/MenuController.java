@@ -6,12 +6,8 @@ package com.jad.system.modules.system.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.entity.Menu;
-import com.jad.common.enums.MenuType;
-import com.jad.common.exception.BadRequestException;
 import com.jad.common.lang.Result;
 import com.jad.common.service.MenuService;
-import com.jad.common.service.UserService;
-import com.jad.common.utils.ValidatorUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +23,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -48,9 +43,6 @@ public class MenuController extends BaseController {
     @ApiOperation("添加菜单权限")
     @PostMapping("/save")
     public Result save(@RequestBody @Valid Menu menu) {
-        // 分组实体校验
-        validMenu(menu, false);
-
         final boolean success = menuService.save(menu);
         if (success) {
             return Result.success("添加成功");
@@ -71,9 +63,6 @@ public class MenuController extends BaseController {
     @ApiOperation("修改菜单权限")
     @PutMapping("/update")
     public Result update(@RequestBody @Valid Menu menu) {
-        // 分组实体校验
-        validMenu(menu, true);
-
         final boolean success = menuService.updateById(menu);
         if (success) {
             return Result.success("修改成功");
@@ -100,27 +89,5 @@ public class MenuController extends BaseController {
     public Result getMenuTree() {
         List<Menu> menus = menuService.getMenuTree();
         return Result.success(menus);
-    }
-
-    /**
-     * 分组实体校验
-     *
-     * @param menu 菜单
-     */
-    private void validMenu(Menu menu, boolean isUpdate) {
-        // 若是更新则判断id是否存在
-        if (isUpdate && StrUtil.isBlank(menu.getId())) {
-            throw new BadRequestException(Result.failed("id不能为空"));
-        }
-        // 分组实体校验
-        Class<?> clazzGroup;
-        if (menu.getType() == MenuType.DIRECTORY) {
-            clazzGroup = Menu.DirectoryValidGroup.class;
-        } else if (menu.getType() == MenuType.MENU) {
-            clazzGroup = Menu.MenuValidGroup.class;
-        } else {
-            clazzGroup = Menu.ButtonValidGroup.class;
-        }
-        ValidatorUtil.validateEntity(menu, clazzGroup);
     }
 }

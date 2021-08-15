@@ -4,7 +4,6 @@
 
 package com.jad.common.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jad.common.constant.RedisConst;
@@ -12,6 +11,9 @@ import com.jad.common.entity.Menu;
 import com.jad.common.entity.RoleMenu;
 import com.jad.common.entity.User;
 import com.jad.common.entity.UserRole;
+import com.jad.common.enums.MenuType;
+import com.jad.common.exception.BadRequestException;
+import com.jad.common.lang.Result;
 import com.jad.common.mapper.MenuMapper;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
@@ -19,6 +21,7 @@ import com.jad.common.service.UserRoleService;
 import com.jad.common.service.UserService;
 import com.jad.common.utils.RedisUtil;
 import com.jad.common.utils.TreeUtil;
+import com.jad.common.utils.ValidatorUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +64,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      */
     @Override
     public boolean save(Menu menu) {
+        // 菜单实体校验
+        validMenu(menu, false);
         clearUserMenuList();
         return super.save(menu);
     }
@@ -74,6 +79,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public boolean removeById(String id) {
         clearUserMenuList();
+        // TODO 移除当前菜单及其子菜单
+        // final List<Menu> menuTree = getMenuTree();
+
         return super.removeById(id);
     }
 
@@ -85,6 +93,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      */
     @Override
     public boolean updateById(Menu menu) {
+        // 菜单实体校验
+        validMenu(menu, true);
         clearUserMenuList();
         return super.updateById(menu);
     }
@@ -134,21 +144,27 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         User curUser = userService.getCurrentAuthUser();
         List<Menu> menuList;
         // 在Redis中缓存菜单信息
-        if (redisUtil.hHasKey(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername())) {
-            final String menuListJson = (String) redisUtil.hget(RedisConst.SYSTEM_USER_MENU_LIST,
-                curUser.getUsername());
-            menuList = JSONArray.parseArray(menuListJson, Menu.class);
+        // if (redisUtil.hHasKey(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername())) {
+        //     final String menuListJson = (String) redisUtil.hget(RedisConst.SYSTEM_USER_MENU_LIST,
+        //         curUser.getUsername());
+        //     menuList = JSONArray.parseArray(menuListJson, Menu.class);
+        // } else {
+        // 如果是超级管理员，则返回所有菜单
+        if (userService.hasAdministrator()) {
+            menuList = this.list();
         } else {
-            // 如果是超级管理员，则返回所有菜单
-            if (userService.hasAdministrator()) {
-                menuList = this.list();
-            } else {
-                menuList = this.getMenuList(curUser.getId());
-            }
-            // 序列化menuList，缓存在Redis中
-            final String menuListJson = JSONObject.toJSONString(menuList);
-            redisUtil.hset(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername(), menuListJson);
+            menuList = this.getMenuList(curUser.getId());
         }
+        // 序列化menuList，缓存在Redis中
+        final String menuListJson = JSONObject.toJSONString(menuList);
+        redisUtil.hset(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername(), menuListJson);
+        // }
+        // 若pId为空白，则设置pId为null，使用方便前端在编辑根节点时不展示父级
+        menuList.forEach(menu -> {
+            if (StrUtil.isBlank(menu.getPId())) {
+                menu.setPId(null);
+            }
+        });
         return menuList;
     }
 
@@ -160,12 +176,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public List<Menu> getMenuTree() {
         // 获取当前登录用户菜单权限列表
         final List<Menu> menuList = this.getMenuList();
-        // 若pId为空白，则设置pId为null，使用方便前端在编辑根节点时不展示父级
-        menuList.forEach(menu -> {
-            if (StrUtil.isBlank(menu.getPId())) {
-                menu.setPId(null);
-            }
-        });
         // 生成菜单树
         final List<Menu> menuTree = TreeUtil.nullTree(menuList);
         // 排序
@@ -196,5 +206,38 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             }
         });
         return menus;
+    }
+
+    /**
+     * 菜单实体校验
+     *
+     * @param menu 菜单
+     */
+    private void validMenu(Menu menu, boolean isUpdate) {
+        // 若是更新则判断id是否存在
+        if (isUpdate && StrUtil.isBlank(menu.getId())) {
+            throw new BadRequestException(Result.failed("id不能为空"));
+        }
+        // 分组实体校验
+        Class<?> clazzGroup;
+        if (menu.getType() == MenuType.DIRECTORY) {
+            clazzGroup = Menu.DirectoryValidGroup.class;
+        } else if (menu.getType() == MenuType.MENU) {
+            clazzGroup = Menu.MenuValidGroup.class;
+        } else {
+            clazzGroup = Menu.ButtonValidGroup.class;
+        }
+        ValidatorUtil.validateEntity(menu, clazzGroup);
+        // 根目录的路由地址必须以'/'开头，且component为'LAYOUT'
+        if (StrUtil.isBlank(menu.getPId()) && menu.getType() == MenuType.DIRECTORY) {
+            if (!menu.getPath().startsWith("/")) {
+                throw new BadRequestException(Result.failed("根目录的路由地址必须以'/'开头"));
+            }
+            menu.setComponent("LAYOUT");
+        }
+        // 若是外链，则需要给frameSrc赋值path
+        if (menu.getExternal()) {
+            menu.setFrameSrc(menu.getPath());
+        }
     }
 }

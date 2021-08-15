@@ -54,6 +54,7 @@ public class Menu extends BaseEntity {
     private String name = UUID.randomUUID().toString().replace("-", "");
 
     @ApiModelProperty(value = "前端组件URL")
+    @NotBlank(message = "组件路径不能为空", groups = {MenuValidGroup.class})
     private String component;
 
     @ApiModelProperty(value = "重定向")
