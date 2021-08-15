@@ -71,7 +71,7 @@ public class Menu extends BaseEntity {
     private Boolean ignoreKeepAlive = false;
 
     @ApiModelProperty(value = "菜单图标")
-    private String icon;
+    private String icon = "";
 
     @ApiModelProperty(value = "内嵌iframe的地址")
     private String frameSrc;

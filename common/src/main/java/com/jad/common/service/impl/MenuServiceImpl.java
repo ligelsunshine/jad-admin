@@ -131,7 +131,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             return menus;
         }
         // 获取menu
-        return this.lambdaQuery().in(Menu::getId, menuIds).list();
+        return this.lambdaQuery().in(Menu::getId, menuIds).orderByAsc(Menu::getCreateTime).list();
     }
 
     /**
@@ -151,7 +151,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         // } else {
         // 如果是超级管理员，则返回所有菜单
         if (userService.hasAdministrator()) {
-            menuList = this.list();
+            menuList = this.lambdaQuery().orderByAsc(Menu::getCreateTime).list();
         } else {
             menuList = this.getMenuList(curUser.getId());
         }

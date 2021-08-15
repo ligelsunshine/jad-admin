@@ -40,6 +40,6 @@ public class MybatisMetaObjectHandler implements MetaObjectHandler {
         final User user = userService.getCurrentAuthUser();
         String userId = user != null ? user.getId() : null;
         this.strictUpdateFill(metaObject, "updateTime", LocalDateTime::now, LocalDateTime.class);
-        this.strictInsertFill(metaObject, "updateBy", () -> userId, String.class);
+        this.strictUpdateFill(metaObject, "updateBy", () -> userId, String.class);
     }
 }
