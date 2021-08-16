@@ -21,6 +21,9 @@ public class RedisConst {
     // Redis中存放用户授权信息的key
     public static final String SECURITY_USER_GRANTED_AUTHORITY = "security-user-granted-authority";
 
-    // Redis中存放菜单
+    // Redis中存放用户菜单列表
     public static final String SYSTEM_USER_MENU_LIST = "system-user-menu-list";
+
+    // Redis中存放用户菜单树
+    public static final String SYSTEM_USER_MENU_TREE = "system-user-menu-tree";
 }
