@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "实体基类")
 @Data
 @Accessors(chain = true)
-public class BaseEntity implements Serializable {
+public class AllFieldBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,4 +54,10 @@ public class BaseEntity implements Serializable {
     @ApiModelProperty(value = "修改人")
     @TableField(value = "update_by", fill = FieldFill.UPDATE)
     private String updateBy;
+
+    @ApiModelProperty(value = "是否启用【未启用：0, 已启用：1（默认）】")
+    @TableField(value = "enable", updateStrategy = FieldStrategy.NOT_NULL, fill = FieldFill.INSERT)
+    @TableLogic(value = "1", delval = "0")
+    private Boolean enable;
+
 }

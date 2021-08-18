@@ -42,6 +42,7 @@ public class JadBasicErrorController extends BasicErrorController {
     @Override
     public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
         HttpStatus status = getStatus(request);
+
         String msg;
         switch (status.value()) {
             case 404:

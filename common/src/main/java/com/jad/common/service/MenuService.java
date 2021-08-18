@@ -66,7 +66,12 @@ public interface MenuService extends IService<Menu> {
     List<Menu> getMenuTree();
 
     /**
-     * 清除用户缓存的菜单
+     * 清除用户缓存的菜单列表
      */
     void clearUserMenuList();
+
+    /**
+     * 清除用户缓存的菜单树
+     */
+    void clearUserMenuTree();
 }

@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -70,6 +71,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         // 菜单实体校验
         validMenu(menu, false);
         clearUserMenuList();
+        clearUserMenuTree();
         return super.save(menu);
     }
 
@@ -82,6 +84,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public boolean removeById(String id) {
         clearUserMenuList();
+        clearUserMenuTree();
         // TODO 移除当前菜单及其子菜单
         // final List<Menu> menuTree = getMenuTree();
 
@@ -99,6 +102,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         // 菜单实体校验
         validMenu(menu, true);
         clearUserMenuList();
+        clearUserMenuTree();
         return super.updateById(menu);
     }
 
@@ -209,12 +213,21 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     /**
-     * 清除用户缓存的菜单
+     * 清除用户缓存的菜单列表
      */
     @Override
     public void clearUserMenuList() {
         final User curUser = userService.getCurrentAuthUser();
         redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername());
+    }
+
+    /**
+     * 清除用户缓存的菜单树
+     */
+    @Override
+    public void clearUserMenuTree() {
+        final User curUser = userService.getCurrentAuthUser();
+        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername());
     }
 
     /**
