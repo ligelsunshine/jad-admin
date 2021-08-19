@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -68,9 +69,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public boolean save(Menu menu) {
         // 菜单实体校验
         validMenu(menu, false);
+        final boolean success = super.save(menu);
         clearUserMenuList();
         clearUserMenuTree();
-        return super.save(menu);
+        return success;
     }
 
     /**
@@ -81,12 +83,22 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      */
     @Override
     public boolean removeById(String id) {
+        boolean success;
+        // 移除当前菜单及其子菜单
+        final List<Menu> menuTree = getMenuTree();
+        final Tree<Menu> tree = new Tree<>(menuTree);
+        final Menu node = tree.getSubTree(id);
+        final List<Menu> menus = tree.toList(node);
+        if (CollUtil.isNotEmpty(menus)) {
+            final List<String> ids = menus.stream().map(Menu::getId).collect(Collectors.toList());
+            success = super.removeByIds(ids);
+        } else {
+            success = super.removeById(id);
+        }
+        // 清空缓存
         clearUserMenuList();
         clearUserMenuTree();
-        // TODO 移除当前菜单及其子菜单
-        // final List<Menu> menuTree = getMenuTree();
-
-        return super.removeById(id);
+        return success;
     }
 
     /**
@@ -99,9 +111,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public boolean updateById(Menu menu) {
         // 菜单实体校验
         validMenu(menu, true);
+        final boolean success = super.updateById(menu);
         clearUserMenuList();
         clearUserMenuTree();
-        return super.updateById(menu);
+        return success;
     }
 
     /**
@@ -223,24 +236,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         final User curUser = userService.getCurrentAuthUser();
         redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername());
     }
-
-    // /**
-    //  * 菜单树排序
-    //  *
-    //  * @param menuTree 菜单树
-    //  * @return 菜单树
-    //  */
-    // private List<Menu> sortMenuTree(List<Menu> menuTree) {
-    //     final List<Menu> menus = menuTree.stream()
-    //         .sorted(Comparator.comparingInt(Menu::getOrderNo))
-    //         .collect(Collectors.toList());
-    //     menus.forEach(menu -> {
-    //         if (menu.getChildren() != null && menu.getChildren().size() > 0) {
-    //             menu.setChildren(sortMenuTree(menu.getChildren()));
-    //         }
-    //     });
-    //     return menus;
-    // }
 
     /**
      * 菜单实体校验

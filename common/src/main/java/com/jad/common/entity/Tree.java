@@ -41,6 +41,16 @@ public class Tree<T extends TreeNode<T>> {
     }
 
     /**
+     * 构建树形数据
+     *
+     * @param treeList 树形数据列表
+     */
+    public Tree(List<T> treeList) {
+        this.list = toList(treeList);
+        this.tree = CollUtil.newArrayList(treeList);
+    }
+
+    /**
      * 获取完整树形数据
      *
      * @return 完整树形数据
@@ -154,8 +164,10 @@ public class Tree<T extends TreeNode<T>> {
         for (T node : treeList) {
             if (id.equals(node.getId())) {
                 return node;
-            } else {
-                return findSubTree(node.getChildren(), id);
+            }
+            T result = findSubTree(node.getChildren(), id);
+            if (result != null) {
+                return result;
             }
         }
         return null;

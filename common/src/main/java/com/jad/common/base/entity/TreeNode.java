@@ -9,8 +9,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -35,7 +33,6 @@ public class TreeNode<T> extends BaseEntity implements Serializable {
     private Integer orderNo = 0;
 
     @ApiModelProperty(value = "父级节点ID")
-    @NotBlank(message = "父级节点不能为空")
     private String pId;
 
     @ApiModelProperty(value = "子节点")

@@ -1,5 +1,9 @@
 package com.jad.common.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.TreeNode;
 import com.jad.common.enums.MenuType;
@@ -97,6 +101,11 @@ public class Menu extends TreeNode<Menu> implements Serializable {
 
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
     private Status status = Status.ENABLE;
+
+    @ApiModelProperty(value = "是否启用【未启用：0, 已启用：1（默认）】")
+    @TableField(value = "enable", updateStrategy = FieldStrategy.NOT_NULL, fill = FieldFill.INSERT)
+    @TableLogic(value = "1", delval = "0")
+    private Boolean enable;
 
     /**
      * 目录校验分组
