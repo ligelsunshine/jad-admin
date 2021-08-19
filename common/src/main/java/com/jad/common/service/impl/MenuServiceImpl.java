@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.RoleMenu;
+import com.jad.common.entity.Tree;
 import com.jad.common.entity.User;
 import com.jad.common.entity.UserRole;
 import com.jad.common.enums.MenuType;
@@ -23,18 +24,15 @@ import com.jad.common.service.RoleMenuService;
 import com.jad.common.service.UserRoleService;
 import com.jad.common.service.UserService;
 import com.jad.common.utils.RedisUtil;
-import com.jad.common.utils.TreeUtil;
 import com.jad.common.utils.ValidatorUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -195,9 +193,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             // 获取当前登录用户菜单权限列表
             final List<Menu> menuList = this.getMenuList();
             // 生成菜单树
-            menuTree = TreeUtil.nullTree(menuList);
-            // 排序
-            menuTree = sortMenuTree(menuTree);
+            final Tree<Menu> tree = new Tree<>(menuList, null);
+            menuTree = tree.getAllTree();
+
             // 序列化菜单列表，缓存在Redis中
             // 这里不能使用 JSONObject.toJSONString(menuList);
             // 因为会遇到循环引用问题，导致序列化出来的json字符串会出现"$ref"
@@ -206,10 +204,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         }
 
         return menuTree;
-    }
-
-    public static void main(String[] args) {
-
     }
 
     /**
@@ -230,23 +224,23 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername());
     }
 
-    /**
-     * 菜单树排序
-     *
-     * @param menuTree 菜单树
-     * @return 菜单树
-     */
-    private List<Menu> sortMenuTree(List<Menu> menuTree) {
-        final List<Menu> menus = menuTree.stream()
-            .sorted(Comparator.comparingInt(Menu::getOrderNo))
-            .collect(Collectors.toList());
-        menus.forEach(menu -> {
-            if (menu.getChildren() != null && menu.getChildren().size() > 0) {
-                menu.setChildren(sortMenuTree(menu.getChildren()));
-            }
-        });
-        return menus;
-    }
+    // /**
+    //  * 菜单树排序
+    //  *
+    //  * @param menuTree 菜单树
+    //  * @return 菜单树
+    //  */
+    // private List<Menu> sortMenuTree(List<Menu> menuTree) {
+    //     final List<Menu> menus = menuTree.stream()
+    //         .sorted(Comparator.comparingInt(Menu::getOrderNo))
+    //         .collect(Collectors.toList());
+    //     menus.forEach(menu -> {
+    //         if (menu.getChildren() != null && menu.getChildren().size() > 0) {
+    //             menu.setChildren(sortMenuTree(menu.getChildren()));
+    //         }
+    //     });
+    //     return menus;
+    // }
 
     /**
      * 菜单实体校验

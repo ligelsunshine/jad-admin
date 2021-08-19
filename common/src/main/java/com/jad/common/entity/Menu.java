@@ -1,12 +1,11 @@
 package com.jad.common.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jad.common.base.entity.BaseEntity;
+import com.jad.common.base.entity.TreeNode;
 import com.jad.common.enums.MenuType;
 import com.jad.common.enums.Status;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
@@ -28,16 +27,12 @@ import lombok.experimental.Accessors;
  */
 @ApiModel("菜单")
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 @TableName("sys_menu")
-public class Menu extends BaseEntity {
+public class Menu extends TreeNode<Menu> implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    @ApiModelProperty(value = "父级菜单ID")
-    @NotBlank(message = "上级菜单不能为空", groups = {ButtonValidGroup.class})
-    private String pId;
 
     @ApiModelProperty(value = "菜单类型 [0：目录 1：菜单 2：按钮]")
     @NotNull(message = "请选择菜单类型")
@@ -91,9 +86,6 @@ public class Menu extends BaseEntity {
     @ApiModelProperty(value = "当前路由不再菜单显示")
     private Boolean hideMenu = false;
 
-    @ApiModelProperty(value = "排序")
-    private Integer orderNo = 0;
-
     @ApiModelProperty(value = "本路由仅用于菜单生成，不会在实际的路由表中出现")
     private Boolean ignoreRoute = false;
 
@@ -105,10 +97,6 @@ public class Menu extends BaseEntity {
 
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
     private Status status = Status.ENABLE;
-
-    @ApiModelProperty(value = "子菜单")
-    @TableField(exist = false)
-    private List<Menu> children;
 
     /**
      * 目录校验分组
