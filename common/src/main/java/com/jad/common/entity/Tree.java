@@ -21,7 +21,7 @@ import cn.hutool.core.collection.CollUtil;
  * @since 2021/8/18 22:35
  */
 public class Tree<T extends TreeNode<T>> {
-    private List<T> list;
+    private final List<T> list;
 
     private List<T> tree;
 
@@ -55,12 +55,22 @@ public class Tree<T extends TreeNode<T>> {
      *
      * @return 完整树形数据
      */
-    public List<T> getAllTree() {
+    public List<T> getRootTree() {
         return this.tree;
     }
 
     /**
-     * 获取子树
+     * 获取子树，包含子树根节点
+     *
+     * @param code 子树根节点code
+     * @return 子树
+     */
+    public T getCodeTree(String code) {
+        return findSubTreeByCode(this.tree, code);
+    }
+
+    /**
+     * 获取子树，包含子树根节点
      *
      * @param id 子树根节点id
      * @return 子树
@@ -69,12 +79,51 @@ public class Tree<T extends TreeNode<T>> {
         return findSubTree(this.tree, id);
     }
 
-    public List<T> getChildren(String id) {
+    /**
+     * 获取子节点，包含子树根节点
+     *
+     * @param id 子树根节点id
+     * @return 子树
+     */
+    public List<T> getSubList(String id) {
+        final T subTree = findSubTree(this.tree, id);
+        if (subTree != null) {
+            final List<T> list = toList(subTree);
+            // 去掉children
+            list.forEach(item -> item.setChildren(null));
+            return list;
+        }
+        return null;
+    }
+
+    /**
+     * 获取子树，不包含子树根节点
+     *
+     * @param id 子树根节点id
+     * @return 子树列表
+     */
+    public List<T> getChildrenTree(String id) {
         final T subTree = findSubTree(this.tree, id);
         if (subTree != null) {
             return subTree.getChildren();
         }
         return null;
+    }
+
+    /**
+     * 获取子节点列表，不包含子树根节点
+     *
+     * @param id 子树根节点id
+     * @return 子节点列表
+     */
+    public List<T> getChildrenList(String id) {
+        final List<T> childrenTree = getChildrenTree(id);
+        final List<T> list = toList(childrenTree);
+        // 去掉children
+        if (list != null) {
+            list.forEach(item -> item.setChildren(null));
+        }
+        return list;
     }
 
     /**
@@ -110,10 +159,9 @@ public class Tree<T extends TreeNode<T>> {
         for (T item : treeList) {
             if (CollUtil.isNotEmpty(item.getChildren())) {
                 list.addAll(toList(item.getChildren()));
-            } else {
-                item.setChildren(null);
-                list.add(item);
             }
+            item.setChildren(null);
+            list.add(item);
         }
         return list;
     }
@@ -133,9 +181,7 @@ public class Tree<T extends TreeNode<T>> {
         // 排序
         this.tree = this.tree.stream().sorted(Comparator.comparingInt(T::getOrderNo)).collect(Collectors.toList());
         // 查找子节点
-        this.tree.forEach(node -> {
-            node.setChildren(findChildren(node.getId()));
-        });
+        this.tree.forEach(node -> node.setChildren(findChildren(node.getId())));
     }
 
     private List<T> findChildren(String pId) {
@@ -162,10 +208,26 @@ public class Tree<T extends TreeNode<T>> {
             return null;
         }
         for (T node : treeList) {
-            if (id.equals(node.getId())) {
+            if (id != null && id.equals(node.getId())) {
                 return node;
             }
             T result = findSubTree(node.getChildren(), id);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private T findSubTreeByCode(List<T> treeList, String code) {
+        if (CollUtil.isEmpty(treeList)) {
+            return null;
+        }
+        for (T node : treeList) {
+            if (code != null && code.equals(node.getCode())) {
+                return node;
+            }
+            T result = findSubTreeByCode(node.getChildren(), code);
             if (result != null) {
                 return result;
             }

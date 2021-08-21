@@ -29,15 +29,18 @@ public class TreeNode<T> extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "父级节点ID")
+    private String pId = null;
+
     @ApiModelProperty(value = "排序")
     private Integer orderNo = 0;
 
-    @ApiModelProperty(value = "父级节点ID")
-    private String pId;
+    @ApiModelProperty(value = "编码")
+    private String code = null;
 
     @ApiModelProperty(value = "子节点")
     @TableField(exist = false)
-    private List<T> children;
+    private List<T> children = null;
 
 }
 

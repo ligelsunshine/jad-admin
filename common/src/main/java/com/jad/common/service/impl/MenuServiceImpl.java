@@ -113,7 +113,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         // 移除当前菜单及其子菜单
         final List<Menu> menuTree = getMenuTree();
         final Tree<Menu> tree = new Tree<>(menuTree);
-        final List<Menu> children = tree.getChildren(id);
+        final List<Menu> children = tree.getChildrenTree(id);
         final List<Menu> menus = tree.toList(children);
         if (CollUtil.isNotEmpty(menus)) {
             final List<String> ids = menus.stream().map(Menu::getId).collect(Collectors.toList());
@@ -233,7 +233,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             final List<Menu> menuList = this.getMenuList();
             // 生成菜单树
             final Tree<Menu> tree = new Tree<>(menuList, null);
-            menuTree = tree.getAllTree();
+            menuTree = tree.getRootTree();
 
             // 序列化菜单列表，缓存在Redis中
             // 这里不能使用 JSONObject.toJSONString(menuList);
