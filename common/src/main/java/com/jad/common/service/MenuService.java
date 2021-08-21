@@ -36,6 +36,14 @@ public interface MenuService extends IService<Menu> {
     boolean removeById(String id);
 
     /**
+     * 删除子菜单
+     *
+     * @param id 菜单ID
+     * @return 是否删除成功
+     */
+    boolean removeChildren(String id);
+
+    /**
      * 修改菜单
      *
      * @param menu 菜单

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -52,8 +53,13 @@ public class MenuController extends BaseController {
 
     @ApiOperation("删除菜单权限")
     @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable String id) {
-        final boolean success = menuService.removeById(id);
+    public Result delete(@PathVariable String id, @RequestParam boolean delChildren) {
+        boolean success;
+        if(delChildren){
+            success = menuService.removeChildren(id);
+        } else {
+            success = menuService.removeById(id);
+        }
         if (success) {
             return Result.success("删除成功");
         }

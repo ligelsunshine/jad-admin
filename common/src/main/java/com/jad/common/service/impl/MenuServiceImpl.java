@@ -102,6 +102,32 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     /**
+     * 删除子菜单
+     *
+     * @param id 菜单ID
+     * @return 是否删除成功
+     */
+    @Override
+    public boolean removeChildren(String id) {
+        boolean success;
+        // 移除当前菜单及其子菜单
+        final List<Menu> menuTree = getMenuTree();
+        final Tree<Menu> tree = new Tree<>(menuTree);
+        final List<Menu> children = tree.getChildren(id);
+        final List<Menu> menus = tree.toList(children);
+        if (CollUtil.isNotEmpty(menus)) {
+            final List<String> ids = menus.stream().map(Menu::getId).collect(Collectors.toList());
+            success = super.removeByIds(ids);
+        } else {
+            success = super.removeById(id);
+        }
+        // 清空缓存
+        clearUserMenuList();
+        clearUserMenuTree();
+        return success;
+    }
+
+    /**
      * 修改菜单
      *
      * @param menu 菜单
