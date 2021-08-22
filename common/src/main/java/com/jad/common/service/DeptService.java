@@ -10,4 +10,19 @@ import com.jad.common.entity.Dept;
  * @since 2021/8/21 14:06
  */
 public interface DeptService extends TreeService<Dept> {
+    /**
+     * 添加部门
+     *
+     * @param dept 部门
+     * @return 是否添加成功
+     */
+    boolean save(Dept dept);
+
+    /**
+     * 修改部门
+     *
+     * @param dept 部门
+     * @return 是否修改成功
+     */
+    boolean updateById(Dept dept);
 }

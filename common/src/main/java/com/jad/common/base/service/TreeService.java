@@ -71,5 +71,5 @@ public interface TreeService<T extends TreeNode<T>> extends IService<T> {
      * @param includeSelf 是否包含子树
      * @return 是否删除成功
      */
-    boolean removeChildren(String id, boolean includeSelf);
+    boolean removeTree(String id, boolean includeSelf);
 }

@@ -2,7 +2,6 @@ package com.jad.system.modules.system.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.entity.Dept;
-import com.jad.common.entity.Menu;
 import com.jad.common.lang.Result;
 import com.jad.common.service.DeptService;
 
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -48,8 +46,8 @@ public class DeptController extends BaseController {
 
     @ApiOperation("删除部门")
     @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable String id, @RequestParam boolean includeSelf) {
-        if (deptService.removeChildren(id, includeSelf)) {
+    public Result delete(@PathVariable String id, boolean includeSelf) {
+        if (deptService.removeTree(id, includeSelf)) {
             return Result.success("删除成功");
         }
         return Result.failed("删除失败");

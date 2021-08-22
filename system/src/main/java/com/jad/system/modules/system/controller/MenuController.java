@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -44,8 +43,7 @@ public class MenuController extends BaseController {
     @ApiOperation("添加菜单权限")
     @PostMapping("/save")
     public Result save(@RequestBody @Valid Menu menu) {
-        final boolean success = menuService.save(menu);
-        if (success) {
+        if ( menuService.save(menu)) {
             return Result.success("添加成功");
         }
         return Result.failed("添加失败");
@@ -53,14 +51,8 @@ public class MenuController extends BaseController {
 
     @ApiOperation("删除菜单权限")
     @DeleteMapping("/delete/{id}")
-    public Result delete(@PathVariable String id, @RequestParam boolean delChildren) {
-        boolean success;
-        if(delChildren){
-            success = menuService.removeChildren(id);
-        } else {
-            success = menuService.removeById(id);
-        }
-        if (success) {
+    public Result delete(@PathVariable String id, boolean includeSelf) {
+        if (menuService.removeTree(id, includeSelf)) {
             return Result.success("删除成功");
         }
         return Result.failed("删除失败");
@@ -69,8 +61,7 @@ public class MenuController extends BaseController {
     @ApiOperation("修改菜单权限")
     @PutMapping("/update")
     public Result update(@RequestBody @Valid Menu menu) {
-        final boolean success = menuService.updateById(menu);
-        if (success) {
+        if (menuService.updateById(menu)) {
             return Result.success("修改成功");
         }
         return Result.failed("修改失败");

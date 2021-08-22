@@ -10,8 +10,6 @@ import com.jad.common.base.entity.TreeNode;
 import com.jad.common.base.service.TreeService;
 import com.jad.common.entity.Tree;
 
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +31,11 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      */
     @Override
     public Tree<T> getTreeBean() {
-        final List<T> list = super.list();
+        // 加上.setEntityClass(super.getEntityClass())，防止can not find lambda cache for this entity
+        final List<T> list = super.lambdaQuery()
+            .setEntityClass(super.getEntityClass())
+            .orderByAsc(T::getCreateTime)
+            .list();
         return new Tree<>(list, null);
     }
 
@@ -99,7 +101,7 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      * @return 是否删除成功
      */
     @Override
-    public boolean removeChildren(String id, boolean includeSelf) {
+    public boolean removeTree(String id, boolean includeSelf) {
         boolean success = false;
         List<T> list;
         if (includeSelf) {

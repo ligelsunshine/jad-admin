@@ -47,7 +47,7 @@ class TreeTest {
 
     @Test
     void getChildrenList() {
-        final List<Menu> childrenList = tree.getChildrenList("dd5c824b9f0f61a6cd3a2b703bdffc55"); // TODO 有问题
+        final List<Menu> childrenList = tree.getChildrenList("dd5c824b9f0f61a6cd3a2b703bdffc55");
     }
 
     @Test

@@ -36,8 +36,4 @@ public class Dept extends TreeNode<Dept> implements Serializable {
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
     private Status status = Status.ENABLE;
 
-    @ApiModelProperty(value = "是否启用【未启用：0, 已启用：1（默认）】")
-    @TableField(value = "enable", updateStrategy = FieldStrategy.NOT_NULL, fill = FieldFill.INSERT)
-    @TableLogic(value = "1", delval = "0")
-    private Boolean enable;
 }

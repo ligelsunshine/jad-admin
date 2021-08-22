@@ -76,50 +76,26 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     /**
-     * 删除菜单
+     * 删除子树
      *
-     * @param id 菜单ID
+     * @param id 子树根节点id
+     * @param includeSelf 是否包含子树根节点
      * @return 是否删除成功
      */
     @Override
-    public boolean removeById(String id) {
-        boolean success;
-        // 移除当前菜单及其子菜单
+    public boolean removeTree(String id, boolean includeSelf) {
+        boolean success = false;
+        List<Menu> list;
         final List<Menu> menuTree = getMenuTree();
         final Tree<Menu> tree = new Tree<>(menuTree);
-        final Menu node = tree.getSubTree(id);
-        final List<Menu> menus = tree.toList(node);
-        if (CollUtil.isNotEmpty(menus)) {
-            final List<String> ids = menus.stream().map(Menu::getId).collect(Collectors.toList());
-            success = super.removeByIds(ids);
+        if (includeSelf) {
+            list = tree.getSubList(id);
         } else {
-            success = super.removeById(id);
+            list = tree.getChildrenList(id);
         }
-        // 清空缓存
-        clearUserMenuList();
-        clearUserMenuTree();
-        return success;
-    }
-
-    /**
-     * 删除子菜单
-     *
-     * @param id 菜单ID
-     * @return 是否删除成功
-     */
-    @Override
-    public boolean removeChildren(String id) {
-        boolean success;
-        // 移除当前菜单及其子菜单
-        final List<Menu> menuTree = getMenuTree();
-        final Tree<Menu> tree = new Tree<>(menuTree);
-        final List<Menu> children = tree.getChildrenTree(id);
-        final List<Menu> menus = tree.toList(children);
-        if (CollUtil.isNotEmpty(menus)) {
-            final List<String> ids = menus.stream().map(Menu::getId).collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(list)) {
+            final List<String> ids = list.stream().map(Menu::getId).collect(Collectors.toList());
             success = super.removeByIds(ids);
-        } else {
-            success = super.removeById(id);
         }
         // 清空缓存
         clearUserMenuList();

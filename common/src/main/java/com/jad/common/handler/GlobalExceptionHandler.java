@@ -14,6 +14,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -41,7 +42,10 @@ public class GlobalExceptionHandler {
      * @return 响应结果 400
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {IllegalArgumentException.class, HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    @ExceptionHandler(value = {
+        IllegalArgumentException.class, HttpMessageNotReadableException.class,
+        MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class
+    })
     public Result illegalDataHandler(Exception e) {
         return processFailed(HttpStatus.BAD_REQUEST.value(), "非法数据请求", e);
     }

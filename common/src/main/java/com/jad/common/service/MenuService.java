@@ -28,20 +28,13 @@ public interface MenuService extends IService<Menu> {
     boolean save(Menu menu);
 
     /**
-     * 删除菜单
+     * 删除子树
      *
-     * @param id 菜单ID
+     * @param id 子树根节点id
+     * @param includeSelf 是否包含子树根节点
      * @return 是否删除成功
      */
-    boolean removeById(String id);
-
-    /**
-     * 删除子菜单
-     *
-     * @param id 菜单ID
-     * @return 是否删除成功
-     */
-    boolean removeChildren(String id);
+    boolean removeTree(String id, boolean includeSelf);
 
     /**
      * 修改菜单

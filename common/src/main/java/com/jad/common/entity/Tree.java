@@ -21,7 +21,7 @@ import cn.hutool.core.collection.CollUtil;
  * @since 2021/8/18 22:35
  */
 public class Tree<T extends TreeNode<T>> {
-    private final List<T> list;
+    private List<T> list;
 
     private List<T> tree;
 
@@ -46,8 +46,8 @@ public class Tree<T extends TreeNode<T>> {
      * @param treeList 树形数据列表
      */
     public Tree(List<T> treeList) {
-        this.list = toList(treeList);
         this.tree = CollUtil.newArrayList(treeList);
+        // this.list = toList(treeList); // toList后会将children设置为null
     }
 
     /**
@@ -90,7 +90,7 @@ public class Tree<T extends TreeNode<T>> {
         if (subTree != null) {
             final List<T> list = toList(subTree);
             // 去掉children
-            list.forEach(item -> item.setChildren(null));
+            // list.forEach(item -> item.setChildren(null)); // 暂时不去掉children，不然后续操作会丢失数据
             return list;
         }
         return null;
@@ -118,12 +118,11 @@ public class Tree<T extends TreeNode<T>> {
      */
     public List<T> getChildrenList(String id) {
         final List<T> childrenTree = getChildrenTree(id);
-        final List<T> list = toList(childrenTree);
         // 去掉children
-        if (list != null) {
-            list.forEach(item -> item.setChildren(null));
-        }
-        return list;
+        // if (list != null) {
+        //     list.forEach(item -> item.setChildren(null)); // 暂时不去掉children，不然后续操作会丢失数据
+        // }
+        return toList(childrenTree);
     }
 
     /**
@@ -135,7 +134,8 @@ public class Tree<T extends TreeNode<T>> {
     public List<T> toList(T treeNode) {
         List<T> list = new ArrayList<>();
         final List<T> childrenList = toList(treeNode.getChildren());
-        treeNode.setChildren(null);
+        // 去掉children
+        // treeNode.setChildren(null); // 暂时不去掉children，不然后续操作会丢失数据
         list.add(treeNode);
         if (childrenList != null) {
             list.addAll(childrenList);
@@ -157,11 +157,12 @@ public class Tree<T extends TreeNode<T>> {
         }
         List<T> list = new ArrayList<>();
         for (T item : treeList) {
+            list.add(item);
             if (CollUtil.isNotEmpty(item.getChildren())) {
                 list.addAll(toList(item.getChildren()));
             }
-            item.setChildren(null);
-            list.add(item);
+            // 去掉children
+            // item.setChildren(null); // 暂时不去掉children，不然后续操作会丢失数据
         }
         return list;
     }
