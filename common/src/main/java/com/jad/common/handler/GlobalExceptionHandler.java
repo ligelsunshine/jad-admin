@@ -23,6 +23,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.nio.file.AccessDeniedException;
+import java.sql.SQLSyntaxErrorException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -150,6 +151,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NullPointerException.class)
     public Result handler(NullPointerException e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误：空指针异常", e);
+    }
+    /**
+     * 空指针异常
+     *
+     * @param e 异常
+     * @return 响应结果 500
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = SQLSyntaxErrorException.class)
+    public Result handler(SQLSyntaxErrorException e) {
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "数据库异常", e);
     }
 
     private Result processFailed(int httpStatus, String msg, Exception e) {

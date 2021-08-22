@@ -70,7 +70,6 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
      */
     private Page<T> generatePager(SearchForm searchForm) {
         Page<T> pager = new Page<>(searchForm.getCurrent(), searchForm.getSize(), true);
-        pager.addOrder(new OrderItem("create_time", false)); // 默认时间降序
         if (searchForm.getOrderItems() == null) {
             return pager;
         }

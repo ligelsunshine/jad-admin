@@ -6,6 +6,7 @@ package com.jad.common.base.form;
 
 import com.jad.common.enums.Condition;
 import com.jad.common.function.PropertyFunc;
+import com.jad.common.utils.NamingUtil;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,15 +42,19 @@ public class WhereItem {
      * @return 条件实例
      */
     public <T> WhereItem whereItem(PropertyFunc<T, ?> column, Condition condition, Object value) {
-        // TODO 转数据库字段
-        this.column = column.getFieldName();
+        // 转数据库字段
+        this.column = NamingUtil.toLowerCaseUnderline(column.getFieldName());
         this.condition = condition;
         this.value = value;
         return this;
     }
 
+    public void setColumn(String column) {
+        // 转数据库字段
+        this.column = NamingUtil.toLowerCaseUnderline(this.column);
+    }
+
     public String getColumn() {
-        // TODO 转数据库字段
         return column;
     }
 }

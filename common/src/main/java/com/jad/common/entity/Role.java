@@ -47,9 +47,6 @@ public class Role extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "角色级别")
     private Integer level = 0;
 
-    @ApiModelProperty(value = "排序")
-    private Integer orderNo = 0;
-
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
     private Status status = Status.ENABLE;
 

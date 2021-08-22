@@ -5,6 +5,7 @@
 package com.jad.system.modules.system.controller;
 
 import com.jad.common.base.controller.BaseController;
+import com.jad.common.base.form.OrderItem;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
 import com.jad.common.lang.Result;
@@ -12,7 +13,6 @@ import com.jad.common.lang.SearchResult;
 import com.jad.common.service.RoleService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,8 +80,11 @@ public class RoleController extends BaseController {
 
     @ApiOperation("分页获取系统角色")
     @GetMapping("/get/page")
-    public Result getListPage(@RequestBody SearchForm searchForm) {
-        final SearchResult<Role> searchResult = roleService.getListPage(searchForm);
+    public Result getListPage(SearchForm searchForm) {
+        // 异常默认的添加时间降序，添加角色级别降序
+        searchForm.deleteOrderItem(Role::getCreateTime);
+        searchForm.addOrderItem(new OrderItem().orderItem(Role::getLevel, false));
+            final SearchResult<Role> searchResult = roleService.getListPage(searchForm);
         return Result.success("查询成功", searchResult);
     }
 
