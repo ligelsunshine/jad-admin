@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;

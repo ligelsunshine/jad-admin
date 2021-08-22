@@ -43,7 +43,7 @@ public class MenuController extends BaseController {
     @ApiOperation("添加菜单权限")
     @PostMapping("/save")
     public Result save(@RequestBody @Valid Menu menu) {
-        if ( menuService.save(menu)) {
+        if (menuService.save(menu)) {
             return Result.success("添加成功");
         }
         return Result.failed("添加失败");

@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.handler;
 
 import com.jad.common.constant.RedisConst;
@@ -8,16 +9,18 @@ import com.jad.common.lang.Result;
 import com.jad.common.utils.JsonUtil;
 import com.jad.common.utils.JwtUtil;
 import com.jad.common.utils.RedisUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * 认证成功处理器
@@ -36,7 +39,7 @@ public class JadAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
+        Authentication authentication) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         final ServletOutputStream outputStream = response.getOutputStream();
 

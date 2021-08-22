@@ -1,10 +1,11 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.config;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import lombok.Data;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import lombok.Data;
 
 /**
  * UrlUtil
@@ -40,21 +43,10 @@ public class UrlConfig {
     public static final String CAPTCHA_URL = "/auth/captcha";
 
     private static final String[] URL_WHITE_LIST = {
-        UrlConfig.HOME_URL,
-        UrlConfig.ERROR_URL,
-        UrlConfig.LOGIN_URL,
-        UrlConfig.LOGOUT_URL,
-        UrlConfig.CAPTCHA_URL,
-        "/favicon.ico",
-        "/**/*.html",
-        "/**/*.css",
-        "/**/*.js",
-        "/webSocket/**",
+        UrlConfig.HOME_URL, UrlConfig.ERROR_URL, UrlConfig.LOGIN_URL, UrlConfig.LOGOUT_URL, UrlConfig.CAPTCHA_URL,
+        "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js", "/webSocket/**",
 
-        "/swagger-ui.html",
-        "/swagger-resources/**",
-        "/webjars/**",
-        "/*/api-docs"
+        "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
     };
 
     @Value("${jad.security.url-white-list}")

@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.filter;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -11,7 +12,7 @@ import com.jad.common.service.UserService;
 import com.jad.common.utils.JwtUtil;
 import com.jad.common.utils.RedisUtil;
 import com.jad.security.service.impl.UserDetailsServiceImpl;
-import io.jsonwebtoken.Claims;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,12 +20,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.util.AntPathMatcher;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
+
+import io.jsonwebtoken.Claims;
 
 /**
  * Jwt认证过滤器
@@ -67,7 +71,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+        throws ServletException, IOException {
         final String token = request.getHeader(jwtUtil.getHeader());
         // 如果token为null，则放行请求，让security自行拦截
         if (StringUtils.isBlank(token)) {
@@ -90,8 +95,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         final String username = claims.getSubject();
 
         // 从redis中获取用户登录的token
-        final String redisToken =
-            (String) redisUtil.get(RedisConst.SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX + username);
+        final String redisToken = (String) redisUtil.get(
+            RedisConst.SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX + username);
         // 若token不存在，则表示该用户登录已过期
         if (StringUtils.isBlank(redisToken)) {
             request.setAttribute("msg", "登录已过期");
@@ -108,9 +113,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         final User user = userService.getByUsername(username);
 
         // 将用户的权限等信息保存到security中
-        final UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(user.getUsername(),
-                user.getPassword(), userDetailsService.getUserAuthority(user.getId()));
+        final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+            user.getUsername(), user.getPassword(), userDetailsService.getUserAuthority(user.getId()));
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 

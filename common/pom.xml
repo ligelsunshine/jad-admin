@@ -120,7 +120,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.3.3</version>
+            <version>5.7.9</version>
         </dependency>
         <!-- apache工具类，包含常用的StringUtils、RandomStringUtils、NumberUtils、ArrayUtils、DateUtils -->
         <dependency>

@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.config;
 
 import org.springframework.context.annotation.Bean;
@@ -38,10 +39,8 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedOrigins("*")
-//          .allowCredentials(true)
-            .allowedMethods("GET", "POST", "DELETE", "PUT")
-            .maxAge(3600);
+        registry.addMapping("/**").allowedOrigins("*")
+            //          .allowCredentials(true)
+            .allowedMethods("GET", "POST", "DELETE", "PUT").maxAge(3600);
     }
 }

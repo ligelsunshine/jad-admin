@@ -1,16 +1,18 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.utils;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 /**
  * JwtUtil
@@ -58,10 +60,7 @@ public class JwtUtil {
      */
     public Claims getClaims(String token) {
         try {
-            return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         } catch (Exception e) {
             return null;
         }

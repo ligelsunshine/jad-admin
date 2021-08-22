@@ -1,25 +1,18 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.BaseEntity;
+
 import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-
-
-
-
-
-
-
-
-
 
 /**
  * <p>
@@ -92,6 +85,5 @@ public class User extends BaseEntity {
      * 最后登录时间
      */
     private LocalDateTime lastLogin;
-
 
 }

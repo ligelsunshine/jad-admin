@@ -1,4 +1,5 @@
 # springboot starter validation
+
 ## 约束性注解(简单)说明
 
 | 注解 | 功能 |

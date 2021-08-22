@@ -1,10 +1,12 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.BaseEntity;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,7 +14,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author cxxwl96
@@ -111,6 +113,5 @@ public class Field extends BaseEntity {
      * 数据正则表达式错误提示
      */
     private String regularMsg;
-
 
 }

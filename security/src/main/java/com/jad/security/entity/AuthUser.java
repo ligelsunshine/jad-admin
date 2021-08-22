@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.entity;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -34,14 +35,12 @@ public class AuthUser implements UserDetails {
     private final boolean enabled;
 
     public AuthUser(String userId, String username, String password,
-                    Collection<? extends GrantedAuthority> authorities) {
+        Collection<? extends GrantedAuthority> authorities) {
         this(userId, username, password, true, true, true, true, authorities);
     }
 
-
     public AuthUser(String userId, String username, String password, boolean enabled, boolean accountNonExpired,
-                    boolean credentialsNonExpired, boolean accountNonLocked,
-                    Collection<? extends GrantedAuthority> authorities) {
+        boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
         Assert.isTrue(username != null && !"".equals(username) && password != null,
             "Cannot pass null or empty values to constructor");
         this.userId = userId;

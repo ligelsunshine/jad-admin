@@ -1,23 +1,23 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.service.impl;
 
+import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.entity.Role;
 import com.jad.common.mapper.RoleMapper;
 import com.jad.common.service.RoleService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
- *  服务实现类
- * </p>
+ * 角色服务实现类
  *
  * @author cxxwl96
- * @since 2021-06-18
+ * @since 2021/8/22 14:34
  */
 @Service
-public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
+public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implements RoleService {
 
 }

@@ -1,9 +1,11 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -25,7 +27,8 @@ public class RedisConfig {
         final RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
-        final Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        final Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
+            Object.class);
         jackson2JsonRedisSerializer.setObjectMapper(new ObjectMapper());
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());

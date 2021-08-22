@@ -1,22 +1,29 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
-package com.jad.common.lang;
 
-import lombok.Data;
+package com.jad.common.lang;
 
 import java.io.Serializable;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 /**
- * Result
+ * 响应结果
  *
  * @author cxxwl96
  * @since 2021/6/18 23:41
  */
 @Data
 public class Result implements Serializable {
+    @ApiModelProperty(value = "响应码")
     private int code;
+
+    @ApiModelProperty(value = "响应消息")
     private String msg;
+
+    @ApiModelProperty(value = "响应数据")
     private Object data;
 
     public static Result success() {

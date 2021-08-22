@@ -1,10 +1,10 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jad.common.entity.Menu;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 

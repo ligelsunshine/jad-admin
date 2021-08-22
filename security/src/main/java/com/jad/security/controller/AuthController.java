@@ -1,28 +1,36 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.controller;
 
-import cn.hutool.core.map.MapUtil;
 import com.google.code.kaptcha.Producer;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
 import com.jad.security.entity.dto.LoginWithCaptchaDto;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-import sun.misc.BASE64Encoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+
+import cn.hutool.core.map.MapUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import sun.misc.BASE64Encoder;
 
 /**
  * 身份认证相关接口
@@ -69,19 +77,21 @@ public class AuthController extends BaseController {
 
         final Map<Object, Object> resultMap = MapUtil.builder()
             .put("codeKey", codeKey)
-            .put("codeImage", base64Img).build();
+            .put("codeImage", base64Img)
+            .build();
         return Result.success(resultMap);
     }
 
     @ApiOperation("登录")
     @PostMapping("/login")
-    public Result login(@RequestBody LoginWithCaptchaDto dto, HttpServletRequest request){
+    public Result login(@RequestBody LoginWithCaptchaDto dto, HttpServletRequest request) {
         // 目的是为了在swagger中显示这个接口
         return null;
     }
+
     @ApiOperation("退出登录")
     @PostMapping("/logout")
-    public Result logout(HttpServletRequest request){
+    public Result logout(HttpServletRequest request) {
         // 目的是为了在swagger中显示这个接口
         return null;
     }

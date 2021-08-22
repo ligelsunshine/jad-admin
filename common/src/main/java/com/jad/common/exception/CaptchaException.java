@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.exception;
 
 import org.springframework.security.core.AuthenticationException;

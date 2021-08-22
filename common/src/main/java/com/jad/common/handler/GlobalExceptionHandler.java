@@ -18,6 +18,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentConversionNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -44,7 +45,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {
         IllegalArgumentException.class, HttpMessageNotReadableException.class,
-        MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class
+        MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class,
+        MethodArgumentConversionNotSupportedException.class
     })
     public Result illegalDataHandler(Exception e) {
         return processFailed(HttpStatus.BAD_REQUEST.value(), "非法数据请求", e);
@@ -148,18 +150,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NullPointerException.class)
     public Result handler(NullPointerException e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误：空指针异常", e);
-    }
-
-    /**
-     * 系统异常
-     *
-     * @param e 异常
-     * @return 响应结果 500
-     */
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(value = Exception.class)
-    public Result handler(Exception e) {
-        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误", e);
     }
 
     private Result processFailed(int httpStatus, String msg, Exception e) {

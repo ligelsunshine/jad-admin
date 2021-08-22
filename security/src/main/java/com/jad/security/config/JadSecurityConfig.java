@@ -1,13 +1,20 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.config;
 
 import com.jad.common.config.UrlConfig;
 import com.jad.security.filter.CaptchaFilter;
 import com.jad.security.filter.JwtAuthenticationFilter;
-import com.jad.security.handler.*;
+import com.jad.security.handler.JadAuthenticationFailureHandler;
+import com.jad.security.handler.JadAuthenticationSuccessHandler;
+import com.jad.security.handler.JadLogoutHandler;
+import com.jad.security.handler.JadLogoutSuccessHandler;
+import com.jad.security.handler.JwtAccessDeniedHandler;
+import com.jad.security.handler.JwtAuthenticationEntryPoint;
 import com.jad.security.service.impl.UserDetailsServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,10 +75,12 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        http.cors()
+            .and()
+            .csrf()
+            .disable()
             // 登录配置
             .formLogin()
             .loginProcessingUrl(UrlConfig.LOGIN_URL)
@@ -85,7 +94,6 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
             .addLogoutHandler(jadLogoutHandler)
             .logoutSuccessHandler(jadLogoutSuccessHandler)
 
-
             // 禁用session
             .and()
             .sessionManagement()
@@ -94,15 +102,17 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
             // 配置拦截规则
             .and()
             .authorizeRequests()
-            .antMatchers(urlConfig.getUrlWhiteList()).permitAll()
-            .anyRequest().authenticated()
+            .antMatchers(urlConfig.getUrlWhiteList())
+            .permitAll()
+            .anyRequest()
+            .authenticated()
 
             // 异常处理器
             .and()
             .exceptionHandling()
-            // 未认证
+            // 未认证处理
             .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            // 未授权
+            // 未授权处理
             .accessDeniedHandler(jwtAccessDeniedHandler)
 
             // 配置自定义过滤器
@@ -110,14 +120,12 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
             // jwt认证过滤器
             .addFilter(jwtAuthenticationFilter())
             // 在验证用户名、密码之前校验验证码
-            .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
-        ;
+            .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService);
     }
-
 
 }

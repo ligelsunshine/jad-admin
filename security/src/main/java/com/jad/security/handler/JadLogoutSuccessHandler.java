@@ -1,22 +1,24 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.handler;
 
 import com.jad.common.lang.Result;
 import com.jad.common.utils.JsonUtil;
 import com.jad.common.utils.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * 退出登录成功处理器
@@ -31,8 +33,8 @@ public class JadLogoutSuccessHandler implements LogoutSuccessHandler {
     private JwtUtil jwtUtil;
 
     @Override
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
-                                Authentication authentication) throws IOException {
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+        throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         final ServletOutputStream outputStream = response.getOutputStream();
 

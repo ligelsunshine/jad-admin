@@ -1,14 +1,15 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.mapper;
 
-import com.jad.common.entity.Field;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jad.common.entity.Field;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author cxxwl96

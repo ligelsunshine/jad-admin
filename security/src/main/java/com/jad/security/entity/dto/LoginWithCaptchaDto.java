@@ -1,9 +1,11 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.entity.dto;
 
 import com.jad.common.enums.LoginTypeEnum;
+
 import lombok.Data;
 
 /**

@@ -7,8 +7,8 @@ server:
 spring:
   application:
     name: jad-admin
-#  profiles:
-#    active: dev # 环境设置：dev、test、prod
+  #  profiles:
+  #    active: dev # 环境设置：dev、test、prod
   datasource:
     url: jdbc:mysql://localhost:3306/dev_jad_admin?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=true&allowMultiQueries=true&autoReconnect=true&useAffectRows=true
     username: root

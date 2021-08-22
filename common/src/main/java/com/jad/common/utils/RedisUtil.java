@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;

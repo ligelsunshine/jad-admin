@@ -1,10 +1,12 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.BaseEntity;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,6 +38,5 @@ public class RoleMenu extends BaseEntity {
      * 菜单
      */
     private String menuId;
-
 
 }

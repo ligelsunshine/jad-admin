@@ -1,11 +1,13 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.security.service.impl;
 
 import com.jad.common.entity.User;
-import com.jad.security.entity.AuthUser;
 import com.jad.common.service.UserService;
+import com.jad.security.entity.AuthUser;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;

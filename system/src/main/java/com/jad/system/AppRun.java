@@ -1,6 +1,7 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.system;
 
 import org.mybatis.spring.annotation.MapperScan;
@@ -15,8 +16,8 @@ import org.springframework.context.annotation.ComponentScan;
  * @since 2021/6/17 23:39
  */
 @SpringBootApplication(scanBasePackages = "com.jad")
-@MapperScan({"com.jad.**.mapper"})
-@ComponentScan({"com.jad.**"})
+@MapperScan( {"com.jad.**.mapper"})
+@ComponentScan( {"com.jad.**"})
 public class AppRun {
 
     public static void main(String[] args) {

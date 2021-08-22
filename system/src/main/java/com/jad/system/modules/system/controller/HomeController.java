@@ -1,11 +1,13 @@
 /*
  * Copyright (C), 2021-2021, jad
  */
+
 package com.jad.system.modules.system.controller;
 
-import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.Api;
 
 @Api(tags = "首页")
 @RestController
