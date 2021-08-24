@@ -152,6 +152,7 @@ public class GlobalExceptionHandler {
     public Result handler(NullPointerException e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误：空指针异常", e);
     }
+
     /**
      * 空指针异常
      *

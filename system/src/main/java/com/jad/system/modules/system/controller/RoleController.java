@@ -8,6 +8,7 @@ import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.OrderItem;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
+import com.jad.common.enums.Status;
 import com.jad.common.lang.Result;
 import com.jad.common.lang.SearchResult;
 import com.jad.common.service.RoleService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,9 +60,9 @@ public class RoleController extends BaseController {
     }
 
     @ApiOperation("修改系统角色")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Result update(@RequestBody @Valid Role role) {
-        if (roleService.save(role)) {
+        if (roleService.updateById(role)) {
             return Result.success("修改成功");
         }
         return Result.failed("修改失败");
@@ -79,13 +81,21 @@ public class RoleController extends BaseController {
     }
 
     @ApiOperation("分页获取系统角色")
-    @GetMapping("/get/page")
-    public Result getListPage(SearchForm searchForm) {
-        // 异常默认的添加时间降序，添加角色级别降序
-        searchForm.deleteOrderItem(Role::getCreateTime);
+    @PostMapping("/get/page")
+    public Result getListPage(@RequestBody SearchForm searchForm) {
+        // 添加角色级别降序
         searchForm.addOrderItem(new OrderItem().orderItem(Role::getLevel, false));
-            final SearchResult<Role> searchResult = roleService.getListPage(searchForm);
+        final SearchResult<Role> searchResult = roleService.getListPage(searchForm);
         return Result.success("查询成功", searchResult);
     }
 
+    @ApiOperation("修改状态")
+    @PutMapping("/update/status")
+    public Result update(String id, Status status) {
+        final boolean success = roleService.lambdaUpdate().set(Role::getStatus, status).eq(Role::getId, id).update();
+        if (success) {
+            return Result.success("修改成功");
+        }
+        return Result.failed("修改失败");
+    }
 }

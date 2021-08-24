@@ -20,7 +20,8 @@ public enum Condition {
     GE(">="),
     LT("<"),
     LE("<="),
-    LIKE("like");
+    LIKE("like"),
+    RANGE_TIME("range time");
 
     private final String condition;
 

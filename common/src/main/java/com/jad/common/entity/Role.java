@@ -40,8 +40,8 @@ public class Role extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "角色编码")
     @NotBlank(message = "角色编码不能为空")
-    @Pattern(regexp = "^(?![rR][oO][lL][eE]_?)[a-zA-Z0-9]{1,10}$",
-        message = "角色编码仅数字或字母组成的十位以内字符串，且不能以“role“、“role_“、“ROLE“、“ROLE_“、“roLe“等不区分大小写的字样开头")
+    @Pattern(regexp = "^(?![rR][oO][lL][eE]_?)[a-zA-Z0-9]{1,20}$",
+        message = "角色编码仅数字或字母组成的20位以内字符串，且不能以“role“、“role_“、“ROLE“、“ROLE_“、“roLe“等不区分大小写的字样开头")
     private String code;
 
     @ApiModelProperty(value = "角色级别")

@@ -21,14 +21,14 @@ import lombok.Data;
 @Data
 public class SearchResult<T extends BaseEntity> implements Serializable {
     @ApiModelProperty(value = "当前页")
-    private long current;
+    private long page;
 
     @ApiModelProperty(value = "每页数量")
-    private long size;
+    private long pageSize;
 
     @ApiModelProperty(value = "总数量")
     private long total;
 
     @ApiModelProperty(value = "数据")
-    private List<T> data;
+    private List<T> items;
 }

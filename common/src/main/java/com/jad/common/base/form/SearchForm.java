@@ -4,7 +4,6 @@
 
 package com.jad.common.base.form;
 
-import com.jad.common.base.entity.BaseEntity;
 import com.jad.common.function.PropertyFunc;
 import com.jad.common.utils.NamingUtil;
 
@@ -30,21 +29,16 @@ import lombok.experimental.Accessors;
 public class SearchForm {
 
     @ApiModelProperty(value = "当前页")
-    private long current = 1;
+    private long page = 1;
 
     @ApiModelProperty(value = "每页数量")
-    private long size = 10;
+    private long pageSize = 10;
 
     @ApiModelProperty(value = "过滤条件")
     private List<WhereItem> whereItems = new ArrayList<>();
 
     @ApiModelProperty(value = "排序条件")
     private List<OrderItem> orderItems = new ArrayList<>();
-
-    public SearchForm() {
-        // 默认创建时间降序
-        orderItems.add(new OrderItem().orderItem(BaseEntity::getCreateTime, false));
-    }
 
     /**
      * 添加where条件

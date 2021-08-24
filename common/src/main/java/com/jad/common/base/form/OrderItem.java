@@ -43,11 +43,6 @@ public class OrderItem {
         return this;
     }
 
-    public void setColumn(String column) {
-        // 转数据库字段
-        this.column = NamingUtil.toLowerCaseUnderline(this.column);
-    }
-
     public String getColumn() {
         return column;
     }
