@@ -6,10 +6,10 @@ package com.jad.common.base.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jad.common.base.entity.BaseEntity;
+import com.jad.common.base.form.OrderItem;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.base.form.WhereItem;
 import com.jad.common.base.service.BaseService;
@@ -55,7 +55,7 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
         // 生成QueryWrapper条件
         QueryWrapper<T> qw = generateQueryWrapper(searchForm);
         // 生成Pager分页
-        Page<T> pager = generatePager(searchForm);
+        Page<T> pager = new Page<>(searchForm.getPage(), searchForm.getPageSize());
         // 分页条件查询
         pager = super.page(pager, qw);
         // 封装返回数据
@@ -69,29 +69,6 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
     }
 
     /**
-     * 生成Pager分页
-     *
-     * @param searchForm 查询表单
-     * @return Pager分页
-     */
-    private Page<T> generatePager(SearchForm searchForm) {
-        Page<T> pager = new Page<>(searchForm.getPage(), searchForm.getPageSize(), true);
-        if (searchForm.getOrderItems() == null) {
-            return pager;
-        }
-        // 若果没有order by，默认添加时间降序
-        if (searchForm.getOrderItems().size() == 0) {
-            // 默认创建时间降序
-            searchForm.addOrderItem(
-                new com.jad.common.base.form.OrderItem().orderItem(BaseEntity::getCreateTime, false));
-        }
-        for (com.jad.common.base.form.OrderItem item : searchForm.getOrderItems()) {
-            pager.addOrder(new OrderItem(item.getColumn(), item.isAsc()));
-        }
-        return pager;
-    }
-
-    /**
      * 生成QueryWrapper条件
      *
      * @param searchForm 查询表单
@@ -100,40 +77,55 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
     private QueryWrapper<T> generateQueryWrapper(SearchForm searchForm) {
         final QueryWrapper<T> qw = new QueryWrapper<>();
         List<WhereItem> whereItems = searchForm.getWhereItems();
-        if (whereItems == null) {
-            return qw;
+        // 得到小写下划线的字段名
+        PropertyFunc<T, ?> column = BaseEntity::getCreateTime;
+        String createTimeFiled = NamingUtil.toLowerCaseUnderline(column.getFieldName());
+
+        // 解析OrderItem
+        // 若果没有order by，默认添加时间降序
+        if (searchForm.getOrderItems().size() == 0) {
+            // 默认创建时间降序
+            qw.orderByDesc(createTimeFiled);
+        }
+        for (OrderItem item : searchForm.getOrderItems()) {
+            final String filed = NamingUtil.toLowerCaseUnderline(item.getColumn());
+            if (item.isAsc()) {
+                qw.orderByAsc(filed);
+            } else {
+                qw.orderByDesc(filed);
+            }
         }
 
+        // 解析WhereItem
         for (WhereItem item : whereItems) {
             if (StrUtil.isNotBlank(item.getColumn()) && item.getCondition() != null && item.getValue() != null) {
+                final String filed = NamingUtil.toLowerCaseUnderline(item.getColumn());
                 switch (item.getCondition()) {
                     case EQ:
-                        qw.eq(item.getColumn(), item.getValue());
+                        qw.eq(filed, item.getValue());
                         break;
                     case NE:
-                        qw.ne(item.getColumn(), item.getValue());
+                        qw.ne(filed, item.getValue());
                         break;
                     case GT:
-                        qw.gt(item.getColumn(), item.getValue());
+                        qw.gt(filed, item.getValue());
                         break;
                     case GE:
-                        qw.ge(item.getColumn(), item.getValue());
+                        qw.ge(filed, item.getValue());
                         break;
                     case LT:
-                        qw.lt(item.getColumn(), item.getValue());
+                        qw.lt(filed, item.getValue());
                         break;
                     case LE:
-                        qw.le(item.getColumn(), item.getValue());
+                        qw.le(filed, item.getValue());
                         break;
                     case LIKE:
-                        qw.like(item.getColumn(), item.getValue());
+                        qw.like(filed, item.getValue());
                         break;
                     case RANGE_TIME:
                         // 创建时间范围查询
                         final List<?> value = (List<?>) item.getValue();
                         if (value.size() == 2) {
-                            PropertyFunc<T, ?> column = BaseEntity::getCreateTime;
-                            String createTimeFiled = NamingUtil.toLowerCaseUnderline(column.getFieldName());
                             try {
                                 // 修改时间部分为 00:00:00, 第二个日期+1天
                                 final String startTimeStr = (String) value.get(0);
