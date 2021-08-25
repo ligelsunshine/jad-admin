@@ -69,7 +69,8 @@ public class SwaggerConfig {
 
     @Bean
     public Docket createRestApi() {
-        return new Docket(DocumentationType.SWAGGER_2).pathMapping("/")
+        return new Docket(DocumentationType.SWAGGER_2).enable(enable)
+            .pathMapping("/")
             .apiInfo(apiInfo())
             .securitySchemes(securitySchemes())
             .securityContexts(securityContexts())
