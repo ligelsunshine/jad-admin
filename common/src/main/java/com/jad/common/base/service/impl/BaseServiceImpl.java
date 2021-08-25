@@ -4,7 +4,9 @@
 
 package com.jad.common.base.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -53,7 +55,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
     @Override
     public SearchResult<T> getPageList(SearchForm searchForm) {
         // 生成QueryWrapper条件
-        QueryWrapper<T> qw = generateQueryWrapper(searchForm);
+        final QueryWrapper<T> qw = generateWrapper(searchForm, new QueryWrapper<>());
+
         // 生成Pager分页
         Page<T> pager = new Page<>(searchForm.getPage(), searchForm.getPageSize());
         // 分页条件查询
@@ -69,58 +72,66 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
     }
 
     /**
-     * 生成QueryWrapper条件
+     * 生成Wrapper
      *
      * @param searchForm 查询表单
-     * @return QueryWrapper条件
+     * @return Wrapper
      */
-    private QueryWrapper<T> generateQueryWrapper(SearchForm searchForm) {
-        final QueryWrapper<T> qw = new QueryWrapper<>();
-        List<WhereItem> whereItems = searchForm.getWhereItems();
+    @Override
+    public <E extends AbstractWrapper<T, String, E>> E generateWrapper(SearchForm searchForm, E wrapper) {
+        if (wrapper == null) {
+            throw new RuntimeException("Failed to generate wrapper with null");
+        }
+        if (!(wrapper instanceof UpdateWrapper) && !(wrapper instanceof QueryWrapper)) {
+            throw new RuntimeException(String.format("%s not instanceof %s or %s.", wrapper.getClass().getName(),
+                UpdateWrapper.class.getName(), QueryWrapper.class.getName()));
+        }
         // 得到小写下划线的字段名
         PropertyFunc<T, ?> column = BaseEntity::getCreateTime;
         String createTimeFiled = NamingUtil.toLowerCaseUnderline(column.getFieldName());
 
         // 解析OrderItem
         // 若果没有order by，默认添加时间降序
-        if (searchForm.getOrderItems().size() == 0) {
+        final List<OrderItem> orderItems = searchForm.getOrderItems();
+        if (orderItems.size() == 0) {
             // 默认创建时间降序
-            qw.orderByDesc(createTimeFiled);
+            wrapper.orderByDesc(createTimeFiled);
         }
-        for (OrderItem item : searchForm.getOrderItems()) {
+        for (OrderItem item : orderItems) {
             final String filed = NamingUtil.toLowerCaseUnderline(item.getColumn());
             if (item.isAsc()) {
-                qw.orderByAsc(filed);
+                wrapper.orderByAsc(filed);
             } else {
-                qw.orderByDesc(filed);
+                wrapper.orderByDesc(filed);
             }
         }
 
         // 解析WhereItem
+        List<WhereItem> whereItems = searchForm.getWhereItems();
         for (WhereItem item : whereItems) {
             if (StrUtil.isNotBlank(item.getColumn()) && item.getCondition() != null && item.getValue() != null) {
                 final String filed = NamingUtil.toLowerCaseUnderline(item.getColumn());
                 switch (item.getCondition()) {
                     case EQ:
-                        qw.eq(filed, item.getValue());
+                        wrapper.eq(filed, item.getValue());
                         break;
                     case NE:
-                        qw.ne(filed, item.getValue());
+                        wrapper.ne(filed, item.getValue());
                         break;
                     case GT:
-                        qw.gt(filed, item.getValue());
+                        wrapper.gt(filed, item.getValue());
                         break;
                     case GE:
-                        qw.ge(filed, item.getValue());
+                        wrapper.ge(filed, item.getValue());
                         break;
                     case LT:
-                        qw.lt(filed, item.getValue());
+                        wrapper.lt(filed, item.getValue());
                         break;
                     case LE:
-                        qw.le(filed, item.getValue());
+                        wrapper.le(filed, item.getValue());
                         break;
                     case LIKE:
-                        qw.like(filed, item.getValue());
+                        wrapper.like(filed, item.getValue());
                         break;
                     case RANGE_TIME:
                         // 创建时间范围查询
@@ -140,8 +151,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
                                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                                 endTime = calendar.getTime();
 
-                                qw.ge(createTimeFiled, startTime);
-                                qw.le(createTimeFiled, endTime);
+                                wrapper.ge(createTimeFiled, startTime);
+                                wrapper.le(createTimeFiled, endTime);
                             } catch (ClassCastException | ParseException e) {
                                 // 不做任何处理
                                 e.printStackTrace();
@@ -151,6 +162,6 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
                 }
             }
         }
-        return qw;
+        return wrapper;
     }
 }

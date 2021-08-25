@@ -4,6 +4,7 @@
 
 package com.jad.common.base.service;
 
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jad.common.base.entity.BaseEntity;
 import com.jad.common.base.form.SearchForm;
@@ -32,4 +33,12 @@ public interface BaseService<T extends BaseEntity> extends IService<T> {
      * @return 数据
      */
     SearchResult<T> getPageList(SearchForm searchForm);
+
+    /**
+     * 生成Wrapper
+     *
+     * @param searchForm 查询表单
+     * @return Wrapper
+     */
+    <E extends AbstractWrapper<T, String, E>> E generateWrapper(SearchForm searchForm, E wrapper);
 }
