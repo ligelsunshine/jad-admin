@@ -37,6 +37,13 @@ public interface UserService extends IService<User> {
     List<Role> getRoles(String userId);
 
     /**
+     * 获取当前用户角色
+     *
+     * @return 用户角色列表
+     */
+    List<Role> getRoles();
+
+    /**
      * 获取用户权限列表
      *
      * @param userId 用户id

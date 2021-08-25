@@ -51,7 +51,7 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
      * @return 数据
      */
     @Override
-    public SearchResult<T> getListPage(SearchForm searchForm) {
+    public SearchResult<T> getPageList(SearchForm searchForm) {
         // 生成QueryWrapper条件
         QueryWrapper<T> qw = generateQueryWrapper(searchForm);
         // 生成Pager分页

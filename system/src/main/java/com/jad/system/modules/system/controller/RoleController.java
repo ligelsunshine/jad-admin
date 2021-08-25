@@ -5,7 +5,6 @@
 package com.jad.system.modules.system.controller;
 
 import com.jad.common.base.controller.BaseController;
-import com.jad.common.base.form.OrderItem;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
 import com.jad.common.enums.Status;
@@ -82,18 +81,15 @@ public class RoleController extends BaseController {
 
     @ApiOperation("分页获取系统角色")
     @PostMapping("/get/page")
-    public Result getListPage(@RequestBody SearchForm searchForm) {
-        // 添加角色级别降序
-        searchForm.addOrderItem(new OrderItem().orderItem(Role::getLevel, false));
-        final SearchResult<Role> searchResult = roleService.getListPage(searchForm);
+    public Result getPageList(@RequestBody SearchForm searchForm) {
+        final SearchResult<Role> searchResult = roleService.getPageList(searchForm);
         return Result.success("查询成功", searchResult);
     }
 
     @ApiOperation("修改状态")
     @PutMapping("/update/status")
-    public Result update(String id, Status status) {
-        final boolean success = roleService.lambdaUpdate().set(Role::getStatus, status).eq(Role::getId, id).update();
-        if (success) {
+    public Result updateStatus(String id, Status status) {
+        if (roleService.updateStatus(id, status)) {
             return Result.success("修改成功");
         }
         return Result.failed("修改失败");

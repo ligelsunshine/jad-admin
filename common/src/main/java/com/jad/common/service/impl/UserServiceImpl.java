@@ -98,6 +98,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     /**
+     * 获取当前用户角色
+     *
+     * @return 用户角色列表
+     */
+    @Override
+    public List<Role> getRoles() {
+        final User authUser = getCurrentAuthUser();
+        return getRoles(authUser.getId());
+    }
+
+    /**
      * 获取用户权限列表
      *
      * @param userId 用户id

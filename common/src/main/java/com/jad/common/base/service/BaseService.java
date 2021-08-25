@@ -31,5 +31,5 @@ public interface BaseService<T extends BaseEntity> extends IService<T> {
      * @param searchForm 查询表单
      * @return 数据
      */
-    SearchResult<T> getListPage(SearchForm searchForm);
+    SearchResult<T> getPageList(SearchForm searchForm);
 }
