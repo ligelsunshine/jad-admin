@@ -9,6 +9,7 @@ import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.RoleMenu;
 import com.jad.common.enums.Status;
+import com.jad.common.exception.BadRequestException;
 import com.jad.common.function.PropertyFunc;
 import com.jad.common.lang.Result;
 import com.jad.common.lang.SearchResult;
@@ -18,6 +19,7 @@ import com.jad.common.service.RoleService;
 import com.jad.system.modules.system.dto.AssignPermissionsDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -127,15 +129,21 @@ public class RoleController extends BaseController {
 
     @ApiOperation("分配权限")
     @PutMapping("/assignPermissions")
+    @Transactional
     public Result assignPermissions(@RequestBody @Valid AssignPermissionsDto dto) {
         if (CollUtil.isEmpty(dto.getRoleMenus())) {
             return Result.failed("最少必须分配一个菜单");
         }
         // 先全部删除
-        final Map<String, Object> columnMap = new HashMap<>();
-        PropertyFunc<RoleMenu, ?> column = RoleMenu::getRoleId;
-        columnMap.put(column.getColumnName(), dto.getRoleId());
-        roleMenuService.removeByMap(columnMap);
+        int count = roleMenuService.lambdaQuery().eq(RoleMenu::getRoleId, dto.getRoleId()).count();
+        if (count > 0) {
+            final Map<String, Object> columnMap = new HashMap<>();
+            PropertyFunc<RoleMenu, ?> column = RoleMenu::getRoleId;
+            columnMap.put(column.getColumnName(), dto.getRoleId());
+            if (!roleMenuService.removeByMap(columnMap)) {
+                throw new BadRequestException("操作失败");
+            }
+        }
 
         // 再添加
         final List<RoleMenu> roleMenus = new ArrayList<>();
@@ -146,7 +154,9 @@ public class RoleController extends BaseController {
             roleMenu.setHalfChecked(item.isHalfChecked());
             roleMenus.add(roleMenu);
         });
-        roleMenuService.saveBatch(roleMenus);
+        if (!roleMenuService.saveBatch(roleMenus)) {
+            throw new BadRequestException("操作失败");
+        }
         return Result.success("操作成功");
     }
 

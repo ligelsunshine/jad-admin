@@ -16,10 +16,15 @@ import lombok.Getter;
  */
 @Getter
 public class BadRequestException extends RuntimeException {
-    private Result result;
+    private final Result result;
 
     public BadRequestException(Result result) {
         super(result.getMsg());
         this.result = result;
+    }
+
+    public BadRequestException(String msg) {
+        super(msg);
+        this.result = Result.failed(msg);
     }
 }
