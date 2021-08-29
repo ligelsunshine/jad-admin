@@ -86,7 +86,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public boolean removeTree(String id, boolean includeSelf) {
         boolean success = false;
         List<Menu> list;
-        final List<Menu> menuTree = getMenuTree();
+        final List<Menu> menuTree = getUserMenuTree();
         final Tree<Menu> tree = new Tree<>(menuTree);
         if (includeSelf) {
             list = tree.getSubList(id);
@@ -126,7 +126,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @return 用户菜单权限
      */
     @Override
-    public List<Menu> getMenuList(String userId) {
+    public List<Menu> getUserMenuList(String userId) {
         List<Menu> menus = new ArrayList<>();
         // 获取roleId
         final List<String> roleIds = userRoleService.lambdaQuery()
@@ -155,12 +155,35 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     /**
+     * 获取角色菜单权限列表
+     *
+     * @param roleId 角色ID
+     * @return 用户菜单权限
+     */
+    @Override
+    public List<Menu> getRoleMenuList(String roleId) {
+        List<Menu> menus = new ArrayList<>();
+        // 获取菜单id
+        final List<String> menuIds = roleMenuService.lambdaQuery()
+            .eq(RoleMenu::getRoleId, roleId)
+            .list()
+            .stream()
+            .map(RoleMenu::getMenuId)
+            .collect(Collectors.toList());
+        if (menuIds.size() == 0) {
+            return menus;
+        }
+        // 获取菜单
+        return this.lambdaQuery().in(Menu::getId, menuIds).list();
+    }
+
+    /**
      * 获取当前登录用户菜单权限列表
      *
      * @return 用户菜单权限
      */
     @Override
-    public List<Menu> getMenuList() {
+    public List<Menu> getUserMenuList() {
         // 当前登录的用户
         User curUser = userService.getCurrentAuthUser();
         List<Menu> menuList;
@@ -174,7 +197,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             if (userService.hasAdministrator()) {
                 menuList = this.lambdaQuery().orderByAsc(Menu::getCreateTime).list();
             } else {
-                menuList = this.getMenuList(curUser.getId());
+                menuList = this.getUserMenuList(curUser.getId());
             }
             // 序列化菜单列表，缓存在Redis中
             final String menuListJson = JSONObject.toJSONString(menuList);
@@ -195,7 +218,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @return 用户菜单权限
      */
     @Override
-    public List<Menu> getMenuTree() {
+    public List<Menu> getUserMenuTree() {
         // 当前登录的用户
         User curUser = userService.getCurrentAuthUser();
         List<Menu> menuTree;
@@ -206,7 +229,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             menuTree = JSONArray.parseArray(menuTreeJson, Menu.class);
         } else {
             // 获取当前登录用户菜单权限列表
-            final List<Menu> menuList = this.getMenuList();
+            final List<Menu> menuList = this.getUserMenuList();
             // 生成菜单树
             final Tree<Menu> tree = new Tree<>(menuList, null);
             menuTree = tree.getRootTree();

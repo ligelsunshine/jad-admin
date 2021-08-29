@@ -4,6 +4,8 @@
 
 package com.jad.common.function;
 
+import com.jad.common.utils.NamingUtil;
+
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
@@ -33,5 +35,10 @@ public interface PropertyFunc<T, R> extends Function<T, R>, Serializable {
         }
         // 首字母变小写
         return CharSequenceUtil.lowerFirst(methodName);
+    }
+
+    @SneakyThrows
+    default String getColumnName() {
+        return NamingUtil.toLowerCaseUnderline(getFieldName());
     }
 }

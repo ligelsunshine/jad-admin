@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {
         IllegalArgumentException.class, HttpMessageNotReadableException.class,
         MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class,
-        MethodArgumentConversionNotSupportedException.class
+        MethodArgumentConversionNotSupportedException.class, IllegalStateException.class
     })
     public Result illegalDataHandler(Exception e) {
         return processFailed(HttpStatus.BAD_REQUEST.value(), "非法数据请求", e);

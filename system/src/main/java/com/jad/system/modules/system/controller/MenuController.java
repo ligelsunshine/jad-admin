@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -74,17 +75,23 @@ public class MenuController extends BaseController {
         return Result.success(menu);
     }
 
-    @ApiOperation("获取菜单权限")
-    @GetMapping("/getMenuList")
-    public Result getMenuList() {
-        List<Menu> menus = menuService.getMenuList();
+    @ApiOperation("获取用户菜单权限")
+    @GetMapping("/getUserMenuList")
+    public Result getUserMenuList() {
+        List<Menu> menus = menuService.getUserMenuList();
         return Result.success(menus);
     }
 
-    @ApiOperation("获取菜单权限树")
-    @GetMapping("/getMenuTree")
-    public Result getMenuTree() {
-        List<Menu> menus = menuService.getMenuTree();
+    @ApiOperation("获取用户菜单权限树")
+    @GetMapping("/getUserMenuTree")
+    public Result getUserMenuTree() {
+        List<Menu> menus = menuService.getUserMenuTree();
         return Result.success(menus);
+    }
+
+    @ApiOperation("获取角色菜单权限")
+    @GetMapping("/getRoleMenuList")
+    public Result getRoleMenuList(@RequestParam String id) {
+        return Result.success(menuService.getRoleMenuList(id));
     }
 }

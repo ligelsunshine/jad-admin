@@ -4,7 +4,7 @@
 
 package com.jad.common.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.entity.RoleMenu;
 import com.jad.common.mapper.RoleMenuMapper;
 import com.jad.common.service.RoleMenuService;
@@ -20,6 +20,6 @@ import org.springframework.stereotype.Service;
  * @since 2021-06-18
  */
 @Service
-public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenu> implements RoleMenuService {
+public class RoleMenuServiceImpl extends BaseServiceImpl<RoleMenuMapper, RoleMenu> implements RoleMenuService {
 
 }

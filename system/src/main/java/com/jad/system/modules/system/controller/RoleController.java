@@ -7,10 +7,15 @@ package com.jad.system.modules.system.controller;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
+import com.jad.common.entity.RoleMenu;
 import com.jad.common.enums.Status;
+import com.jad.common.function.PropertyFunc;
 import com.jad.common.lang.Result;
 import com.jad.common.lang.SearchResult;
+import com.jad.common.service.MenuService;
+import com.jad.common.service.RoleMenuService;
 import com.jad.common.service.RoleService;
+import com.jad.system.modules.system.dto.AssignPermissionsDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,10 +25,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import cn.hutool.core.collection.CollUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -39,6 +52,12 @@ import io.swagger.annotations.ApiOperation;
 public class RoleController extends BaseController {
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private MenuService menuService;
+
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     @ApiOperation("添加系统角色")
     @PostMapping("/save")
@@ -93,5 +112,51 @@ public class RoleController extends BaseController {
             return Result.success("修改成功");
         }
         return Result.failed("修改失败");
+    }
+
+    @ApiOperation("获取角色菜单ID")
+    @GetMapping("/getRoleMenuIds")
+    public Result getRoleMenuIds(@RequestParam String roleId) {
+        final List<String> halfChecked = getRoleMenuIds(roleId, true);
+        final List<String> checked = getRoleMenuIds(roleId, false);
+        final HashMap<String, List<String>> result = new HashMap<>();
+        result.put("halfChecked", halfChecked);
+        result.put("checked", checked);
+        return Result.success(result);
+    }
+
+    @ApiOperation("分配权限")
+    @PutMapping("/assignPermissions")
+    public Result assignPermissions(@RequestBody @Valid AssignPermissionsDto dto) {
+        if (CollUtil.isEmpty(dto.getRoleMenus())) {
+            return Result.failed("最少必须分配一个菜单");
+        }
+        // 先全部删除
+        final Map<String, Object> columnMap = new HashMap<>();
+        PropertyFunc<RoleMenu, ?> column = RoleMenu::getRoleId;
+        columnMap.put(column.getColumnName(), dto.getRoleId());
+        roleMenuService.removeByMap(columnMap);
+
+        // 再添加
+        final List<RoleMenu> roleMenus = new ArrayList<>();
+        dto.getRoleMenus().forEach(item -> {
+            final RoleMenu roleMenu = new RoleMenu();
+            roleMenu.setRoleId(dto.getRoleId());
+            roleMenu.setMenuId(item.getMenuId());
+            roleMenu.setHalfChecked(item.isHalfChecked());
+            roleMenus.add(roleMenu);
+        });
+        roleMenuService.saveBatch(roleMenus);
+        return Result.success("操作成功");
+    }
+
+    private List<String> getRoleMenuIds(String roleId, boolean isHalfChecked) {
+        return roleMenuService.lambdaQuery()
+            .eq(RoleMenu::getRoleId, roleId)
+            .eq(RoleMenu::isHalfChecked, isHalfChecked)
+            .list()
+            .stream()
+            .map(RoleMenu::getMenuId)
+            .collect(Collectors.toList());
     }
 }

@@ -50,21 +50,29 @@ public interface MenuService extends IService<Menu> {
      * @param userId 用户ID
      * @return 用户菜单权限
      */
-    List<Menu> getMenuList(String userId);
+    List<Menu> getUserMenuList(String userId);
+
+    /**
+     * 获取角色菜单权限列表
+     *
+     * @param roleId 角色ID
+     * @return 用户菜单权限
+     */
+    List<Menu> getRoleMenuList(String roleId);
 
     /**
      * 获取当前登录用户菜单权限列表
      *
      * @return 用户菜单权限
      */
-    List<Menu> getMenuList();
+    List<Menu> getUserMenuList();
 
     /**
      * 获取当前登录用户菜单权限树
      *
      * @return 用户菜单权限
      */
-    List<Menu> getMenuTree();
+    List<Menu> getUserMenuTree();
 
     /**
      * 清除用户缓存的菜单列表

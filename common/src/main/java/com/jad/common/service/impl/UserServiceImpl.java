@@ -116,7 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public String getUserAuthority(String userId) {
-        String authority = "";
+        String authority;
         final User user = this.getById(userId);
 
         // 在Redis中缓存用户权限信息
@@ -129,7 +129,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return "";
             }
             // 获取菜单权限
-            final List<Menu> menus = menuService.getMenuList(userId);
+            final List<Menu> menus = menuService.getUserMenuList(userId);
             // 生成security权限列表字符串
             final List<String> roleAuthorities = roles.stream()
                 .map(role -> "ROLE_" + role.getCode())
