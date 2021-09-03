@@ -82,6 +82,33 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
     }
 
     /**
+     * 获取角色列表
+     * - 角色级别降序
+     * - 查询角色等级比当前用户角色最高级别低的角色
+     *
+     * @return 角色列表
+     */
+    @Override
+    public List<Role> getList() {
+        if (userService.hasAdministrator()) {
+            return super.lambdaQuery().orderByDesc(Role::getLevel).list();
+        } else {
+            // 只能查询角色等级比当前用户角色最高级别低的角色
+            // 获取当前用户的角色中level最大的角色
+            final Role maxLevelRole = getMaxLevelRole();
+            if (maxLevelRole != null) {
+                // 添加level <= maxLevel, order by level desc条件
+                return super.lambdaQuery()
+                    .le(Role::getLevel, maxLevelRole.getLevel())
+                    .orderByDesc(Role::getLevel)
+                    .list();
+            } else {
+                throw new BadRequestException("您的账号还未分配角色");
+            }
+        }
+    }
+
+    /**
      * 分页查询角色
      * - 角色级别降序
      * - 查询角色等级比当前用户角色最高级别低的角色
@@ -106,11 +133,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
                     new WhereItem().whereItem(Role::getLevel, Condition.LE, maxLevelRole.getLevel()));
                 return super.getPageList(searchForm);
             } else {
-                final SearchResult<Role> searchResult = new SearchResult<>();
-                searchResult.setPage(searchResult.getPage());
-                searchResult.setPageSize(searchForm.getPageSize());
-                searchResult.setTotal(searchResult.getTotal());
-                return searchResult;
+                throw new BadRequestException("您的账号还未分配角色");
             }
         }
     }

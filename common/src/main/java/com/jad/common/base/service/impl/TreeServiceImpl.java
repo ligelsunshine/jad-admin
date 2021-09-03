@@ -5,7 +5,6 @@
 package com.jad.common.base.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jad.common.base.entity.TreeNode;
 import com.jad.common.base.service.TreeService;
 import com.jad.common.entity.Tree;
@@ -21,7 +20,7 @@ import cn.hutool.core.collection.CollUtil;
  * @author cxxwl96
  * @since 2021/8/21 12:52
  */
-public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> extends ServiceImpl<M, T>
+public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> extends BaseServiceImpl<M, T>
     implements TreeService<T> {
 
     /**

@@ -4,21 +4,19 @@
 
 package com.jad.common.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jad.common.base.service.BaseService;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 
 import java.util.List;
 
 /**
- * <p>
- * 服务类
- * </p>
+ * 系统用户服务类接口
  *
  * @author cxxwl96
  * @since 2021-06-18
  */
-public interface UserService extends IService<User> {
+public interface UserService extends BaseService<User> {
 
     /**
      * 根据username获取用户

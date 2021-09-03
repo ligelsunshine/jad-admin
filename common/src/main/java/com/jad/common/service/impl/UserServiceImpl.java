@@ -6,7 +6,7 @@ package com.jad.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.Role;
@@ -33,15 +33,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * <p>
- * 服务实现类
- * </p>
+ * 系统用户服务类
  *
  * @author cxxwl96
  * @since 2021-06-18
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implements UserService {
 
     // yaml中配置的超级管理员ID
     @Value("${jad.system.role.administrator-id}")

@@ -4,20 +4,27 @@
 
 package com.jad.common.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.BaseEntity;
+import com.jad.common.enums.Sex;
+import com.jad.common.valid.AddValidGroup;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * <p>
- *
- * </p>
+ * 系统用户
  *
  * @author cxxwl96
  * @since 2021-06-29
@@ -31,59 +38,59 @@ public class User extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 账号
-     */
+    @ApiModelProperty(value = "账号")
+    @NotBlank(message = "账号不能为空")
+    @Pattern(message = "账号只能由16位 A-Z a-z 0-9 @ . _ 组成", regexp = "^[A-Za-z0-9@._]{1,16}$")
     private String username;
 
-    /**
-     * 密码
-     */
+    @ApiModelProperty(value = "密码")
+    @NotBlank(message = "密码不能为空", groups = {AddValidGroup.class})
+    @Pattern(message = "密码只能由16位 A-Z a-z 0-9 @ . _ 组成", regexp = "^[A-Za-z0-9@._]{0,16}$",
+        groups = {AddValidGroup.class})
     private String password;
 
-    /**
-     * 姓名
-     */
+    @ApiModelProperty(value = "姓名")
     private String name;
 
-    /**
-     * 性别
-     */
-    private Integer sex;
+    @ApiModelProperty(value = "性别【未设置：0,男：1,女：2】")
+    private Sex sex = Sex.UNSET;
 
-    /**
-     * 年龄
-     */
+    @ApiModelProperty(value = "年龄")
     private Integer age;
 
-    /**
-     * 出生日期
-     */
+    @ApiModelProperty(value = "出生日期")
     private LocalDateTime birthday;
 
-    /**
-     * 邮箱
-     */
+    @ApiModelProperty(value = "邮箱")
+    @Pattern(message = "邮箱格式不正确", regexp = "^(\\w+@(\\w+\\.)+(\\w+))?$")
     private String email;
 
-    /**
-     * 电话
-     */
+    @ApiModelProperty(value = "手机号码")
+    @Pattern(message = "手机号码格式不正确", regexp = "^(1[345789]\\d{9})?$")
     private String phone;
 
-    /**
-     * 头像
-     */
+    @ApiModelProperty(value = "头像")
     private String avatar;
 
-    /**
-     * 所在城市
-     */
+    @ApiModelProperty(value = "所在城市")
     private String city;
 
-    /**
-     * 最后登录时间
-     */
+    @ApiModelProperty(value = "最后登录时间")
     private LocalDateTime lastLogin;
 
+    @ApiModelProperty(value = "部门ID")
+    private String deptId;
+
+    @ApiModelProperty(value = "部门")
+    @TableField(exist = false)
+    private Dept dept;
+
+    @ApiModelProperty(value = "角色ID")
+    @TableField(exist = false)
+    @NotEmpty(message = "至少分配一个角色")
+    private List<String> roleIds;
+
+    @ApiModelProperty(value = "角色")
+    @TableField(exist = false)
+    private List<Role> roles;
 }

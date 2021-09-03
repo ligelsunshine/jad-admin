@@ -10,6 +10,8 @@ import com.jad.common.entity.Role;
 import com.jad.common.enums.Status;
 import com.jad.common.lang.SearchResult;
 
+import java.util.List;
+
 /**
  * 角色服务接口类
  *
@@ -43,6 +45,15 @@ public interface RoleService extends BaseService<Role> {
      * @return 是否修改成功
      */
     boolean updateById(Role role);
+
+    /**
+     * 获取角色列表
+     * - 角色级别降序
+     * - 查询角色等级比当前用户角色最高级别低的角色
+     *
+     * @return 角色列表
+     */
+    List<Role> getList();
 
     /**
      * 分页查询角色

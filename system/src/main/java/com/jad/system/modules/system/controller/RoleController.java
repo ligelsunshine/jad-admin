@@ -97,7 +97,7 @@ public class RoleController extends BaseController {
     @ApiOperation("获取所有系统角色")
     @GetMapping("/get/list")
     public Result getList() {
-        return Result.success(roleService.list());
+        return Result.success(roleService.getList());
     }
 
     @ApiOperation("分页获取系统角色")

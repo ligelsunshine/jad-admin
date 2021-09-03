@@ -4,7 +4,6 @@
 
 package com.jad.common.base.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.jad.common.base.entity.TreeNode;
 import com.jad.common.entity.Tree;
 
@@ -16,7 +15,7 @@ import java.util.List;
  * @author cxxwl96
  * @since 2021/8/21 13:26
  */
-public interface TreeService<T extends TreeNode<T>> extends IService<T> {
+public interface TreeService<T extends TreeNode<T>> extends BaseService<T> {
 
     /**
      * 获取树实例
