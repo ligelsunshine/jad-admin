@@ -9,9 +9,12 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.jad.common.valid.UpdateValidGroup;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import javax.validation.constraints.NotBlank;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -33,6 +36,7 @@ public class BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "主键id")
     @TableId(type = IdType.ASSIGN_UUID)
+    @NotBlank(message = "ID是必须的", groups = {UpdateValidGroup.class})
     private String id;
 
     @ApiModelProperty(value = "备注")
