@@ -6,31 +6,44 @@ package com.jad.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.jad.common.base.form.SearchForm;
 import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.constant.RedisConst;
+import com.jad.common.entity.Dept;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.RoleMenu;
 import com.jad.common.entity.User;
 import com.jad.common.entity.UserRole;
+import com.jad.common.exception.BadRequestException;
+import com.jad.common.function.PropertyFunc;
+import com.jad.common.lang.SearchResult;
 import com.jad.common.mapper.UserMapper;
+import com.jad.common.service.DeptService;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
 import com.jad.common.service.RoleService;
 import com.jad.common.service.UserRoleService;
 import com.jad.common.service.UserService;
 import com.jad.common.utils.RedisUtil;
+import com.jad.common.utils.ValidatorUtil;
+import com.jad.common.valid.AddValidGroup;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 系统用户服务类
@@ -58,7 +71,149 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     private RoleMenuService roleMenuService;
 
     @Autowired
+    private DeptService deptService;
+
+    @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    /**
+     * 添加用户
+     *
+     * @param user 用户
+     * @return 是否添加成功
+     */
+    @Override
+    public boolean save(User user) {
+        // 校验k
+        validate(user, false);
+        // 添加用户
+        if (!super.save(user)) {
+            throw new BadRequestException("添加用户失败");
+        }
+        // 分配角色
+        List<UserRole> userRoles = new ArrayList<>();
+        user.getRoleIds().forEach(roleId -> {
+            final UserRole userRole = new UserRole();
+            userRole.setUserId(user.getId());
+            userRole.setRoleId(roleId);
+            userRoles.add(userRole);
+        });
+        if (!userRoleService.saveBatch(userRoles)) {
+            throw new BadRequestException("分配角色失败");
+        }
+        return true;
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param id 用户ID
+     * @return 是否删除成功
+     */
+    @Override
+    public boolean removeById(String id) {
+        PropertyFunc<UserRole, ?> userIdColumn = UserRole::getUserId;
+        final Map<String, Object> map = new HashMap<>();
+        map.put(userIdColumn.getColumnName(), id);
+        if (!userRoleService.removeByMap(map)) {
+            throw new BadRequestException("删除用户角色失败");
+        }
+        if (!super.removeById(id)) {
+            throw new BadRequestException("删除失败");
+        }
+        return true;
+    }
+
+    /**
+     * 更新用户
+     *
+     * @param user 用户
+     * @return 是否更新成功
+     */
+    @Override
+    public boolean update(User user) {
+        // 校验
+        validate(user, true);
+        if (!super.updateById(user)) {
+            throw new BadRequestException("修改用户失败");
+        }
+        // 分配角色
+        // 删除原来分配的角色
+        final Integer count = userRoleService.lambdaQuery().eq(UserRole::getUserId, user.getId()).count();
+        if (count > 0) {
+            PropertyFunc<UserRole, ?> userIdColumn = UserRole::getUserId;
+            final Map<String, Object> map = new HashMap<>();
+            map.put(userIdColumn.getColumnName(), user.getId());
+            if (!userRoleService.removeByMap(map)) {
+                throw new BadRequestException("分配角色失败");
+            }
+        }
+        // 添加新分配的角色
+        List<UserRole> userRoles = new ArrayList<>();
+        user.getRoleIds().forEach(roleId -> {
+            final UserRole userRole = new UserRole();
+            userRole.setUserId(user.getId());
+            userRole.setRoleId(roleId);
+            userRoles.add(userRole);
+        });
+        if (!userRoleService.saveBatch(userRoles)) {
+            throw new BadRequestException("分配角色失败");
+        }
+        return true;
+    }
+
+    /**
+     * 获取用户
+     *
+     * @param id 用户ID
+     * @return 用户
+     */
+    @Override
+    public User getById(String id) {
+        final User user = super.getById(id);
+        final List<Role> roles = this.getRoles(user.getId());
+        final Dept dept = deptService.getById(user.getDeptId());
+        user.setRoles(roles);
+        user.setDept(dept);
+        user.setPassword(null);
+        return user;
+    }
+
+    /**
+     * 分页条件查询
+     *
+     * @param searchForm 查询表单
+     * @return 数据
+     */
+    @Override
+    public SearchResult<User> getPageList(SearchForm searchForm) {
+        final SearchResult<User> searchResult = super.getPageList(searchForm);
+        final List<User> users = searchResult.getItems();
+        users.forEach(user -> {
+            // 初始化角色信息
+            final List<String> roleIds = userRoleService.lambdaQuery()
+                .eq(UserRole::getUserId, user.getId())
+                .list()
+                .stream()
+                .map(UserRole::getRoleId)
+                .collect(Collectors.toList());
+            if (roleIds.size() > 0) {
+                final List<Role> roles = roleService.lambdaQuery().in(Role::getId, roleIds).list();
+                user.setRoleIds(roleIds);
+                user.setRoles(roles);
+            }
+            // 初始化部门信息
+            if (deptService.exist(user.getDeptId())) {
+                final Dept dept = deptService.getById(user.getDeptId());
+                user.setDept(dept);
+            }
+            user.setPassword(null);
+        });
+        return searchResult;
+    }
 
     /**
      * 根据username获取用户
@@ -145,6 +300,37 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
+     * 获取当前登录的用户
+     *
+     * @return 用户
+     */
+    @Override
+    public User getCurrentAuthUser() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String username = authentication.getName();
+        final User user = this.getByUsername(username);
+        user.setPassword(null);
+        return user;
+    }
+
+    /**
+     * 是否拥有超级管理员身份
+     *
+     * @return 是否拥有超级管理员身份
+     */
+    @Override
+    public boolean hasAdministrator() {
+        // 当前登录用户
+        final User user = this.getCurrentAuthUser();
+        // 过滤是否拥有超级管理员身份
+        final Optional<Role> administrator = this.getRoles(user.getId())
+            .stream()
+            .filter(role -> role.getId().equalsIgnoreCase(administratorId))
+            .findFirst();
+        return administrator.isPresent();
+    }
+
+    /**
      * 清除用户授权信息
      *
      * @param username 用户名
@@ -204,33 +390,28 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
-     * 获取当前登录的用户
+     * 校验用户
      *
-     * @return 用户
+     * @param user 用户
+     * @param isUpdate 是否是更新操作
      */
-    @Override
-    public User getCurrentAuthUser() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final String username = authentication.getName();
-        final User user = this.getByUsername(username);
-        user.setPassword(null);
-        return user;
-    }
-
-    /**
-     * 是否拥有超级管理员身份
-     *
-     * @return 是否拥有超级管理员身份
-     */
-    @Override
-    public boolean hasAdministrator() {
-        // 当前登录用户
-        final User user = this.getCurrentAuthUser();
-        // 过滤是否拥有超级管理员身份
-        final Optional<Role> administrator = this.getRoles(user.getId())
-            .stream()
-            .filter(role -> role.getId().equalsIgnoreCase(administratorId))
-            .findFirst();
-        return administrator.isPresent();
+    private void validate(User user, boolean isUpdate) {
+        int count;
+        // 校验账号是否唯一
+        if (isUpdate) {
+            // 密码加密
+            if (StrUtil.isNotBlank(user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+            count = super.lambdaQuery().eq(User::getUsername, user.getUsername()).ne(User::getId, user.getId()).count();
+        } else {
+            ValidatorUtil.validateEntity(user, AddValidGroup.class);
+            // 密码加密
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            count = super.lambdaQuery().eq(User::getUsername, user.getUsername()).count();
+        }
+        if (count > 0) {
+            throw new BadRequestException("该用户已存在");
+        }
     }
 }
