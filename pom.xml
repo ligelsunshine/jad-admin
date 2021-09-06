@@ -23,6 +23,7 @@
 
     <modules>
         <module>common</module>
+        <module>generator</module>
         <module>security</module>
         <module>system</module>
     </modules>
