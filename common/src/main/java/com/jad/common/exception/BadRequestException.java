@@ -6,6 +6,8 @@ package com.jad.common.exception;
 
 import com.jad.common.lang.Result;
 
+import java.util.Locale;
+
 import lombok.Getter;
 
 /**
@@ -23,8 +25,9 @@ public class BadRequestException extends RuntimeException {
         this.result = result;
     }
 
-    public BadRequestException(String msg) {
-        super(msg);
-        this.result = Result.failed(msg);
+    public BadRequestException(String msg, Object ...obj) {
+        super(String.format(Locale.ROOT, msg, obj));
+        final String format = String.format(Locale.ROOT, msg, obj);
+        this.result = Result.failed(format);
     }
 }

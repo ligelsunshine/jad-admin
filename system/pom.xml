@@ -12,7 +12,7 @@
 
     <artifactId>system</artifactId>
     <version>1.0.0</version>
-    <name>system</name>
+    <name>${project.artifactId}</name>
     <packaging>jar</packaging>
 
     <properties>
@@ -26,7 +26,12 @@
             <groupId>com.jad</groupId>
             <artifactId>security</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
+        </dependency>
+        <!-- generator -->
+        <dependency>
+            <groupId>com.jad</groupId>
+            <artifactId>generator</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

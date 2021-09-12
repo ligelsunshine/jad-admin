@@ -12,7 +12,7 @@
 
     <artifactId>security</artifactId>
     <version>1.0.0</version>
-    <name>security</name>
+    <name>${project.artifactId}</name>
     <packaging>jar</packaging>
 
     <properties>

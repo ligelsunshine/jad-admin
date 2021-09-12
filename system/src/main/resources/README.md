@@ -59,8 +59,8 @@ mybatis-plus:
   mapper-locations: classpath*:com/jad/**/xml/*.xml # 配置mapper xml文件的路径
   configuration:
     log-com.jad.common.service.impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志
-  global-config:
-    db-config:
+  global-pathConfig:
+    db-pathConfig:
       update-strategy: ignored
       insert-strategy: ignored
 

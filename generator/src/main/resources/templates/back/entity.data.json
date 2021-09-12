@@ -1,0 +1,94 @@
+{
+  "module": "generator",
+  "title": "学生",
+  "name": "student",
+  "namespace": "sys",
+  "mainField": "title",
+  "treeModel": false,
+  "logic": false,
+  "fieldSchema":[
+    {
+      "title": "姓名",
+      "name": "name",
+      "type": "STRING",
+      "component": "Input",
+      "defaultVal": "cxx",
+      "require": true,
+      "orderNo": 0,
+      "rules": []
+    },
+    {
+      "title": "年龄",
+      "name": "age",
+      "type": "INT",
+      "component": "InputNumber",
+      "defaultVal": 0,
+      "require": true,
+      "orderNo": 0,
+      "rules": []
+    },
+    {
+      "title": "身高",
+      "name": "my-height",
+      "type": "Float",
+      "component": "InputNumber",
+      "defaultVal": 1.65,
+      "require": false,
+      "orderNo": 0,
+      "rules": []
+    },
+    {
+      "title": "余额",
+      "name": "My money",
+      "type": "double",
+      "component": "InputNumber",
+      "defaultVal": 1.99,
+      "require": false,
+      "orderNo": 1,
+      "rules": []
+    },
+    {
+      "title": "是否已婚",
+      "name": "is-marry",
+      "type": "boolean",
+      "component": "Input",
+      "defaultVal": true,
+      "require": true,
+      "orderNo": -1,
+      "rules": []
+    },
+    {
+      "title": "生日",
+      "name": "birthday",
+      "type": "DATE",
+      "component": "DatePicker",
+      "defaultVal": "2021-09-12T21:37:47",
+      "require": true,
+      "orderNo": 0,
+      "rules": []
+    },
+    {
+      "title": "性别",
+      "name": "sex",
+      "type": "ENUM",
+      "component": "RadioGroup",
+      "defaultVal": "",
+      "enumVal": [
+        {
+          "title": "男",
+          "name": "Man"
+        },
+        {
+          "title": "女",
+          "name": "Woman"
+        }
+      ],
+      "require": true,
+      "orderNo": 0,
+      "rules": []
+    }
+  ],
+  "generateConfig": {
+
+  }
+}

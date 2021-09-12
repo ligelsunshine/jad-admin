@@ -2,6 +2,8 @@ package com.jad.common.utils;
 
 import com.jad.common.enums.ConvertType;
 
+import java.util.Arrays;
+
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -85,7 +87,8 @@ public class NamingUtil {
             return null;
         }
         // 按规则分离
-        String[] arr = split(name);
+        final String[] split = split(name);
+        String[] arr = Arrays.stream(split).filter(StrUtil::isNotBlank).toArray(String[]::new);
         // 新名称
         StringBuilder newName = new StringBuilder();
         // 1、生成第一组字符串
@@ -103,9 +106,6 @@ public class NamingUtil {
         // 1、生成除第一组的字符串
         if (arr.length > 1) {
             for (int i = 1; i < arr.length; i++) {
-                if ("".equals(arr[i])) {
-                    continue;
-                }
                 // 添加连接字符
                 newName.append(character);
                 if (type == ConvertType.BigHump || type == ConvertType.SmallHump) {

@@ -13,7 +13,7 @@
     <groupId>com.jad</groupId>
     <artifactId>jad-admin</artifactId>
     <version>1.0.0</version>
-    <name>jad-admin</name>
+    <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     <description>JadAdmin project for Spring Boot</description>
 

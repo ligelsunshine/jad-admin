@@ -17,6 +17,10 @@ import lombok.Data;
  */
 @Data
 public class Result implements Serializable {
+    public static final int CODE_SUCCESS = 200;
+
+    public static final int CODE_FAILED = 400;
+
     @ApiModelProperty(value = "响应码")
     private int code;
 
