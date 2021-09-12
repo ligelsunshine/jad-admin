@@ -1,12 +1,12 @@
 {
-  "module": "generator",
+  "module": "aaa",
   "title": "学生",
   "name": "student",
   "namespace": "sys",
   "mainField": "title",
   "treeModel": false,
   "logic": false,
-  "fieldSchema":[
+  "fieldSchema": [
     {
       "title": "姓名",
       "name": "name",
@@ -89,6 +89,11 @@
     }
   ],
   "generateConfig": {
-
+    "entity": true,
+    "mapper": true,
+    "mapperXml": true,
+    "service": true,
+    "serviceImpl": true,
+    "controller": true
   }
 }

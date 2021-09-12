@@ -39,9 +39,10 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     public void generateBack(Model model) {
         final PathConfig pathConfig = new PathConfig(model.getModule());
-        // 生成entity
-        generateEntity(model, pathConfig);
-
+        if (model.getGenerateConfig().isEntity()) {
+            // 生成entity
+            generateEntity(model, pathConfig);
+        }
     }
 
     private void generateEntity(Model model, PathConfig pathConfig) {
