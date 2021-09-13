@@ -13,14 +13,10 @@ package com.jad.generator.enums;
 public enum RuleType {
     STRING,
     NUMBER,
-    BOOLEAN,
-    REGEXP,
     INTEGER,
     FLOAT,
-    OBJECT,
-    ENUM,
-    DATE,
     URL,
-    HEX,
-    EMAIL
+    EMAIL,
+    PHONE,
+    REGEXP
 }

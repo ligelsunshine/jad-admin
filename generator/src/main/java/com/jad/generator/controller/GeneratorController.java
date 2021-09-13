@@ -13,10 +13,13 @@ import com.jad.generator.service.impl.GeneratorServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
+
+import javax.validation.Valid;
 
 import cn.hutool.core.io.FileUtil;
 import io.swagger.annotations.Api;
@@ -30,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Api(tags = "代码生成 - 代码生成相关接口")
 @RestController
-@RequestMapping("/sys/codeGenerate")
+@RequestMapping("/devtools/generator")
 public class GeneratorController extends BaseController {
 
     @Autowired
@@ -38,9 +41,9 @@ public class GeneratorController extends BaseController {
 
     @ApiOperation("生成后端代码")
     @PostMapping("/back")
-    public Result back() {
-
-        return Result.success();
+    public Result back(@RequestBody @Valid Model model) {
+        service.generateBack(model);
+        return Result.success("生成成功");
     }
 
     @ApiOperation("生成前端代码")
@@ -52,7 +55,7 @@ public class GeneratorController extends BaseController {
 
     public static void main(String[] args) {
         final String path = Objects.requireNonNull(
-            GeneratorController.class.getResource("/templates/back/entity.data.json")).getPath();
+            GeneratorController.class.getResource("/templates/model.json")).getPath();
         final String jsonStr = FileUtil.readUtf8String(path);
         final Model model = JSON.parseObject(jsonStr, Model.class);
 

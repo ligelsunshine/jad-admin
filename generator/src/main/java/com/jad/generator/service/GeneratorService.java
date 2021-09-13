@@ -4,6 +4,8 @@
 
 package com.jad.generator.service;
 
+import com.jad.generator.model.Model;
+
 /**
  * GeneratorService
  *
@@ -11,4 +13,17 @@ package com.jad.generator.service;
  * @since 2021/9/11 23:16
  */
 public interface GeneratorService {
+    /**
+     * 生成后端代码
+     *
+     * @param model model
+     */
+    void generateBack(Model model);
+
+    /**
+     * 生成前端代码
+     *
+     * @param model model
+     */
+    void generateFront(Model model);
 }

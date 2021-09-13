@@ -36,13 +36,28 @@ import cn.hutool.core.util.StrUtil;
  */
 @Service
 public class GeneratorServiceImpl implements GeneratorService {
-
+    /**
+     * 生成后端代码
+     *
+     * @param model model
+     */
+    @Override
     public void generateBack(Model model) {
         final PathConfig pathConfig = new PathConfig(model.getModule());
         if (model.getGenerateConfig().isEntity()) {
             // 生成entity
             generateEntity(model, pathConfig);
         }
+    }
+
+    /**
+     * 生成前端代码
+     *
+     * @param model model
+     */
+    @Override
+    public void generateFront(Model model) {
+
     }
 
     private void generateEntity(Model model, PathConfig pathConfig) {
@@ -75,7 +90,7 @@ public class GeneratorServiceImpl implements GeneratorService {
      * 获取import列表
      *
      * @param model model
-     * @param pathConfig
+     * @param pathConfig pathConfig
      * @return import列表
      */
     private List<String> getEntityImport(Model model, PathConfig pathConfig) {
@@ -116,8 +131,13 @@ public class GeneratorServiceImpl implements GeneratorService {
                         setImports.add("cn.hutool.core.date.LocalDateTimeUtil");
                     }
                 }
+                // 添加自定义枚举
                 if (fieldSchema.getType() == FieldType.ENUM) {
                     setImports.add(pathConfig.getEnumPackage() + "." + fieldSchema.getBigHump());
+                }
+                // 添加正则
+                if (fieldSchema.getRules() != null && fieldSchema.getRules().size() > 0) {
+                    setImports.add("javax.validation.constraints.Pattern");
                 }
             });
         }

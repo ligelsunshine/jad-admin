@@ -67,6 +67,7 @@ public class Model {
 
     public List<FieldSchema> getFieldSchema() {
         if (CollUtil.isNotEmpty(fieldSchema)) {
+            // 字段排序
             fieldSchema = fieldSchema.stream()
                 .sorted(Comparator.comparing(FieldSchema::getOrderNo))
                 .collect(Collectors.toList());

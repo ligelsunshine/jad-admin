@@ -15,7 +15,13 @@
       "defaultVal": "cxx",
       "require": true,
       "orderNo": 0,
-      "rules": []
+      "rules": [
+        {
+          "type": "STRING",
+          "max": 7,
+          "min": 4
+        }
+      ]
     },
     {
       "title": "年龄",
@@ -30,7 +36,7 @@
     {
       "title": "身高",
       "name": "my-height",
-      "type": "Float",
+      "type": "FLOAT",
       "component": "InputNumber",
       "defaultVal": 1.65,
       "require": false,
@@ -40,7 +46,7 @@
     {
       "title": "余额",
       "name": "My money",
-      "type": "double",
+      "type": "DOUBLE",
       "component": "InputNumber",
       "defaultVal": 1.99,
       "require": false,
@@ -50,7 +56,7 @@
     {
       "title": "是否已婚",
       "name": "is-marry",
-      "type": "boolean",
+      "type": "BOOLEAN",
       "component": "Input",
       "defaultVal": true,
       "require": true,
@@ -72,7 +78,7 @@
       "name": "sex",
       "type": "ENUM",
       "component": "RadioGroup",
-      "defaultVal": "",
+      "defaultVal": "Man",
       "enumVal": [
         {
           "title": "男",

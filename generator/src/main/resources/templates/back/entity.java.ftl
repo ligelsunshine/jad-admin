@@ -31,62 +31,72 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
     <#list model.fieldSchema as field>
 
     @ApiModelProperty(value = "${field.title}")
+        <#if field.require>
+            <#if field.type?? && field.type == "STRING">
+    @NotBlank(message = "${field.title}不能为空")
+            <#else>
+    @NotNull(message = "${field.title}不能为空")
+            </#if>
+        </#if>
+        <#list field.rules as rule>
+            <#switch rule.type!"">
+                <#case "STRING">
+                    <#if rule.len??>
+    @Pattern(message = "${field.title}长度必须为${rule.len}", regexp = "^[^S]{${rule.len}}$")
+                    <#elseif rule.min?? && rule.max??>
+    @Pattern(message = "${field.title}长度必须在${rule.min}-${rule.max}之间", regexp = "^[^S]{${rule.min},${rule.max}}$")
+                    </#if>
+                    <#break>
+                <#case "NUMBER">
+    @Pattern(message = "${field.title}不是数字", regexp = "^-?\\d+(\\.\\d+)?$")
+                    <#break>
+                <#case "INTEGER">
+    @Pattern(message = "${field.title}不是整数", regexp = "^-?\\d+$")
+                    <#break>
+                <#case "FLOAT">
+    @Pattern(message = "${field.title}不是小数", regexp = "^-?\\d+\\.\\d+$")
+                    <#break>
+                <#case "URL">
+    @Pattern(message = "${field.title}不是URL", regexp = "^[a-zA-z]+://[^S]*$")
+                    <#break>
+                <#case "EMAIL">
+    @Pattern(message = "${field.title}邮箱格式不对", regexp = "^(\\w+@(\\w+\\.)+(\\w+))?$")
+                    <#break>
+                <#case "PHONE">
+    @Pattern(message = "${field.title}手机格式不对", regexp = "^(1[345789]\\d{9})?$")
+                    <#break>
+                <#case "REGEXP">
+    @Pattern(message = "${rule.message}", regexp = "${rule.pattern?replace('\\','\\\\')}")
+                    <#break>
+            </#switch>
+        </#list>
         <#switch field.type!"">
             <#case "STRING">
-                <#if field.require>
-    @NotBlank(message = "${field.title}不能为空")
-                </#if>
     private String ${field.smallHump}<#if (field.defaultVal)??> = "${field.defaultVal}"</#if>;
                 <#break>
             <#case "INT">
-                <#if field.require>
-    @NotNull(message = "${field.title}不能为空")
-    private Integer ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
-                <#else>
-    private int ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
-                </#if>
+    private <#if field.require>Integer<#else>int</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
                 <#break>
             <#case "FLOAT">
-                <#if field.require>
-    @NotNull(message = "${field.title}不能为空")
-    private Float ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}f</#if>;
-                <#else>
-    private float ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}f</#if>;
-                </#if>
+    private <#if field.require>Float<#else>float</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}f</#if>;
                 <#break>
             <#case "DOUBLE">
-                <#if field.require>
-    @NotNull(message = "${field.title}不能为空")
-    private Double ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
-                <#else>
-    private double ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
-                </#if>
+    private <#if field.require>Dowble<#else>double</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
                 <#break>
             <#case "BOOLEAN">
-                <#if field.require>
-    @NotNull(message = "${field.title}不能为空")
-    private Boolean ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal?string("true","false")}</#if>;
-                <#else>
-    private boolean ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal?string("true","false")}</#if>;
-                </#if>
+    private <#if field.require>Boolean<#else>boolean</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal?string("true","false")}</#if>;
                 <#break>
             <#case "DATE">
-                <#if field.require>
-    @NotNull(message = "${field.title}不能为空")
-                </#if>
     private LocalDateTime ${field.smallHump}<#if (field.defaultVal)??> = LocalDateTimeUtil.parse("${field.defaultVal}")</#if>;
                 <#break>
             <#case "ENUM">
-                <#if field.require>
-    @NotNull(message = "请选择${field.title}")
-                </#if>
-    private ${field.bigHump} ${field.smallHump};
+    private ${field.bigHump} ${field.smallHump}<#if (field.defaultVal)??> = ${field.bigHump}.${field.defaultVal}</#if>;
                 <#break>
             <#case "OBJECT">
-                <#if field.require>
-    @NotNull(message = "${field.title}不能为空")
-                </#if>
     private Object ${field.smallHump};
+                <#break>
+            <#default>
+    private String ${field.smallHump}<#if (field.defaultVal)??> = "${field.defaultVal}"</#if>;
                 <#break>
         </#switch>
     </#list>
