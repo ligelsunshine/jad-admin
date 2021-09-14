@@ -1,5 +1,5 @@
 {
-  "module": "aaa",
+  "module": "generator",
   "title": "学生",
   "name": "student",
   "namespace": "sys",

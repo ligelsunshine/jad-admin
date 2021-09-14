@@ -93,7 +93,16 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
     private LocalDateTime ${field.smallHump}<#if (field.defaultVal)??> = LocalDateTimeUtil.parse("${field.defaultVal}")</#if>;
                 <#break>
             <#case "ENUM">
-    private ${field.bigHump} ${field.smallHump}<#if (field.defaultVal)??> = ${field.bigHump}.${field.defaultVal}</#if>;
+                <#if field.defaultVal??>
+                    <#list field.enumVal as enum>
+                        <#if field.defaultVal == enum.name>
+    private ${field.bigHump} ${field.smallHump} = ${field.bigHump}.${enum.upperCaseUnderline};
+                            <#break>
+                        </#if>
+                    </#list>
+                <#else>
+    private ${field.bigHump} ${field.smallHump};
+                </#if>
                 <#break>
             <#case "OBJECT">
     private Object ${field.smallHump};
