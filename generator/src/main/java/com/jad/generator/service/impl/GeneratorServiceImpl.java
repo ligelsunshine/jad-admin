@@ -48,6 +48,14 @@ public class GeneratorServiceImpl implements GeneratorService {
             // 生成entity
             generateEntity(model, pathConfig);
         }
+        if (model.getGenerateConfig().isMapper()) {
+            // 生成mapper
+            generateMapper(model, pathConfig);
+        }
+        if (model.getGenerateConfig().isMapperXml()) {
+            // 生成mapperXml
+            generateMapperXml(model, pathConfig);
+        }
         if (model.getGenerateConfig().isService()) {
             // 生成service
             generateService(model, pathConfig);
@@ -105,6 +113,31 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     /**
+     * 生成生成mapper
+     *
+     * @param model model
+     * @param pathConfig pathConfig
+     */
+    private void generateMapper(Model model, PathConfig pathConfig) {
+        final Map<String, Object> paramMap = getParamMap(model);
+        paramMap.put("package", pathConfig.getMapperPackage());
+        new FreemarkerGenerator("templates/back/mapper.java.ftl",
+            pathConfig.getMapperPath() + "/" + model.getBigHump() + "Mapper.java").process(paramMap);
+    }
+    /**
+     * 生成生成mapperXml
+     *
+     * @param model model
+     * @param pathConfig pathConfig
+     */
+    private void generateMapperXml(Model model, PathConfig pathConfig) {
+        final Map<String, Object> paramMap = getParamMap(model);
+        paramMap.put("namespace", pathConfig.getMapperPackage());
+        new FreemarkerGenerator("templates/back/mapper.xml.ftl",
+            pathConfig.getMapperXmlPath() + "/" + model.getBigHump() + "Mapper.xml").process(paramMap);
+    }
+
+    /**
      * 生成生成service
      *
      * @param model model
@@ -115,7 +148,6 @@ public class GeneratorServiceImpl implements GeneratorService {
         paramMap.put("package", pathConfig.getServicePackage());
         new FreemarkerGenerator("templates/back/service.java.ftl",
             pathConfig.getServicePath() + "/" + model.getBigHump() + "Service.java").process(paramMap);
-        generateEnum(model, pathConfig);
     }
 
     /**
@@ -127,7 +159,8 @@ public class GeneratorServiceImpl implements GeneratorService {
     private void generateServiceImpl(Model model, PathConfig pathConfig) {
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("package", pathConfig.getServiceImplPackage());
-
+        new FreemarkerGenerator("templates/back/serviceImpl.java.ftl",
+            pathConfig.getServiceImplPath() + "/" + model.getBigHump() + "ServiceImpl.java").process(paramMap);
     }
 
     /**
