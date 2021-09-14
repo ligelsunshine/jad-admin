@@ -16,9 +16,9 @@ import ${pkg};
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-<#if (model.namespace!"") == "">
+<#if model.namespace?trim?length == 0>
 @TableName("${model.name}")
-<#elseif (model.namespace!"") != "">
+<#elseif model.namespace?trim?length gt 0>
 @TableName("${model.namespace}_${model.name}")
 </#if>
 <#if model.treeModel==true>
