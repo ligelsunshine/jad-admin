@@ -48,6 +48,12 @@ public class GeneratorServiceImpl implements GeneratorService {
             // 生成entity
             generateEntity(model, pathConfig);
         }
+        if (model.getGenerateConfig().isService()) {
+            // 生成service
+            generateService(model, pathConfig);
+            // 生成serviceImpl
+            generateServiceImpl(model, pathConfig);
+        }
     }
 
     /**
@@ -60,6 +66,12 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     }
 
+    /**
+     * 生成entity
+     *
+     * @param model model
+     * @param pathConfig pathConfig
+     */
     private void generateEntity(Model model, PathConfig pathConfig) {
         final List<String> imports = getEntityImport(model, pathConfig);
         final Map<String, Object> paramMap = getParamMap(model);
@@ -70,6 +82,12 @@ public class GeneratorServiceImpl implements GeneratorService {
         generateEnum(model, pathConfig);
     }
 
+    /**
+     * 生成enum
+     *
+     * @param model model
+     * @param pathConfig pathConfig
+     */
     private void generateEnum(Model model, PathConfig pathConfig) {
         final List<FieldSchema> fieldSchemas = model.getFieldSchema();
         if (CollUtil.isEmpty(fieldSchemas)) {
@@ -84,6 +102,32 @@ public class GeneratorServiceImpl implements GeneratorService {
                     pathConfig.getEnumPath() + "/" + fieldSchema.getBigHump() + ".java").process(paramMap);
             }
         });
+    }
+
+    /**
+     * 生成生成service
+     *
+     * @param model model
+     * @param pathConfig pathConfig
+     */
+    private void generateService(Model model, PathConfig pathConfig) {
+        final Map<String, Object> paramMap = getParamMap(model);
+        paramMap.put("package", pathConfig.getServicePackage());
+        new FreemarkerGenerator("templates/back/service.java.ftl",
+            pathConfig.getServicePath() + "/" + model.getBigHump() + "Service.java").process(paramMap);
+        generateEnum(model, pathConfig);
+    }
+
+    /**
+     * 生成serviceImpl
+     *
+     * @param model model
+     * @param pathConfig pathConfig
+     */
+    private void generateServiceImpl(Model model, PathConfig pathConfig) {
+        final Map<String, Object> paramMap = getParamMap(model);
+        paramMap.put("package", pathConfig.getServiceImplPackage());
+
     }
 
     /**

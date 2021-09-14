@@ -4,8 +4,8 @@
   "name": "student",
   "namespace": "sys",
   "mainField": "title",
-  "treeModel": false,
-  "logic": false,
+  "treeModel": true,
+  "logic": true,
   "fieldSchema": [
     {
       "title": "姓名",
@@ -99,7 +99,6 @@
     "mapper": true,
     "mapperXml": true,
     "service": true,
-    "serviceImpl": true,
     "controller": true
   }
 }

@@ -81,7 +81,10 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
     private <#if field.require>Float<#else>float</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}f</#if>;
                 <#break>
             <#case "DOUBLE">
-    private <#if field.require>Dowble<#else>double</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
+    private <#if field.require>Double<#else>double</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
+                <#break>
+            <#case "LONG">
+    private <#if field.require>Long<#else>long</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
                 <#break>
             <#case "BOOLEAN">
     private <#if field.require>Boolean<#else>boolean</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal?string("true","false")}</#if>;

@@ -16,6 +16,7 @@ public enum FieldType {
     INT,
     FLOAT,
     DOUBLE,
+    LONG,
     BOOLEAN,
     DATE,
     ENUM,
