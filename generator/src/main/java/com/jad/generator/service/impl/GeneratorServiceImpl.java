@@ -62,6 +62,10 @@ public class GeneratorServiceImpl implements GeneratorService {
             // 生成serviceImpl
             generateServiceImpl(model, pathConfig);
         }
+        if (model.getGenerateConfig().isController()) {
+            // 生成controller
+            generateController(model, pathConfig);
+        }
     }
 
     /**
@@ -124,6 +128,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         new FreemarkerGenerator("templates/back/mapper.java.ftl",
             pathConfig.getMapperPath() + "/" + model.getBigHump() + "Mapper.java").process(paramMap);
     }
+
     /**
      * 生成生成mapperXml
      *
@@ -161,6 +166,19 @@ public class GeneratorServiceImpl implements GeneratorService {
         paramMap.put("package", pathConfig.getServiceImplPackage());
         new FreemarkerGenerator("templates/back/serviceImpl.java.ftl",
             pathConfig.getServiceImplPath() + "/" + model.getBigHump() + "ServiceImpl.java").process(paramMap);
+    }
+
+    /**
+     * 生成controller
+     *
+     * @param model model
+     * @param pathConfig pathConfig
+     */
+    private void generateController(Model model, PathConfig pathConfig) {
+        final Map<String, Object> paramMap = getParamMap(model);
+        paramMap.put("package", pathConfig.getControllerPackage());
+        new FreemarkerGenerator("templates/back/controller.java.ftl",
+            pathConfig.getControllerPath() + "/" + model.getBigHump() + "Controller.java").process(paramMap);
     }
 
     /**
