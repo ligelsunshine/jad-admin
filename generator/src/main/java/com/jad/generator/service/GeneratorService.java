@@ -14,6 +14,13 @@ import com.jad.generator.model.Model;
  */
 public interface GeneratorService {
     /**
+     * 生成数据库表DDL
+     *
+     * @param model model
+     */
+    void generateTable(Model model);
+
+    /**
      * 生成后端代码
      *
      * @param model model

@@ -65,6 +65,22 @@ public class Model {
         return NamingUtil.toLowerCaseUnderline(name);
     }
 
+    public String getNamespaceLowerCaseUnderline() {
+        return NamingUtil.toLowerCaseUnderline(this.namespace);
+    }
+
+    public String getNamespaceLowerCaseDash() {
+        return NamingUtil.toLowerCaseDash(this.namespace);
+    }
+
+    public String getNamespaceSmallHump() {
+        return NamingUtil.toSmallHump(this.namespace);
+    }
+
+    public String getNamespaceBigHump() {
+        return NamingUtil.toBigHump(this.namespace);
+    }
+
     public List<FieldSchema> getFieldSchema() {
         if (CollUtil.isNotEmpty(fieldSchema)) {
             // 字段排序

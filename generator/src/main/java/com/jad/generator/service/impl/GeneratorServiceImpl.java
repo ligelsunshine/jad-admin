@@ -37,6 +37,18 @@ import cn.hutool.core.util.StrUtil;
 @Service
 public class GeneratorServiceImpl implements GeneratorService {
     /**
+     * 生成数据库表DDL
+     *
+     * @param model model
+     */
+    @Override
+    public void generateTable(Model model) {
+        final Map<String, Object> paramMap = getParamMap(model);
+        final String tableSql = new FreemarkerGenerator("templates/db/table.sql.ftl").process(paramMap);
+        System.out.println(tableSql);
+    }
+
+    /**
      * 生成后端代码
      *
      * @param model model
@@ -89,8 +101,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("package", pathConfig.getEntityPackage());
         paramMap.put("imports", imports);
-        new FreemarkerGenerator("templates/back/entity.java.ftl",
-            pathConfig.getEntityPath() + "/" + model.getBigHump() + ".java").process(paramMap);
+        String tempPath = "templates/back/entity.java.ftl";
+        String outputPath = pathConfig.getEntityPath() + "/" + model.getBigHump() + ".java";
+        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
         generateEnum(model, pathConfig);
     }
 
@@ -110,8 +123,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         fieldSchemas.forEach(fieldSchema -> {
             if (fieldSchema.getType() == FieldType.ENUM) {
                 paramMap.put("enumParam", fieldSchema);
-                new FreemarkerGenerator("templates/back/enum.java.ftl",
-                    pathConfig.getEnumPath() + "/" + fieldSchema.getBigHump() + ".java").process(paramMap);
+                String tempPath = "templates/back/enum.java.ftl";
+                String outputPath = pathConfig.getEnumPath() + "/" + fieldSchema.getBigHump() + ".java";
+                new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
             }
         });
     }
@@ -125,8 +139,9 @@ public class GeneratorServiceImpl implements GeneratorService {
     private void generateMapper(Model model, PathConfig pathConfig) {
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("package", pathConfig.getMapperPackage());
-        new FreemarkerGenerator("templates/back/mapper.java.ftl",
-            pathConfig.getMapperPath() + "/" + model.getBigHump() + "Mapper.java").process(paramMap);
+        String tempPath = "templates/back/mapper.java.ftl";
+        String outputPath = pathConfig.getMapperPath() + "/" + model.getBigHump() + "Mapper.java";
+        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
     }
 
     /**
@@ -138,8 +153,9 @@ public class GeneratorServiceImpl implements GeneratorService {
     private void generateMapperXml(Model model, PathConfig pathConfig) {
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("namespace", pathConfig.getMapperPackage());
-        new FreemarkerGenerator("templates/back/mapper.xml.ftl",
-            pathConfig.getMapperXmlPath() + "/" + model.getBigHump() + "Mapper.xml").process(paramMap);
+        String tempPath = "templates/back/mapper.xml.ftl";
+        String outputPath = pathConfig.getMapperXmlPath() + "/" + model.getBigHump() + "Mapper.xml";
+        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
     }
 
     /**
@@ -151,8 +167,9 @@ public class GeneratorServiceImpl implements GeneratorService {
     private void generateService(Model model, PathConfig pathConfig) {
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("package", pathConfig.getServicePackage());
-        new FreemarkerGenerator("templates/back/service.java.ftl",
-            pathConfig.getServicePath() + "/" + model.getBigHump() + "Service.java").process(paramMap);
+        String tempPath = "templates/back/service.java.ftl";
+        String outputPath = pathConfig.getServicePath() + "/" + model.getBigHump() + "Service.java";
+        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
     }
 
     /**
@@ -164,8 +181,9 @@ public class GeneratorServiceImpl implements GeneratorService {
     private void generateServiceImpl(Model model, PathConfig pathConfig) {
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("package", pathConfig.getServiceImplPackage());
-        new FreemarkerGenerator("templates/back/serviceImpl.java.ftl",
-            pathConfig.getServiceImplPath() + "/" + model.getBigHump() + "ServiceImpl.java").process(paramMap);
+        String tempPath = "templates/back/serviceImpl.java.ftl";
+        String outputPath = pathConfig.getServiceImplPath() + "/" + model.getBigHump() + "ServiceImpl.java";
+        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
     }
 
     /**
@@ -177,8 +195,9 @@ public class GeneratorServiceImpl implements GeneratorService {
     private void generateController(Model model, PathConfig pathConfig) {
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("package", pathConfig.getControllerPackage());
-        new FreemarkerGenerator("templates/back/controller.java.ftl",
-            pathConfig.getControllerPath() + "/" + model.getBigHump() + "Controller.java").process(paramMap);
+        String tempPath = "templates/back/controller.java.ftl";
+        String outputPath = pathConfig.getControllerPath() + "/" + model.getBigHump() + "Controller.java";
+        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
     }
 
     /**
@@ -229,6 +248,9 @@ public class GeneratorServiceImpl implements GeneratorService {
                 // 添加自定义枚举
                 if (fieldSchema.getType() == FieldType.ENUM) {
                     setImports.add(pathConfig.getEnumPackage() + "." + fieldSchema.getBigHump());
+                }
+                if (fieldSchema.getType() == FieldType.DECIMAL) {
+                    setImports.add("java.math.BigDecimal");
                 }
                 // 添加正则
                 if (fieldSchema.getRules() != null && fieldSchema.getRules().size() > 0) {

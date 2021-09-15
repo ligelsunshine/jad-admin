@@ -11,6 +11,8 @@ import com.jad.common.exception.BadRequestException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import cn.hutool.core.io.FileUtil;
@@ -32,12 +34,8 @@ public class FreemarkerGenerator {
     // 例如：templates/back/Entity.java.ftl
     private final String name;
 
-    // 输出文件路径
-    private final String outputPath;
-
-    public FreemarkerGenerator(String name, String outputPath) {
+    public FreemarkerGenerator(String name) {
         this.name = name;
-        this.outputPath = outputPath;
     }
 
     /**
@@ -63,7 +61,7 @@ public class FreemarkerGenerator {
      *
      * @param paramObj 模板参数
      */
-    public void process(Object paramObj) {
+    public void processFile(Object paramObj, String outputPath) {
         try {
             createOutputPath(outputPath);
             final Template temp = this.getTemplate();
@@ -73,6 +71,38 @@ public class FreemarkerGenerator {
         } catch (TemplateException | IOException e) {
             throw new BadRequestException(e.getMessage());
         }
+    }
+
+    /**
+     * 生成字符串
+     *
+     * @param paramObj 模板参数
+     * @return 字符串
+     */
+    public String process(Object paramObj) {
+        Writer out = null;
+        boolean success = true;
+        String error = null;
+        try {
+            final Template temp = this.getTemplate();
+            out = new StringWriter();
+            temp.process(paramObj, out);
+        } catch (TemplateException | IOException e) {
+            throw new BadRequestException(e.getMessage());
+        } finally {
+            try {
+                assert out != null;
+                out.close();
+            } catch (NullPointerException | IOException e) {
+                success = false;
+                error = e.getMessage();
+                e.printStackTrace();
+            }
+        }
+        if (!success) {
+            throw new BadRequestException(error);
+        }
+        return out.toString();
     }
 
     private void createOutputPath(String path) {

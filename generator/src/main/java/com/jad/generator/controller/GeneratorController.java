@@ -60,6 +60,7 @@ public class GeneratorController extends BaseController {
         final Model model = JSON.parseObject(jsonStr, Model.class);
 
         final GeneratorServiceImpl service = new GeneratorServiceImpl();
-        service.generateBack(model);
+        service.generateTable(model);
+        // service.generateBack(model);
     }
 }

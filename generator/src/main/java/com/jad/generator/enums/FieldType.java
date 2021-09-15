@@ -13,10 +13,12 @@ package com.jad.generator.enums;
  */
 public enum FieldType {
     STRING,
+    TEXT,
     INT,
     FLOAT,
     DOUBLE,
     LONG,
+    DECIMAL,
     BOOLEAN,
     DATE,
     ENUM,

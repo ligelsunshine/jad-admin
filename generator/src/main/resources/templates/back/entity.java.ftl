@@ -17,9 +17,9 @@ import ${pkg};
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 <#if model.namespace?trim?length == 0>
-@TableName("${model.name}")
+@TableName("${model.lowerCaseUnderline}")
 <#elseif model.namespace?trim?length gt 0>
-@TableName("${model.namespace}_${model.name}")
+@TableName("${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}")
 </#if>
 <#if model.treeModel==true>
 public class ${model.bigHump} extends TreeNode<${model.bigHump}> implements Serializable {
@@ -72,6 +72,7 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
         </#list>
         <#switch field.type!"">
             <#case "STRING">
+            <#case "TEXT">
     private String ${field.smallHump}<#if (field.defaultVal)??> = "${field.defaultVal}"</#if>;
                 <#break>
             <#case "INT">
@@ -85,6 +86,9 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
                 <#break>
             <#case "LONG">
     private <#if field.require>Long<#else>long</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
+                <#break>
+            <#case "DECIMAL">
+    private BigDecimal ${field.smallHump}<#if (field.defaultVal)??> = BigDecimal.valueOf(${field.defaultVal})</#if>;
                 <#break>
             <#case "BOOLEAN">
     private <#if field.require>Boolean<#else>boolean</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal?string("true","false")}</#if>;

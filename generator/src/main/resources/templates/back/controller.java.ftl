@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Api(tags = "${title}相关接口")
 @RestController
-@RequestMapping("<#if model.namespace?trim?length gt 0>/${model.namespace}</#if>/${entity}")
+@RequestMapping("<#if model.namespace?trim?length gt 0>/${model.namespaceSmallHump}</#if>/${entity}")
 public class ${Controller} extends BaseController {
     @Autowired
     private ${Service} ${service};
