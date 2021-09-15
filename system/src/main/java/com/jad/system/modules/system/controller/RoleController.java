@@ -109,8 +109,8 @@ public class RoleController extends BaseController {
 
     @ApiOperation("修改状态")
     @PutMapping("/update/status")
-    public Result updateStatus(String id, Status status) {
-        if (roleService.updateStatus(id, status)) {
+    public Result updateStatus(@RequestParam String id, @RequestParam String status) {
+        if (roleService.updateStatus(id, Status.valueOf(status))) {
             return Result.success("修改成功");
         }
         return Result.failed("修改失败");
