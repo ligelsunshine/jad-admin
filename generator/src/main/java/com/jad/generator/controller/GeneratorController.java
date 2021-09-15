@@ -39,6 +39,13 @@ public class GeneratorController extends BaseController {
     @Autowired
     private GeneratorService service;
 
+    @ApiOperation("生成数据库表")
+    @PostMapping("/table")
+    public Result table(@RequestBody @Valid Model model) {
+        service.generateTable(model);
+        return Result.success("生成成功");
+    }
+
     @ApiOperation("生成后端代码")
     @PostMapping("/back")
     public Result back(@RequestBody @Valid Model model) {
@@ -54,8 +61,8 @@ public class GeneratorController extends BaseController {
     }
 
     public static void main(String[] args) {
-        final String path = Objects.requireNonNull(
-            GeneratorController.class.getResource("/templates/model.json")).getPath();
+        final String path = Objects.requireNonNull(GeneratorController.class.getResource("/templates/model.json"))
+            .getPath();
         final String jsonStr = FileUtil.readUtf8String(path);
         final Model model = JSON.parseObject(jsonStr, Model.class);
 
