@@ -76,6 +76,12 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.4.3</version>
         </dependency>
+        <!--MybatisPlus 动态数据源-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>3.4.1</version>
+        </dependency>
         <!--MybatisPlus Generator 代码生成-->
         <dependency>
             <groupId>com.baomidou</groupId>

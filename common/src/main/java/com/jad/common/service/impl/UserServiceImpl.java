@@ -309,7 +309,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final String username = authentication.getName();
         final User user = this.getByUsername(username);
-        user.setPassword(null);
+        if (user != null) {
+            user.setPassword(null);
+        }
         return user;
     }
 

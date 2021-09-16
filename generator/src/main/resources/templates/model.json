@@ -1,5 +1,5 @@
 {
-  "module": "aaa",
+  "module": "slave",
   "title": "学生",
   "name": "student",
   "namespace": "sys",

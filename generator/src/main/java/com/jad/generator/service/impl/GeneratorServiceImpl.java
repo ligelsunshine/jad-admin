@@ -12,6 +12,8 @@ import com.jad.generator.model.FieldSchema;
 import com.jad.generator.model.Model;
 import com.jad.generator.service.GeneratorService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -36,6 +38,9 @@ import cn.hutool.core.util.StrUtil;
  */
 @Service
 public class GeneratorServiceImpl implements GeneratorService {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     /**
      * 生成数据库表DDL
      *
@@ -45,7 +50,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     public void generateTable(Model model) {
         final Map<String, Object> paramMap = getParamMap(model);
         final String tableSql = new FreemarkerGenerator("templates/db/table.sql.ftl").process(paramMap);
-        System.out.println(tableSql);
+        jdbcTemplate.execute(tableSql);
     }
 
     /**

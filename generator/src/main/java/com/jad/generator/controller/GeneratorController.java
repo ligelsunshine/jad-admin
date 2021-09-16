@@ -68,6 +68,6 @@ public class GeneratorController extends BaseController {
 
         final GeneratorServiceImpl service = new GeneratorServiceImpl();
         service.generateTable(model);
-        // service.generateBack(model);
+        service.generateBack(model);
     }
 }
