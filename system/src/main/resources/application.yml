@@ -62,7 +62,7 @@ mybatis-plus:
   type-enums-package: com.jad.**.enums # 枚举转换
   configuration:
     default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler # 使用ordinal处理枚举转换
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志，打印sql
 
 # JAD Configuration
 jad:
@@ -71,7 +71,7 @@ jad:
     secret: cxxwl96 # jwt秘钥
     header: Authorization
   security:
-    url-white-list: /auth/captcha/generator,/test/**,/cxx,/devtools/generator/**
+    url-white-list: /auth/captcha/generator,/test/**,/cxx,/devtools/generator/**,/slave/**
   system:
     auth-config:
       captcha-timeout: 120 # 验证码过期时间（单位：s）

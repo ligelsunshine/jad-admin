@@ -88,6 +88,12 @@
             <artifactId>mybatis-plus-generator</artifactId>
             <version>3.4.1</version>
         </dependency>
+        <!--Alibaba Druid数据库连接池-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.2.6</version>
+        </dependency>
         <!--Freemarker 模板引擎, MybatisPlus Generator 代码生成器需要-->
         <dependency>
             <groupId>org.freemarker</groupId>

@@ -2,7 +2,7 @@
   "module": "slave",
   "title": "学生",
   "name": "student",
-  "namespace": "sys",
+  "namespace": "slave",
   "mainField": "title",
   "treeModel": false,
   "logic": true,

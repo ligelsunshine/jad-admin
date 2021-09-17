@@ -23,7 +23,6 @@ import com.jad.${module}.entity.${Entity};
 import com.jad.${module}.service.${Service};
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,7 +54,6 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("添加${title}")
     @PostMapping("/save")
-    @Transactional
     public Result save(@RequestBody @Valid ${Entity} ${entity}) {
         if (!${service}.save(${entity})) {
             return Result.failed("添加失败");
@@ -65,7 +63,6 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("删除${title}")
     @DeleteMapping("/delete/{id}")
-    @Transactional
     public Result delete(@PathVariable String id) {
         if (!${service}.removeById(id)) {
             return Result.success("删除失败");
@@ -75,7 +72,6 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("修改${title}")
     @PutMapping("/update")
-    @Transactional
     public Result update(@RequestBody @Valid ${Entity} ${entity}) {
         if (!${service}.updateById(${entity})) {
             return Result.success("修改失败");

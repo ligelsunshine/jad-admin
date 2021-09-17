@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>system</artifactId>
+    <artifactId>slave</artifactId>
     <version>1.0.0</version>
     <name>${project.artifactId}</name>
     <packaging>jar</packaging>
@@ -21,22 +21,10 @@
     </properties>
 
     <dependencies>
-        <!-- jad security -->
+        <!-- jad common -->
         <dependency>
             <groupId>com.jad</groupId>
-            <artifactId>security</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <!-- generator -->
-        <dependency>
-            <groupId>com.jad</groupId>
-            <artifactId>generator</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <!-- slave -->
-        <dependency>
-            <groupId>com.jad</groupId>
-            <artifactId>slave</artifactId>
+            <artifactId>common</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
