@@ -17,18 +17,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
 
 /**
  * GeneratorServiceImpl
@@ -102,10 +97,8 @@ public class GeneratorServiceImpl implements GeneratorService {
      * @param pathConfig pathConfig
      */
     private void generateEntity(Model model, PathConfig pathConfig) {
-        final List<String> imports = getEntityImport(model, pathConfig);
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("package", pathConfig.getEntityPackage());
-        paramMap.put("imports", imports);
         String tempPath = "templates/back/entity.java.ftl";
         String outputPath = pathConfig.getEntityPath() + "/" + model.getBigHump() + ".java";
         new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
@@ -203,68 +196,6 @@ public class GeneratorServiceImpl implements GeneratorService {
         String tempPath = "templates/back/controller.java.ftl";
         String outputPath = pathConfig.getControllerPath() + "/" + model.getBigHump() + "Controller.java";
         new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
-    }
-
-    /**
-     * 获取import列表
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     * @return import列表
-     */
-    private List<String> getEntityImport(Model model, PathConfig pathConfig) {
-        final List<FieldSchema> fieldSchemas = model.getFieldSchema();
-        final Set<String> setImports = new HashSet<>();
-        setImports.add("com.baomidou.mybatisplus.annotation.TableName");
-        setImports.add("java.io.Serializable");
-        setImports.add("io.swagger.annotations.ApiModel");
-        setImports.add("io.swagger.annotations.ApiModelProperty");
-        setImports.add("lombok.Data");
-        setImports.add("lombok.EqualsAndHashCode");
-        setImports.add("lombok.experimental.Accessors");
-        if (model.isLogic()) {
-            setImports.add("com.baomidou.mybatisplus.annotation.FieldStrategy");
-            setImports.add("com.baomidou.mybatisplus.annotation.FieldFill");
-            setImports.add("com.baomidou.mybatisplus.annotation.TableField");
-            setImports.add("com.baomidou.mybatisplus.annotation.TableLogic");
-        }
-        if (model.isTreeModel()) {
-            setImports.add("com.jad.common.base.entity.TreeNode");
-        } else {
-            setImports.add("com.jad.common.base.entity.BaseEntity");
-        }
-        if (CollUtil.isNotEmpty(fieldSchemas)) {
-            fieldSchemas.forEach(fieldSchema -> {
-                if (fieldSchema.isRequire()) {
-                    if (fieldSchema.getType() == FieldType.STRING) {
-                        setImports.add("javax.validation.constraints.NotBlank");
-                    } else {
-                        setImports.add("javax.validation.constraints.NotNull");
-                    }
-                }
-                if (fieldSchema.getType() == FieldType.DATE) {
-                    setImports.add("java.time.LocalDateTime");
-                    final String defaultVal = (String) fieldSchema.getDefaultVal();
-                    if (fieldSchema.isRequire() && StrUtil.isNotBlank(defaultVal) && defaultVal.matches(
-                        "^\\d{4}(-\\d{2}){2}T\\d{2}(:\\d{2}){2}$")) {
-                        setImports.add("cn.hutool.core.date.LocalDateTimeUtil");
-                    }
-                }
-                // 添加自定义枚举
-                if (fieldSchema.getType() == FieldType.ENUM) {
-                    setImports.add(pathConfig.getEnumPackage() + "." + fieldSchema.getBigHump());
-                }
-                if (fieldSchema.getType() == FieldType.DECIMAL) {
-                    setImports.add("java.math.BigDecimal");
-                }
-                // 添加正则
-                if (fieldSchema.getRules() != null && fieldSchema.getRules().size() > 0) {
-                    setImports.add("javax.validation.constraints.Pattern");
-                }
-            });
-        }
-        ArrayList<String> imports = new ArrayList<>(setImports);
-        return imports.stream().sorted().collect(Collectors.toList());
     }
 
     private Map<String, Object> getParamMap(Model model) {

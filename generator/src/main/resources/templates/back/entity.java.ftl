@@ -1,10 +1,86 @@
+<#assign notBlank=false/>
+<#assign notNull=false/>
+<#assign localDateTime=false/>
+<#assign localDateTimeUtil=false/>
+<#assign hasEnum=false/>
+<#assign bigDecimal=false/>
+<#assign pattern=false/>
+<#list model.fieldSchema as field>
+    <#if field.require>
+        <#if field.type=="STRING">
+            <#assign notBlank=true/>
+        <#else>
+            <#assign notNull=true/>
+        </#if>
+    </#if>
+    <#if field.type=="DATE">
+        <#assign localDateTime=true/>
+        <#if field.require && field.defaultVal??>
+            <#assign localDateTimeUtil=true/>
+        </#if>
+    </#if>
+    <#if field.type=="ENUM">
+        <#assign hasEnum=true/>
+    </#if>
+    <#if field.type=="DECIMAL">
+        <#assign bigDecimal=true/>
+    </#if>
+    <#if field.rules?size gt 0>
+        <#assign pattern=true/>
+    </#if>
+</#list>
 <#include "../common/copyright.ftl">
 
 package ${package};
 
-<#list imports as pkg>
-import ${pkg};
-</#list>
+<#if model.logic>
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+</#if>
+import com.baomidou.mybatisplus.annotation.TableName;
+<#if model.treeModel>
+import com.jad.common.base.entity.TreeNode;
+<#else>
+import com.jad.common.base.entity.BaseEntity;
+</#if>
+<#if hasEnum>
+    <#list model.fieldSchema as field>
+        <#if field.type=="ENUM">
+import com.jad.${model.module}.enums.${field.bigHump};
+        </#if>
+    </#list>
+</#if>
+
+import java.io.Serializable;
+<#if bigDecimal>
+import java.math.BigDecimal;
+</#if>
+<#if localDateTime>
+import java.time.LocalDateTime;
+</#if>
+<#if notBlank || notNull || pattern>
+
+</#if>
+<#if notBlank>
+import javax.validation.constraints.NotBlank;
+</#if>
+<#if notNull>
+import javax.validation.constraints.NotNull;
+</#if>
+<#if pattern>
+import javax.validation.constraints.Pattern;
+</#if>
+
+<#if localDateTimeUtil>
+import cn.hutool.core.date.LocalDateTimeUtil;
+</#if>
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * ${model.title}实体

@@ -1,5 +1,5 @@
 {
-  "module": "slave",
+  "module": "generator",
   "title": "学生",
   "name": "student",
   "namespace": "slave",
