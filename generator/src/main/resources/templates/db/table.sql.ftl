@@ -15,7 +15,7 @@ CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` 
         <#switch field.type>
             <#case "STRING">
                 <#assign strLen = 255/>
-                <#if field.rules?size gt 0>
+                <#if field.rules?? && field.rules?size gt 0>
                     <#list field.rules as rule>
                         <#if rule.type == "STRING" && rule.max?? && rule.max gt 255>
                             <#assign strLen = rule.max/>

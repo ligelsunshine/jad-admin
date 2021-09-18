@@ -25,7 +25,7 @@
     <#if field.type=="DECIMAL">
         <#assign bigDecimal=true/>
     </#if>
-    <#if field.rules?size gt 0>
+    <#if field.rules?? && field.rules?size gt 0>
         <#assign pattern=true/>
     </#if>
 </#list>
@@ -149,7 +149,7 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
         <#switch field.type!"">
             <#case "STRING">
             <#case "TEXT">
-    private String ${field.smallHump}<#if (field.defaultVal)??> = "${field.defaultVal}"</#if>;
+    private String ${field.smallHump}<#if (field.defaultVal)?? && field.defaultVal?trim?length gt 0> = "${field.defaultVal}"</#if>;
                 <#break>
             <#case "INT">
     private <#if field.require>Integer<#else>int</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal}</#if>;
