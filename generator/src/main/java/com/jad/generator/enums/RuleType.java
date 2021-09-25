@@ -11,7 +11,8 @@ package com.jad.generator.enums;
  * @since 2021/9/12 14:34
  */
 public enum RuleType {
-    STRING,
+    STRING_LEN,
+    STRING_RANGE,
     NUMBER,
     INTEGER,
     FLOAT,

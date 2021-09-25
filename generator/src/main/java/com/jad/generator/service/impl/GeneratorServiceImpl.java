@@ -4,26 +4,35 @@
 
 package com.jad.generator.service.impl;
 
+import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.utils.SystemUtil;
 import com.jad.generator.common.FreemarkerGenerator;
 import com.jad.generator.config.PathConfig;
+import com.jad.generator.entity.Generator;
 import com.jad.generator.enums.FieldType;
+import com.jad.generator.mapper.GeneratorMapper;
 import com.jad.generator.model.FieldSchema;
 import com.jad.generator.model.Model;
+import com.jad.generator.model.Module;
 import com.jad.generator.service.GeneratorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.system.SystemPropsKeys;
 
 /**
  * GeneratorServiceImpl
@@ -32,9 +41,23 @@ import cn.hutool.core.collection.CollUtil;
  * @since 2021/9/11 23:16
  */
 @Service
-public class GeneratorServiceImpl implements GeneratorService {
+public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Generator> implements GeneratorService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    /**
+     * 获取module
+     *
+     * @return module
+     */
+    @Override
+    public List<Module> getModule() {
+        final String userDir = System.getProperty(SystemPropsKeys.USER_DIR);
+        final Module module = this.deepModule(userDir);
+        final ArrayList<Module> list = new ArrayList<>();
+        list.add(module);
+        return list;
+    }
 
     /**
      * 生成数据库表DDL
@@ -198,6 +221,12 @@ public class GeneratorServiceImpl implements GeneratorService {
         new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
     }
 
+    /**
+     * 生成默认参数
+     *
+     * @param model model
+     * @return 参数
+     */
     private Map<String, Object> getParamMap(Model model) {
         final Map<String, Object> paramMap = new HashMap<>();
         final Date date = new Date();
@@ -218,5 +247,37 @@ public class GeneratorServiceImpl implements GeneratorService {
         paramMap.put("second", calendar.get(Calendar.SECOND));
         paramMap.put("timestamp", String.valueOf(date.getTime()));
         return paramMap;
+    }
+
+    /**
+     * 获取项目module结构
+     *
+     * @param modulePath modulePath
+     * @return module结构
+     */
+    private Module deepModule(String modulePath) {
+        final boolean isModule = FileUtil.exist(modulePath + File.separator + "pom.xml");
+        if (!isModule) {
+            return null;
+        }
+        final File file = new File(modulePath);
+        final Module module = new Module();
+        module.setKey(UUID.randomUUID().toString().replace("-", ""));
+        module.setAbsolutePath(file.getAbsolutePath());
+        module.setName(file.getName());
+
+        final String[] list = file.list();
+        if (list == null) {
+            return null;
+        }
+        List<Module> modules = new ArrayList<>();
+        for (String name : list) {
+            String path = modulePath + File.separator + name;
+            if (FileUtil.isDirectory(path) && FileUtil.exist(path + File.separator + "pom.xml")) {
+                modules.add(deepModule(path));
+            }
+        }
+        module.setChildren(modules);
+        return module;
     }
 }

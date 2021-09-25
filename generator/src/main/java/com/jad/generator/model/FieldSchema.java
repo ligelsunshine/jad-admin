@@ -11,8 +11,8 @@ import com.jad.generator.enums.FieldType;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
+import cn.hutool.core.lang.UUID;
 import lombok.Data;
 
 /**
@@ -23,6 +23,9 @@ import lombok.Data;
  */
 @Data
 public class FieldSchema {
+
+    private String id = UUID.fastUUID().toString(true);
+
     // 字段标题
     @NotBlank(message = "字段标题不能为空")
     private String title;
@@ -32,12 +35,10 @@ public class FieldSchema {
     private String name;
 
     // 字段类型
-    @NotNull(message = "字段类型不能为空")
-    private FieldType type;
+    private FieldType type = FieldType.STRING;
 
-    // 类型
-    @NotNull(message = "组件不能为空")
-    private ComponentType component;
+    // 组件
+    private ComponentType component = ComponentType.Input;
 
     // 默认值
     private Object defaultVal;

@@ -4,7 +4,12 @@
 
 package com.jad.generator.service;
 
+import com.jad.common.base.service.BaseService;
+import com.jad.generator.entity.Generator;
 import com.jad.generator.model.Model;
+import com.jad.generator.model.Module;
+
+import java.util.List;
 
 /**
  * GeneratorService
@@ -12,7 +17,14 @@ import com.jad.generator.model.Model;
  * @author cxxwl96
  * @since 2021/9/11 23:16
  */
-public interface GeneratorService {
+public interface GeneratorService extends BaseService<Generator> {
+    /**
+     * 获取module
+     *
+     * @return module
+     */
+    List<Module> getModule();
+
     /**
      * 生成数据库表DDL
      *

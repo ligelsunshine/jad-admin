@@ -111,9 +111,9 @@ public class RoleController extends BaseController {
     @PutMapping("/update/status")
     public Result updateStatus(@RequestParam String id, @RequestParam String status) {
         if (roleService.updateStatus(id, Status.valueOf(status))) {
-            return Result.success("修改成功");
+            return Result.success("已成功修改角色状态");
         }
-        return Result.failed("修改失败");
+        return Result.failed("修改角色状态失败");
     }
 
     @ApiOperation("获取角色菜单ID")

@@ -116,10 +116,13 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
         </#if>
         <#list field.rules as rule>
             <#switch rule.type!"">
-                <#case "STRING">
+                <#case "STRING_LEN">
                     <#if rule.len??>
     @Pattern(message = "${field.title}长度必须为${rule.len}", regexp = "^[^S]{${rule.len}}$")
-                    <#elseif rule.min?? && rule.max??>
+                    </#if>
+                    <#break>
+                <#case "STRING_RANGE">
+                    <#if rule.min?? && rule.max??>
     @Pattern(message = "${field.title}长度必须在${rule.min}-${rule.max}之间", regexp = "^[^S]{${rule.min},${rule.max}}$")
                     </#if>
                     <#break>

@@ -14,9 +14,9 @@ import lombok.Data;
 /**
  * 自定义规则
  * 拥有以下几种类型
- * - {type: "STRING", len: 6}
- * - {type: "STRING", min: 1, max: 6}
- * - {type: "除STRING、REGEXP以外的其他类型"}
+ * - {type: "STRING_LEN", len: 6}
+ * - {type: "STRING_RANGE", min: 1, max: 6}
+ * - {type: "除STRING_LEN、STRING_RANGE、REGEXP以外的其他类型"}
  * - {type: "REGEXP", message: "错误消息", pattern: "正则表达式"}
  *
  * @author cxxwl96

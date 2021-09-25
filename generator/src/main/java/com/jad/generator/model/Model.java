@@ -6,6 +6,7 @@ package com.jad.generator.model;
 
 import com.jad.common.utils.NamingUtil;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,11 +32,11 @@ public class Model {
     @NotBlank(message = "Model标题不能为空")
     private String title;
 
+    private String namespace;
+
     // model名
     @NotBlank(message = "Model名不能为空")
     private String name;
-
-    private String namespace;
 
     // 主属性字段
     @NotBlank(message = "主属性不能为空")
@@ -48,7 +49,7 @@ public class Model {
     private boolean logic;
 
     // 字段约束
-    private List<FieldSchema> fieldSchema;
+    private List<FieldSchema> fieldSchema = new ArrayList<>();
 
     // 生成配置
     private GenerateConfig generateConfig;
