@@ -7,8 +7,11 @@ package com.jad.generator.model;
 import com.jad.common.utils.NamingUtil;
 import com.jad.generator.enums.ComponentType;
 import com.jad.generator.enums.FieldType;
+import com.jad.generator.enums.Present;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
@@ -55,6 +58,9 @@ public class FieldSchema {
     // 自定义规则
     private List<Rule> rules;
 
+    // 控制字段出现的位置：列表展示、添加表单、编辑表单、查询表单
+    private Set<Present> presents = new HashSet<>();
+
     public String getBigHump() {
         return NamingUtil.toBigHump(name);
     }
@@ -70,4 +76,13 @@ public class FieldSchema {
     public String getUpperCaseUnderline() {
         return NamingUtil.toUpperCaseUnderline(name);
     }
+
+    public void addPresent(Present present) {
+        this.presents.add(present);
+    }
+
+    public void removePresent(Present present) {
+        this.presents.remove(present);
+    }
+
 }

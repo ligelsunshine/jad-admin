@@ -142,6 +142,17 @@ public class GeneratorController extends BaseController {
         return Result.success("修改成功");
     }
 
+    @ApiOperation("获取所有Field列表")
+    @GetMapping("/getFields/{id}")
+    public Result getFields(@PathVariable String id) {
+        final Generator generator = generatorService.getById(id);
+        if (generator == null) {
+            return Result.failed("数据不存在");
+        }
+        final List<FieldSchema> fieldSchemas = generator.getModel().getFieldSchema();
+        return Result.success(fieldSchemas);
+    }
+
     @ApiOperation("获取单个代码生成")
     @GetMapping("/get/{id}")
     public Result get(@PathVariable String id) {
