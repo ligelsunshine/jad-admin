@@ -5,7 +5,9 @@
 package com.jad.generator.service;
 
 import com.jad.common.base.service.BaseService;
+import com.jad.common.lang.Result;
 import com.jad.generator.entity.Generator;
+import com.jad.generator.model.GenerateConfig;
 import com.jad.generator.model.Model;
 import com.jad.generator.model.Module;
 
@@ -33,11 +35,28 @@ public interface GeneratorService extends BaseService<Generator> {
     void generateTable(Model model);
 
     /**
+     * 预览数据库表DDL
+     *
+     * @param model model
+     * @return 预览结果
+     */
+    Result viewTable(Model model);
+
+    /**
      * 生成后端代码
      *
      * @param model model
      */
-    void generateBack(Model model);
+    void generateBack(Model model, GenerateConfig config);
+
+    /**
+     * 预览后端代码
+     *
+     * @param model model
+     * @param config config
+     * @return 预览结果
+     */
+    Result viewBack(Model model, GenerateConfig config);
 
     /**
      * 生成前端代码

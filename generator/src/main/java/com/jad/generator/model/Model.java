@@ -51,9 +51,6 @@ public class Model {
     // 字段约束
     private List<FieldSchema> fieldSchema = new ArrayList<>();
 
-    // 生成配置
-    private GenerateConfig generateConfig;
-
     public String getBigHump() {
         return NamingUtil.toBigHump(name);
     }

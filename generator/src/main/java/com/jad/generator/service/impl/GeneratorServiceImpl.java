@@ -5,6 +5,7 @@
 package com.jad.generator.service.impl;
 
 import com.jad.common.base.service.impl.BaseServiceImpl;
+import com.jad.common.lang.Result;
 import com.jad.common.utils.SystemUtil;
 import com.jad.generator.common.FreemarkerGenerator;
 import com.jad.generator.config.PathConfig;
@@ -12,6 +13,8 @@ import com.jad.generator.entity.Generator;
 import com.jad.generator.enums.FieldType;
 import com.jad.generator.mapper.GeneratorMapper;
 import com.jad.generator.model.FieldSchema;
+import com.jad.generator.model.GenerateConfig;
+import com.jad.generator.model.Item;
 import com.jad.generator.model.Model;
 import com.jad.generator.model.Module;
 import com.jad.generator.service.GeneratorService;
@@ -72,35 +75,48 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     }
 
     /**
+     * 预览数据库表DDL
+     *
+     * @param model model
+     * @return 预览结果
+     */
+    @Override
+    public Result viewTable(Model model) {
+        final Map<String, Object> paramMap = getParamMap(model);
+        final String tableSql = new FreemarkerGenerator("templates/db/table.sql.ftl").process(paramMap);
+        return Result.success(null, tableSql);
+    }
+
+    /**
+     * 预览后端代码
+     *
+     * @param model model
+     * @param config config
+     * @return 预览结果
+     */
+    @Override
+    public Result viewBack(Model model, GenerateConfig config) {
+        List<Map<String, String>> viewList = new ArrayList<>();
+        getItems(model, config).forEach(item -> {
+            final String content = new FreemarkerGenerator(item.getTempPath()).process(item.getParamMap());
+            final Map<String, String> map = new HashMap<>();
+            map.put("path", item.getOutputPath());
+            map.put("content", content);
+            viewList.add(map);
+        });
+        return Result.success(viewList);
+    }
+
+    /**
      * 生成后端代码
      *
      * @param model model
      */
     @Override
-    public void generateBack(Model model) {
-        final PathConfig pathConfig = new PathConfig(model.getModule());
-        if (model.getGenerateConfig().isEntity()) {
-            // 生成entity
-            generateEntity(model, pathConfig);
-        }
-        if (model.getGenerateConfig().isMapper()) {
-            // 生成mapper
-            generateMapper(model, pathConfig);
-        }
-        if (model.getGenerateConfig().isMapperXml()) {
-            // 生成mapperXml
-            generateMapperXml(model, pathConfig);
-        }
-        if (model.getGenerateConfig().isService()) {
-            // 生成service
-            generateService(model, pathConfig);
-            // 生成serviceImpl
-            generateServiceImpl(model, pathConfig);
-        }
-        if (model.getGenerateConfig().isController()) {
-            // 生成controller
-            generateController(model, pathConfig);
-        }
+    public void generateBack(Model model, GenerateConfig config) {
+        getItems(model, config).forEach(item -> {
+            new FreemarkerGenerator(item.getTempPath()).processFile(item.getParamMap(), item.getOutputPath());
+        });
     }
 
     /**
@@ -111,114 +127,6 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     @Override
     public void generateFront(Model model) {
 
-    }
-
-    /**
-     * 生成entity
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     */
-    private void generateEntity(Model model, PathConfig pathConfig) {
-        final Map<String, Object> paramMap = getParamMap(model);
-        paramMap.put("package", pathConfig.getEntityPackage());
-        String tempPath = "templates/back/entity.java.ftl";
-        String outputPath = pathConfig.getEntityPath() + "/" + model.getBigHump() + ".java";
-        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
-        generateEnum(model, pathConfig);
-    }
-
-    /**
-     * 生成enum
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     */
-    private void generateEnum(Model model, PathConfig pathConfig) {
-        final List<FieldSchema> fieldSchemas = model.getFieldSchema();
-        if (CollUtil.isEmpty(fieldSchemas)) {
-            return;
-        }
-        final Map<String, Object> paramMap = getParamMap(model);
-        paramMap.put("package", pathConfig.getEnumPackage());
-        fieldSchemas.forEach(fieldSchema -> {
-            if (fieldSchema.getType() == FieldType.ENUM) {
-                paramMap.put("enumParam", fieldSchema);
-                String tempPath = "templates/back/enum.java.ftl";
-                String outputPath = pathConfig.getEnumPath() + "/" + fieldSchema.getBigHump() + ".java";
-                new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
-            }
-        });
-    }
-
-    /**
-     * 生成生成mapper
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     */
-    private void generateMapper(Model model, PathConfig pathConfig) {
-        final Map<String, Object> paramMap = getParamMap(model);
-        paramMap.put("package", pathConfig.getMapperPackage());
-        String tempPath = "templates/back/mapper.java.ftl";
-        String outputPath = pathConfig.getMapperPath() + "/" + model.getBigHump() + "Mapper.java";
-        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
-    }
-
-    /**
-     * 生成生成mapperXml
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     */
-    private void generateMapperXml(Model model, PathConfig pathConfig) {
-        final Map<String, Object> paramMap = getParamMap(model);
-        paramMap.put("namespace", pathConfig.getMapperPackage());
-        String tempPath = "templates/back/mapper.xml.ftl";
-        String outputPath = pathConfig.getMapperXmlPath() + "/" + model.getBigHump() + "Mapper.xml";
-        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
-    }
-
-    /**
-     * 生成生成service
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     */
-    private void generateService(Model model, PathConfig pathConfig) {
-        final Map<String, Object> paramMap = getParamMap(model);
-        paramMap.put("package", pathConfig.getServicePackage());
-        String tempPath = "templates/back/service.java.ftl";
-        String outputPath = pathConfig.getServicePath() + "/" + model.getBigHump() + "Service.java";
-        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
-    }
-
-    /**
-     * 生成serviceImpl
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     */
-    private void generateServiceImpl(Model model, PathConfig pathConfig) {
-        final Map<String, Object> paramMap = getParamMap(model);
-        paramMap.put("package", pathConfig.getServiceImplPackage());
-        String tempPath = "templates/back/serviceImpl.java.ftl";
-        String outputPath = pathConfig.getServiceImplPath() + "/" + model.getBigHump() + "ServiceImpl.java";
-        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
-    }
-
-    /**
-     * 生成controller
-     *
-     * @param model model
-     * @param pathConfig pathConfig
-     */
-    private void generateController(Model model, PathConfig pathConfig) {
-        final Map<String, Object> paramMap = getParamMap(model);
-        paramMap.put("package", pathConfig.getControllerPackage());
-        String tempPath = "templates/back/controller.java.ftl";
-        String outputPath = pathConfig.getControllerPath() + "/" + model.getBigHump() + "Controller.java";
-        new FreemarkerGenerator(tempPath).processFile(paramMap, outputPath);
     }
 
     /**
@@ -279,5 +187,96 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
         }
         module.setChildren(modules);
         return module;
+    }
+
+    /**
+     * 获取生成数据
+     *
+     * @param model model
+     * @param config config
+     * @return 生成数据
+     */
+    private List<Item> getItems(Model model, GenerateConfig config) {
+        final PathConfig pathConfig = new PathConfig(model.getModule());
+
+        List<Item> itemList = new ArrayList<>();
+
+        if (config.isEntity()) {
+            // 添加entity生成数据
+            final Map<String, Object> paramMap = getParamMap(model);
+            paramMap.put("package", pathConfig.getEntityPackage());
+            final Item item = new Item();
+            item.setTempPath("templates/back/entity.java.ftl");
+            item.setOutputPath(pathConfig.getEntityPath() + "/" + model.getBigHump() + ".java");
+            item.setParamMap(paramMap);
+            itemList.add(item);
+            // 添加enum生成数据
+            final List<FieldSchema> fieldSchemas = model.getFieldSchema();
+            if (CollUtil.isEmpty(fieldSchemas)) {
+                final Map<String, Object> enumParamMap = getParamMap(model);
+                enumParamMap.put("package", pathConfig.getEnumPackage());
+                fieldSchemas.forEach(fieldSchema -> {
+                    if (fieldSchema.getType() == FieldType.ENUM) {
+                        enumParamMap.put("enumParam", fieldSchema);
+                        final Item enumItem = new Item();
+                        enumItem.setTempPath("templates/back/enum.java.ftl");
+                        enumItem.setOutputPath(pathConfig.getEnumPath() + "/" + fieldSchema.getBigHump() + ".java");
+                        enumItem.setParamMap(enumParamMap);
+                        itemList.add(enumItem);
+                    }
+                });
+            }
+        }
+        if (config.isMapper()) {
+            // 添加mapper生成数据
+            final Map<String, Object> paramMap = getParamMap(model);
+            paramMap.put("package", pathConfig.getMapperPackage());
+            final Item item = new Item();
+            item.setTempPath("templates/back/mapper.java.ftl");
+            item.setOutputPath(pathConfig.getMapperPath() + "/" + model.getBigHump() + "Mapper.java");
+            item.setParamMap(paramMap);
+            itemList.add(item);
+        }
+        if (config.isMapperXml()) {
+            // 添加mapperXml生成数据
+            final Map<String, Object> paramMap = getParamMap(model);
+            paramMap.put("package", pathConfig.getMapperPackage());
+            final Item item = new Item();
+            item.setTempPath("templates/back/mapper.xml.ftl");
+            item.setOutputPath(pathConfig.getMapperXmlPath() + "/" + model.getBigHump() + "Mapper.xml");
+            item.setParamMap(paramMap);
+            itemList.add(item);
+        }
+        if (config.isService()) {
+            // 添加service生成数据
+            final Map<String, Object> paramMap = getParamMap(model);
+            paramMap.put("package", pathConfig.getServicePackage());
+            final Item item = new Item();
+            item.setTempPath("templates/back/service.java.ftl");
+            item.setOutputPath(pathConfig.getServicePath() + "/" + model.getBigHump() + "Service.java");
+            item.setParamMap(paramMap);
+            itemList.add(item);
+        }
+        if (config.isServiceImpl()) {
+            // 添加serviceImpl生成数据
+            final Map<String, Object> paramMap = getParamMap(model);
+            paramMap.put("package", pathConfig.getServiceImplPackage());
+            final Item item = new Item();
+            item.setTempPath("templates/back/serviceImpl.java.ftl");
+            item.setOutputPath(pathConfig.getServiceImplPath() + "/" + model.getBigHump() + "ServiceImpl.java");
+            item.setParamMap(paramMap);
+            itemList.add(item);
+        }
+        if (config.isServiceImpl()) {
+            // 添加controller生成数据
+            final Map<String, Object> paramMap = getParamMap(model);
+            paramMap.put("package", pathConfig.getControllerPackage());
+            final Item item = new Item();
+            item.setTempPath("templates/back/controller.java.ftl");
+            item.setOutputPath(pathConfig.getControllerPath() + "/" + model.getBigHump() + "Controller.java");
+            item.setParamMap(paramMap);
+            itemList.add(item);
+        }
+        return itemList;
     }
 }

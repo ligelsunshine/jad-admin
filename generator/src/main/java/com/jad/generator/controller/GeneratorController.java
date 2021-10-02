@@ -9,7 +9,9 @@ import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.lang.Result;
 import com.jad.generator.entity.Generator;
+import com.jad.generator.enums.GenerateType;
 import com.jad.generator.model.FieldSchema;
+import com.jad.generator.model.GenerateConfig;
 import com.jad.generator.model.Model;
 import com.jad.generator.service.GeneratorService;
 import com.jad.generator.service.impl.GeneratorServiceImpl;
@@ -173,23 +175,33 @@ public class GeneratorController extends BaseController {
 
     @ApiOperation("生成数据库表")
     @PostMapping("/table/{id}")
-    public Result table(@PathVariable String id) {
+    public Result table(@PathVariable String id, @RequestParam GenerateType type) {
         final Generator generator = generatorService.getById(id);
-        generatorService.generateTable(generator.getModel());
+        if (type == GenerateType.VIEW) {
+            return generatorService.viewTable(generator.getModel());
+        } else if (type == GenerateType.CREATE) {
+            generatorService.generateTable(generator.getModel());
+        } else {
+            return Result.failed("仅支持 预览 或 直接创建");
+        }
         return Result.success("生成成功");
     }
 
     @ApiOperation("生成后端代码")
     @PostMapping("/back/{id}")
-    public Result back(@PathVariable String id) {
+    public Result back(@PathVariable String id, @RequestParam GenerateType type, GenerateConfig config) {
         final Generator generator = generatorService.getById(id);
-        generatorService.generateBack(generator.getModel());
+        if (type == GenerateType.VIEW) {
+            return generatorService.viewBack(generator.getModel(), config);
+        } else if (type == GenerateType.CREATE) {
+            generatorService.generateBack(generator.getModel(), config);
+        }
         return Result.success("生成成功");
     }
 
     @ApiOperation("生成前端代码")
     @PostMapping("/front/{id}")
-    public Result front(@PathVariable String id) {
+    public Result front(@PathVariable String id, @RequestParam GenerateType type) {
         final Generator generator = generatorService.getById(id);
         generatorService.generateFront(generator.getModel());
         return Result.success();
@@ -203,6 +215,6 @@ public class GeneratorController extends BaseController {
 
         final GeneratorServiceImpl service = new GeneratorServiceImpl();
         service.generateTable(model);
-        service.generateBack(model);
+        // service.generateBack(model);
     }
 }
