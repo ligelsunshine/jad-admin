@@ -189,7 +189,7 @@ public class GeneratorController extends BaseController {
 
     @ApiOperation("生成后端代码")
     @PostMapping("/back/{id}")
-    public Result back(@PathVariable String id, @RequestParam GenerateType type, GenerateConfig config) {
+    public Result back(@PathVariable String id, @RequestParam GenerateType type, @RequestBody GenerateConfig config) {
         final Generator generator = generatorService.getById(id);
         if (type == GenerateType.VIEW) {
             return generatorService.viewBack(generator.getModel(), config);

@@ -84,7 +84,13 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     public Result viewTable(Model model) {
         final Map<String, Object> paramMap = getParamMap(model);
         final String tableSql = new FreemarkerGenerator("templates/db/table.sql.ftl").process(paramMap);
-        return Result.success(null, tableSql);
+        final Map<String, String> map = new HashMap<>();
+        map.put("name", model.getBigHump() + ".sql");
+        map.put("path", "");
+        map.put("content", tableSql);
+        final List<Map<String, String>> list = new ArrayList<>();
+        list.add(map);
+        return Result.success(list);
     }
 
     /**
@@ -100,6 +106,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
         getItems(model, config).forEach(item -> {
             final String content = new FreemarkerGenerator(item.getTempPath()).process(item.getParamMap());
             final Map<String, String> map = new HashMap<>();
+            map.put("name", FileUtil.getName(item.getOutputPath()));
             map.put("path", item.getOutputPath());
             map.put("content", content);
             viewList.add(map);
@@ -212,7 +219,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
             itemList.add(item);
             // 添加enum生成数据
             final List<FieldSchema> fieldSchemas = model.getFieldSchema();
-            if (CollUtil.isEmpty(fieldSchemas)) {
+            if (!CollUtil.isEmpty(fieldSchemas)) {
                 final Map<String, Object> enumParamMap = getParamMap(model);
                 enumParamMap.put("package", pathConfig.getEnumPackage());
                 fieldSchemas.forEach(fieldSchema -> {
@@ -267,7 +274,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
             item.setParamMap(paramMap);
             itemList.add(item);
         }
-        if (config.isServiceImpl()) {
+        if (config.isController()) {
             // 添加controller生成数据
             final Map<String, Object> paramMap = getParamMap(model);
             paramMap.put("package", pathConfig.getControllerPackage());
