@@ -194,9 +194,10 @@ public class GeneratorController extends BaseController {
         if (type == GenerateType.VIEW) {
             return generatorService.viewBack(generator.getModel(), config);
         } else if (type == GenerateType.CREATE) {
-            generatorService.generateBack(generator.getModel(), config);
+            return generatorService.generateBack(generator.getModel(), config);
+        } else {
+            return Result.failed("仅支持 预览 或 直接创建");
         }
-        return Result.success("生成成功");
     }
 
     @ApiOperation("生成前端代码")

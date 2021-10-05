@@ -120,10 +120,13 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @param model model
      */
     @Override
-    public void generateBack(Model model, GenerateConfig config) {
+    public Result generateBack(Model model, GenerateConfig config) {
+        List<String> result = new ArrayList<>();
         getItems(model, config).forEach(item -> {
             new FreemarkerGenerator(item.getTempPath()).processFile(item.getParamMap(), item.getOutputPath());
+            result.add(item.getOutputPath());
         });
+        return Result.success("生成成功", result);
     }
 
     /**

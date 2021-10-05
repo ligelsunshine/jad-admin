@@ -47,7 +47,7 @@ public interface GeneratorService extends BaseService<Generator> {
      *
      * @param model model
      */
-    void generateBack(Model model, GenerateConfig config);
+    Result generateBack(Model model, GenerateConfig config);
 
     /**
      * 预览后端代码
