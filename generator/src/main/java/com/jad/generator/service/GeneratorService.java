@@ -28,6 +28,14 @@ public interface GeneratorService extends BaseService<Generator> {
     List<Module> getModule();
 
     /**
+     * 获取本地路径
+     *
+     * @param path path
+     * @return 本地路径
+     */
+    Result getLocalPath(String path);
+
+    /**
      * 生成数据库表DDL
      *
      * @param model model

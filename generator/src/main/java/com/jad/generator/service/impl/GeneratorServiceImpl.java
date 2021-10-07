@@ -32,9 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemPropsKeys;
 
 /**
@@ -63,6 +65,47 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     }
 
     /**
+     * 获取本地路径
+     *
+     * @param path path
+     * @return 本地路径
+     */
+    @Override
+    public Result getLocalPath(String path) {
+        List<Map<String, String>> result = new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        File[] files = new File[0];
+        if (StrUtil.isBlank(path) || !FileUtil.exist(path)) {
+            final File[] roots = File.listRoots();
+            final File userHomeDir = FileUtil.getUserHomeDir();
+            files = new File[roots.length+1];
+            System.arraycopy(roots, 0, files, 0, roots.length);
+            files[roots.length] = userHomeDir;
+        } else if (FileUtil.isDirectory(path)) {
+            files = new File(path).listFiles();
+        }
+        if (files != null) {
+            for (File file : files) {
+                if (FileUtil.isDirectory(file)) {
+                    list.add(file.getPath());
+                }
+            }
+        }
+        list = list.stream().sorted().collect(Collectors.toList());
+        list.forEach(item -> {
+            Map<String, String> mapResult = new HashMap<>();
+            String name = FileUtil.getName(item);
+            if (StrUtil.isBlank(name)){
+                name = item;
+            }
+            mapResult.put("name", name);
+            mapResult.put("path", item);
+            result.add(mapResult);
+        });
+        return Result.success(result);
+    }
+
+    /**
      * 生成数据库表DDL
      *
      * @param model model
@@ -85,7 +128,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
         final Map<String, Object> paramMap = getParamMap(model);
         final String tableSql = new FreemarkerGenerator("templates/db/table.sql.ftl").process(paramMap);
         final Map<String, String> map = new HashMap<>();
-        map.put("name", model.getBigHump() + ".sql");
+        map.put("name", model.getNamespaceLowerCaseUnderline() + "_" + model.getLowerCaseUnderline() + ".sql");
         map.put("path", "");
         map.put("content", tableSql);
         final List<Map<String, String>> list = new ArrayList<>();

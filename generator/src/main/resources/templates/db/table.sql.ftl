@@ -69,12 +69,12 @@ CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` 
                 <#break>
         </#switch>
     </#list>
+</#if>
     `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注',
     `create_time` datetime DEFAULT NULL COMMENT '创建时间',
     `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '创建人',
     `update_time` datetime DEFAULT NULL COMMENT '更新时间',
     `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
-</#if>
 <#if model.logic>
     `enable` bit(1) DEFAULT NULL COMMENT '是否启用【未启用：0,已启用：1】',
 </#if>

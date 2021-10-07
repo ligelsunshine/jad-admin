@@ -26,7 +26,6 @@
         <module>generator</module>
         <module>security</module>
         <module>system</module>
-        <module>slave</module>
     </modules>
 
     <build>

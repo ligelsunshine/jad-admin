@@ -14,7 +14,6 @@ import com.jad.generator.model.FieldSchema;
 import com.jad.generator.model.GenerateConfig;
 import com.jad.generator.model.Model;
 import com.jad.generator.service.GeneratorService;
-import com.jad.generator.service.impl.GeneratorServiceImpl;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.validation.Valid;
 
@@ -173,6 +171,28 @@ public class GeneratorController extends BaseController {
         return Result.success(generatorService.getModule());
     }
 
+    @ApiOperation("获取本地Path")
+    @GetMapping("/getLocalPath")
+    public Result getLocalPath(String path) {
+        return generatorService.getLocalPath(path);
+    }
+
+    @ApiOperation("判断是否是路径")
+    @GetMapping("/isDirectory")
+    public Result isDirectory(String path) {
+        return Result.success(FileUtil.isDirectory(path));
+    }
+
+    @ApiOperation("获取上级路径")
+    @GetMapping("/getParentPath")
+    public Result getParentPath(String path) {
+        String parent = FileUtil.getParent(path, 1);
+        if (parent == null) {
+            parent = FileUtil.getUserHomePath();
+        }
+        return Result.success(null, parent);
+    }
+
     @ApiOperation("生成数据库表")
     @PostMapping("/table/{id}")
     public Result table(@PathVariable String id, @RequestParam GenerateType type) {
@@ -206,16 +226,5 @@ public class GeneratorController extends BaseController {
         final Generator generator = generatorService.getById(id);
         generatorService.generateFront(generator.getModel());
         return Result.success();
-    }
-
-    public static void main(String[] args) {
-        final String path = Objects.requireNonNull(GeneratorController.class.getResource("/templates/model.json"))
-            .getPath();
-        final String jsonStr = FileUtil.readUtf8String(path);
-        final Model model = JSON.parseObject(jsonStr, Model.class);
-
-        final GeneratorServiceImpl service = new GeneratorServiceImpl();
-        service.generateTable(model);
-        // service.generateBack(model);
     }
 }
