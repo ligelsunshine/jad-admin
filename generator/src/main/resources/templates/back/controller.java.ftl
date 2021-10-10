@@ -74,7 +74,7 @@ public class ${Controller} extends BaseController {
     @ApiOperation("删除多个${title}")
     @DeleteMapping("/deleteArr")
     public Result deleteArr(@RequestBody @Valid IDs ids) {
-        if (!${service}Service.removeByIds(ids.getIds())) {
+        if (!${service}.removeByIds(ids.getIds())) {
             return Result.failed("删除失败");
         }
         return Result.success("删除成功");
@@ -92,7 +92,11 @@ public class ${Controller} extends BaseController {
     @ApiOperation("获取单个${title}")
     @GetMapping("/get/{id}")
     public Result get(@PathVariable String id) {
-        return Result.success(${service}.getById(id));
+        final ${Entity} ${entity} = ${service}.getById(id);
+        if (student==null){
+            return Result.failed("获取数据失败");
+        }
+        return Result.success(${entity});
     }
 
     @ApiOperation("分页获取${title}")
