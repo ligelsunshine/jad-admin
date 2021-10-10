@@ -18,6 +18,7 @@ package ${package};
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;
+import com.jad.common.lang.IDs;
 import com.jad.common.lang.Result;
 import com.jad.${module}.entity.${Entity};
 import com.jad.${module}.service.${Service};
@@ -65,16 +66,25 @@ public class ${Controller} extends BaseController {
     @DeleteMapping("/delete/{id}")
     public Result delete(@PathVariable String id) {
         if (!${service}.removeById(id)) {
-            return Result.success("删除失败");
+            return Result.failed("删除失败");
         }
-        return Result.failed("删除成功");
+        return Result.success("删除成功");
+    }
+
+    @ApiOperation("删除多个${title}")
+    @DeleteMapping("/deleteArr")
+    public Result deleteArr(@RequestBody @Valid IDs ids) {
+        if (!${service}Service.removeByIds(ids.getIds())) {
+            return Result.failed("删除失败");
+        }
+        return Result.success("删除成功");
     }
 
     @ApiOperation("修改${title}")
     @PutMapping("/update")
     public Result update(@RequestBody @Valid ${Entity} ${entity}) {
         if (!${service}.updateById(${entity})) {
-            return Result.success("修改失败");
+            return Result.failed("修改失败");
         }
         return Result.success("修改成功");
     }
