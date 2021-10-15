@@ -222,9 +222,14 @@ public class GeneratorController extends BaseController {
 
     @ApiOperation("生成前端代码")
     @PostMapping("/front/{id}")
-    public Result front(@PathVariable String id, @RequestParam GenerateType type) {
+    public Result front(@PathVariable String id, @RequestParam GenerateType type, @RequestParam String frontPath) {
         final Generator generator = generatorService.getById(id);
-        generatorService.generateFront(generator.getModel());
-        return Result.success();
+        if (type == GenerateType.VIEW) {
+            return generatorService.viewFront(generator.getModel(), frontPath);
+        } else if (type == GenerateType.CREATE) {
+            return generatorService.generateFront(generator.getModel(), frontPath);
+        } else {
+            return Result.failed("仅支持 预览 或 直接创建");
+        }
     }
 }

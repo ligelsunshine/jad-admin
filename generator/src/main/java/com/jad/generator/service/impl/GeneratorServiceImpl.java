@@ -5,6 +5,7 @@
 package com.jad.generator.service.impl;
 
 import com.jad.common.base.service.impl.BaseServiceImpl;
+import com.jad.common.exception.BadRequestException;
 import com.jad.common.lang.Result;
 import com.jad.common.utils.SystemUtil;
 import com.jad.generator.common.FreemarkerGenerator;
@@ -78,7 +79,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
         if (StrUtil.isBlank(path) || !FileUtil.exist(path)) {
             final File[] roots = File.listRoots();
             final File userHomeDir = FileUtil.getUserHomeDir();
-            files = new File[roots.length+1];
+            files = new File[roots.length + 1];
             System.arraycopy(roots, 0, files, 0, roots.length);
             files[roots.length] = userHomeDir;
         } else if (FileUtil.isDirectory(path)) {
@@ -95,7 +96,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
         list.forEach(item -> {
             Map<String, String> mapResult = new HashMap<>();
             String name = FileUtil.getName(item);
-            if (StrUtil.isBlank(name)){
+            if (StrUtil.isBlank(name)) {
                 name = item;
             }
             mapResult.put("name", name);
@@ -137,6 +138,21 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     }
 
     /**
+     * 生成后端代码
+     *
+     * @param model model
+     */
+    @Override
+    public Result generateBack(Model model, GenerateConfig config) {
+        List<String> result = new ArrayList<>();
+        getBackItems(model, config).forEach(item -> {
+            new FreemarkerGenerator(item.getTempPath()).processFile(item.getParamMap(), item.getOutputPath());
+            result.add(item.getOutputPath());
+        });
+        return Result.success("生成成功", result);
+    }
+
+    /**
      * 预览后端代码
      *
      * @param model model
@@ -146,7 +162,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     @Override
     public Result viewBack(Model model, GenerateConfig config) {
         List<Map<String, String>> viewList = new ArrayList<>();
-        getItems(model, config).forEach(item -> {
+        getBackItems(model, config).forEach(item -> {
             final String content = new FreemarkerGenerator(item.getTempPath()).process(item.getParamMap());
             final Map<String, String> map = new HashMap<>();
             map.put("name", FileUtil.getName(item.getOutputPath()));
@@ -158,14 +174,16 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     }
 
     /**
-     * 生成后端代码
+     * 生成前端代码
      *
      * @param model model
+     * @param frontPath frontPath
+     * @return 生成结果
      */
     @Override
-    public Result generateBack(Model model, GenerateConfig config) {
+    public Result generateFront(Model model, String frontPath) {
         List<String> result = new ArrayList<>();
-        getItems(model, config).forEach(item -> {
+        getFrontItems(model, frontPath).forEach(item -> {
             new FreemarkerGenerator(item.getTempPath()).processFile(item.getParamMap(), item.getOutputPath());
             result.add(item.getOutputPath());
         });
@@ -173,13 +191,24 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
     }
 
     /**
-     * 生成前端代码
+     * 预览前端代码
      *
      * @param model model
+     * @param frontPath frontPath
+     * @return 预览结果
      */
     @Override
-    public void generateFront(Model model) {
-
+    public Result viewFront(Model model, String frontPath) {
+        List<Map<String, String>> viewList = new ArrayList<>();
+        getFrontItems(model, frontPath).forEach(item -> {
+            final String content = new FreemarkerGenerator(item.getTempPath()).process(item.getParamMap());
+            final Map<String, String> map = new HashMap<>();
+            map.put("name", FileUtil.getName(item.getOutputPath()));
+            map.put("path", item.getOutputPath());
+            map.put("content", content);
+            viewList.add(map);
+        });
+        return Result.success(viewList);
     }
 
     /**
@@ -249,7 +278,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @param config config
      * @return 生成数据
      */
-    private List<Item> getItems(Model model, GenerateConfig config) {
+    private List<Item> getBackItems(Model model, GenerateConfig config) {
         final PathConfig pathConfig = new PathConfig(model.getModule());
 
         List<Item> itemList = new ArrayList<>();
@@ -327,6 +356,57 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
             final Item item = new Item();
             item.setTempPath("templates/back/controller.java.ftl");
             item.setOutputPath(pathConfig.getControllerPath() + "/" + model.getBigHump() + "Controller.java");
+            item.setParamMap(paramMap);
+            itemList.add(item);
+        }
+        return itemList;
+    }
+
+    /**
+     * 获取生成数据
+     *
+     * @param model model
+     * @param frontPath frontPath
+     * @return 生成数据
+     */
+    private List<Item> getFrontItems(Model model, String frontPath) {
+        if (StrUtil.isBlank(frontPath) || !FileUtil.exist(frontPath)) {
+            throw new BadRequestException("前端代码生成路径不存在");
+        }
+        String apiFilePath = String.format("/api/%s/%s/%s/%s.api", model.getModule(), model.getNamespaceLowerCaseDash(),
+            model.getLowerCaseDash(), model.getBigHump());
+        String dataFilePath = String.format("/views/%s/%s/%s/%s.data", model.getModule(),
+            model.getNamespaceLowerCaseDash(), model.getLowerCaseDash(), model.getBigHump());
+        String indexFilePath = String.format("/views/%s/%s/%s/Index.vue", model.getModule(),
+            model.getNamespaceLowerCaseDash(), model.getLowerCaseDash());
+        String drawerFilePath = String.format("/views/%s/%s/%s/%sDrawer.vue", model.getModule(),
+            model.getNamespaceLowerCaseDash(), model.getLowerCaseDash(), model.getBigHump());
+        String modalFilePath = String.format("/views/%s/%s/%s/%sModal.vue", model.getModule(),
+            model.getNamespaceLowerCaseDash(), model.getLowerCaseDash(), model.getBigHump());
+        final Map<String, Object> paramMap = getParamMap(model);
+        paramMap.put("apiFilePath", apiFilePath);
+        paramMap.put("dataFilePath", dataFilePath);
+        paramMap.put("indexFilePath", indexFilePath);
+        paramMap.put("drawerFilePath", drawerFilePath);
+        paramMap.put("modalFilePath", modalFilePath);
+        String[] tempPaths = {
+            "templates/front/api.ts.ftl",
+            "templates/front/data.ts.ftl",
+            "templates/front/index.vue.ftl",
+            "templates/front/drawer.vue.ftl",
+            "templates/front/modal.vue.ftl",
+        };
+        String[] outputPaths = {
+            frontPath + "/src" + apiFilePath + ".ts", frontPath + "/src" + dataFilePath + ".ts",
+            frontPath + "/src" + indexFilePath, frontPath + "/src" + drawerFilePath,
+            frontPath + "/src" + modalFilePath,
+        };
+
+        List<Item> itemList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            final Item item = new Item();
+            item.setTempPath(tempPaths[i]);
+            item.setOutputPath(outputPaths[i]);
             item.setParamMap(paramMap);
             itemList.add(item);
         }

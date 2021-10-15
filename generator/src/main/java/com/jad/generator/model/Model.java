@@ -63,6 +63,10 @@ public class Model {
         return NamingUtil.toLowerCaseUnderline(name);
     }
 
+    public String getLowerCaseDash() {
+        return NamingUtil.toLowerCaseDash(name);
+    }
+
     public String getNamespaceLowerCaseUnderline() {
         return NamingUtil.toLowerCaseUnderline(this.namespace);
     }

@@ -54,6 +54,7 @@ public interface GeneratorService extends BaseService<Generator> {
      * 生成后端代码
      *
      * @param model model
+     * @return 生成结果
      */
     Result generateBack(Model model, GenerateConfig config);
 
@@ -70,6 +71,17 @@ public interface GeneratorService extends BaseService<Generator> {
      * 生成前端代码
      *
      * @param model model
+     * @param frontPath frontPath
+     * @return 生成结果
      */
-    void generateFront(Model model);
+    Result generateFront(Model model, String frontPath);
+
+    /**
+     * 预览前端代码
+     *
+     * @param model model
+     * @param frontPath frontPath
+     * @return 预览结果
+     */
+    Result viewFront(Model model, String frontPath);
 }

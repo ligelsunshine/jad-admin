@@ -18,7 +18,7 @@ package com.jad.generator.enums;
 
 /**
  * Present
- * 控制字段出现的位置：列表展示、添加表单、编辑表单、查询表单
+ * 控制字段出现的位置：列表展示、添加表单、编辑表单、查询表单、详情页展示
  *
  * @author cxxwl96
  * @since 2021/9/25 22:58
@@ -27,5 +27,6 @@ public enum Present {
     LIST,
     ADD_FORM,
     EDIT_FORM,
-    SEARCH_FORM
+    SEARCH_FORM,
+    DETAIL
 }

@@ -170,7 +170,7 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
     private BigDecimal ${field.smallHump}<#if (field.defaultVal)??> = BigDecimal.valueOf(${field.defaultVal})</#if>;
                 <#break>
             <#case "BOOLEAN">
-    private <#if field.require>Boolean<#else>boolean</#if> ${field.smallHump}<#if (field.defaultVal)??> = ${field.defaultVal?string("true","false")}</#if>;
+    private <#if field.require>Boolean<#else>boolean</#if> ${field.smallHump}<#if field.defaultVal?? && field.defaultVal?length gt 0> = ${field.defaultVal?string("true","false")}</#if>;
                 <#break>
             <#case "DATE">
     private LocalDateTime ${field.smallHump}<#if (field.defaultVal)??> = LocalDateTimeUtil.parse("${field.defaultVal}")</#if>;
