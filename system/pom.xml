@@ -33,12 +33,6 @@
             <artifactId>generator</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <!-- slave -->
-        <dependency>
-            <groupId>com.jad</groupId>
-            <artifactId>slave</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
 
 </project>
