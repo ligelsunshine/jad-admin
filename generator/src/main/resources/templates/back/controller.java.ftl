@@ -93,7 +93,7 @@ public class ${Controller} extends BaseController {
     @GetMapping("/get/{id}")
     public Result get(@PathVariable String id) {
         final ${Entity} ${entity} = ${service}.getById(id);
-        if (${entity}==null){
+        if (${entity} == null){
             return Result.failed("获取数据失败");
         }
         return Result.success(${entity});
