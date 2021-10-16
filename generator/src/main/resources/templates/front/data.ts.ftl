@@ -5,14 +5,12 @@
 <#assign hasDateType=false/>
 <#list model.fieldSchema as field>
     <#if field.type=='DATE'>
-        <#assign hasDateType=true/>
+        <#assign hasDateType=true/>˚
     </#if>
 </#list>
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { DescItem } from '/@/components/Description';
-<#if hasDateType>
 import { formatToDateTime } from '/@/utils/dateUtil';
-</#if>
 
 /**
  * Entity
