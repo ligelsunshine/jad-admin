@@ -14,12 +14,12 @@
   </BasicDrawer>
 </template>
 <script lang="ts">
-    import {computed, defineComponent, ref, unref} from 'vue';
-    import {BasicForm, useForm} from '/@/components/Form/index';
-    import {BasicDrawer, useDrawerInner} from '/@/components/Drawer';
-    import {formSchema, saveApi, updateApi} from '/@';
+  import {computed, defineComponent, ref, unref} from 'vue';
+  import {BasicForm, useForm} from '/@/components/Form/index';
+  import {BasicDrawer, useDrawerInner} from '/@/components/Drawer';
+  import {formSchema, saveApi, updateApi} from '/@';
 
-    export default defineComponent({
+  export default defineComponent({
     name: '${Entity}Drawer',
     components: { BasicDrawer, BasicForm },
     emits: ['success', 'register'],
