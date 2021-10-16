@@ -47,7 +47,7 @@ public class DeptServiceImpl extends TreeServiceImpl<DeptMapper, Dept> implement
         // 若部门编码存在值，且唯一，则校验部门编码是否满足：仅字母、数字和中横线组成
         if (StrUtil.isNotBlank(dept.getCode())) {
             // 是否唯一
-            final int count = super.lambdaQuery()
+            final long count = super.lambdaQuery()
                 .eq(Dept::getCode, dept.getCode())
                 .ne(Dept::getId, dept.getId())
                 .count();

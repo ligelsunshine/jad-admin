@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.3</version>
+            <version>3.4.3.4</version>
         </dependency>
         <!--MybatisPlus 动态数据源-->
         <dependency>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
-            <version>3.4.1</version>
+            <version>3.5.1</version>
         </dependency>
         <!--Alibaba Druid数据库连接池-->
         <dependency>

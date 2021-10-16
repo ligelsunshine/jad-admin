@@ -25,7 +25,7 @@ public class BadRequestException extends RuntimeException {
         this.result = result;
     }
 
-    public BadRequestException(String msg, Object ...obj) {
+    public BadRequestException(String msg, Object... obj) {
         super(String.format(Locale.ROOT, msg, obj));
         final String format = String.format(Locale.ROOT, msg, obj);
         this.result = Result.failed(format);

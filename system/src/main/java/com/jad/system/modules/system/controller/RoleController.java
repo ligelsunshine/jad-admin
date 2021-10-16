@@ -135,7 +135,7 @@ public class RoleController extends BaseController {
             return Result.failed("最少必须分配一个菜单");
         }
         // 先全部删除
-        int count = roleMenuService.lambdaQuery().eq(RoleMenu::getRoleId, dto.getRoleId()).count();
+        long count = roleMenuService.lambdaQuery().eq(RoleMenu::getRoleId, dto.getRoleId()).count();
         if (count > 0) {
             final Map<String, Object> columnMap = new HashMap<>();
             PropertyFunc<RoleMenu, ?> column = RoleMenu::getRoleId;

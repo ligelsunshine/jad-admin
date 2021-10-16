@@ -4,7 +4,6 @@
 
 package com.jad.common.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.jad.common.base.form.SearchForm;
@@ -53,7 +52,7 @@ import cn.hutool.core.util.StrUtil;
  * @since 2021-06-18
  */
 @Service
-@DS("master")
+// @DS("master")
 public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implements UserService {
 
     // yaml中配置的超级管理员ID
@@ -144,7 +143,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         }
         // 分配角色
         // 删除原来分配的角色
-        final Integer count = userRoleService.lambdaQuery().eq(UserRole::getUserId, user.getId()).count();
+        final long count = userRoleService.lambdaQuery().eq(UserRole::getUserId, user.getId()).count();
         if (count > 0) {
             PropertyFunc<UserRole, ?> userIdColumn = UserRole::getUserId;
             final Map<String, Object> map = new HashMap<>();
@@ -400,7 +399,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      * @param isUpdate 是否是更新操作
      */
     private void validate(User user, boolean isUpdate) {
-        int count;
+        long count;
         // 校验账号是否唯一
         if (isUpdate) {
             // 密码加密
