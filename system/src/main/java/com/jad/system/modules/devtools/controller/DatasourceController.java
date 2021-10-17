@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
@@ -95,6 +97,16 @@ public class DatasourceController extends BaseController {
             return Result.failed("获取数据失败");
         }
         return Result.success(datasource);
+    }
+
+    @ApiOperation("获取多个数据源")
+    @GetMapping("/getAll")
+    public Result getAll() {
+        final List<Datasource> list = datasourceService.list();
+        if (list == null) {
+            return Result.failed("获取数据失败");
+        }
+        return Result.success(list);
     }
 
     @ApiOperation("分页获取数据源")

@@ -23,6 +23,7 @@ import com.jad.common.enums.DBType;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -48,8 +49,13 @@ public class Datasource extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "数据库名称")
     private String name;
 
+    @ApiModelProperty(value = "编码")
+    @NotBlank(message = "编码不能为空")
+    private String code;
+
     @ApiModelProperty(value = "类型")
-    private DBType type = DBType.MySQL;
+    @NotNull(message = "类型不能为空")
+    private DBType type;
 
     @ApiModelProperty(value = "URL")
     @NotBlank(message = "URL不能为空")
