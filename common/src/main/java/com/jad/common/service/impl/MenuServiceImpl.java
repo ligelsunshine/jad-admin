@@ -70,6 +70,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         // 菜单实体校验
         validMenu(menu, false);
         final boolean success = super.save(menu);
+        // 清空缓存
+        userService.clearUserAuthorityByMenuId(menu.getId());
         clearUserMenuList();
         clearUserMenuTree();
         return success;
@@ -96,10 +98,13 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         if (CollUtil.isNotEmpty(list)) {
             final List<String> ids = list.stream().map(Menu::getId).collect(Collectors.toList());
             success = super.removeByIds(ids);
+            // 清空缓存
+            for (String menuId : ids) {
+                userService.clearUserAuthorityByMenuId(menuId);
+            }
+            clearUserMenuList();
+            clearUserMenuTree();
         }
-        // 清空缓存
-        clearUserMenuList();
-        clearUserMenuTree();
         return success;
     }
 
@@ -114,6 +119,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         // 菜单实体校验
         validMenu(menu, true);
         final boolean success = super.updateById(menu);
+        // 清空缓存
+        userService.clearUserAuthorityByMenuId(menu.getId());
         clearUserMenuList();
         clearUserMenuTree();
         return success;
@@ -243,7 +250,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
         return menuTree;
     }
-
     /**
      * 清除用户缓存的菜单列表
      */

@@ -340,7 +340,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     public void clearUserAuthorityByUsername(String username) {
+        // 清除授权
         redisUtil.hdel(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, username);
+        // 清除菜单列表
+        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_LIST, username);
+        // 清除菜单树
+        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, username);
     }
 
     /**

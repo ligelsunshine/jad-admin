@@ -6,10 +6,8 @@ package com.jad.system.modules.system.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;
-import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.RoleMenu;
-import com.jad.common.entity.User;
 import com.jad.common.enums.Status;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.function.PropertyFunc;
@@ -163,10 +161,7 @@ public class RoleController extends BaseController {
         if (!roleMenuService.saveBatch(roleMenus)) {
             throw new BadRequestException("操作失败");
         }
-        // 移除Redis缓存的用户菜单树和用户菜单列表
-        final User curUser = userService.getCurrentAuthUser();
-        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername());
-        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername());
+        userService.clearUserAuthorityByRoleId(dto.getRoleId());
         return Result.success("操作成功");
     }
 

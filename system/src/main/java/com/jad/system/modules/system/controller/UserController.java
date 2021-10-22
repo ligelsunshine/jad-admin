@@ -13,6 +13,7 @@ import com.jad.common.service.UserService;
 import com.jad.system.modules.system.vo.UserVo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +47,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("添加用户")
     @PostMapping("/save")
+    @PreAuthorize("@auth.hasAuthority('sys:user:save')")
     @Transactional
     public Result save(@RequestBody @Valid User user) {
         userService.save(user);
@@ -54,6 +56,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("删除用户")
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("@auth.hasAuthority('sys:user:delete')")
     @Transactional
     public Result delete(@PathVariable String id) {
         userService.removeById(id);
@@ -62,6 +65,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("修改用户")
     @PutMapping("/update")
+    @PreAuthorize("@auth.hasAuthority('sys:user:update')")
     @Transactional
     public Result update(@RequestBody @Valid User user) {
         userService.update(user);
@@ -70,12 +74,14 @@ public class UserController extends BaseController {
 
     @ApiOperation("获取单个用户")
     @GetMapping("/get/{id}")
+    @PreAuthorize("@auth.hasAuthority('sys:user:get')")
     public Result get(@PathVariable String id) {
         return Result.success(userService.getById(id));
     }
 
     @ApiOperation("分页获取用户")
     @PostMapping("/get/page")
+    @PreAuthorize("hasAuthority('sys:user:get:page')")
     public Result getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", userService.getPageList(searchForm));
     }

@@ -8,6 +8,7 @@ import com.jad.common.base.controller.BaseController;
 import com.jad.common.entity.Menu;
 import com.jad.common.lang.Result;
 import com.jad.common.service.MenuService;
+import com.jad.common.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +41,8 @@ public class MenuController extends BaseController {
 
     @Autowired
     private MenuService menuService;
+    @Autowired
+    private UserService userService;
 
     @ApiOperation("添加菜单权限")
     @PostMapping("/save")
