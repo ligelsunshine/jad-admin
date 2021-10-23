@@ -13,7 +13,6 @@ import com.jad.common.exception.BadRequestException;
 import com.jad.common.function.PropertyFunc;
 import com.jad.common.lang.Result;
 import com.jad.common.lang.SearchResult;
-import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
 import com.jad.common.service.RoleService;
 import com.jad.common.service.UserService;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import cn.hutool.core.collection.CollUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -58,9 +56,6 @@ public class RoleController extends BaseController {
 
     @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private MenuService menuService;
 
     @Autowired
     private RoleMenuService roleMenuService;
@@ -123,21 +118,19 @@ public class RoleController extends BaseController {
     @ApiOperation("获取角色菜单ID")
     @GetMapping("/getRoleMenuIds")
     public Result getRoleMenuIds(@RequestParam String roleId) {
-        final List<String> halfChecked = getRoleMenuIds(roleId, true);
-        final List<String> checked = getRoleMenuIds(roleId, false);
-        final HashMap<String, List<String>> result = new HashMap<>();
-        result.put("halfChecked", halfChecked);
-        result.put("checked", checked);
-        return Result.success(result);
+        final List<String> menuIds = roleMenuService.lambdaQuery()
+            .eq(RoleMenu::getRoleId, roleId)
+            .list()
+            .stream()
+            .map(RoleMenu::getMenuId)
+            .collect(Collectors.toList());
+        return Result.success(menuIds);
     }
 
     @ApiOperation("分配权限")
     @PutMapping("/assignPermissions")
     @Transactional
     public Result assignPermissions(@RequestBody @Valid AssignPermissionsDto dto) {
-        if (CollUtil.isEmpty(dto.getRoleMenus())) {
-            return Result.failed("最少必须分配一个菜单");
-        }
         // 先全部删除
         long count = roleMenuService.lambdaQuery().eq(RoleMenu::getRoleId, dto.getRoleId()).count();
         if (count > 0) {
@@ -151,11 +144,10 @@ public class RoleController extends BaseController {
 
         // 再添加
         final List<RoleMenu> roleMenus = new ArrayList<>();
-        dto.getRoleMenus().forEach(item -> {
+        dto.getMenuIds().forEach(item -> {
             final RoleMenu roleMenu = new RoleMenu();
             roleMenu.setRoleId(dto.getRoleId());
-            roleMenu.setMenuId(item.getMenuId());
-            roleMenu.setHalfChecked(item.isHalfChecked());
+            roleMenu.setMenuId(item);
             roleMenus.add(roleMenu);
         });
         if (!roleMenuService.saveBatch(roleMenus)) {
@@ -163,15 +155,5 @@ public class RoleController extends BaseController {
         }
         userService.clearUserAuthorityByRoleId(dto.getRoleId());
         return Result.success("操作成功");
-    }
-
-    private List<String> getRoleMenuIds(String roleId, boolean isHalfChecked) {
-        return roleMenuService.lambdaQuery()
-            .eq(RoleMenu::getRoleId, roleId)
-            .eq(RoleMenu::isHalfChecked, isHalfChecked)
-            .list()
-            .stream()
-            .map(RoleMenu::getMenuId)
-            .collect(Collectors.toList());
     }
 }

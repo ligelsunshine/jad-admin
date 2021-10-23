@@ -28,6 +28,7 @@ import com.jad.common.utils.ValidatorUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +86,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @return 是否删除成功
      */
     @Override
+    @Transactional
     public boolean removeTree(String id, boolean includeSelf) {
         boolean success = false;
         List<Menu> list;
@@ -104,6 +106,12 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             }
             clearUserMenuList();
             clearUserMenuTree();
+            // 删除用户菜单
+            final List<RoleMenu> roleMenuIds = roleMenuService.lambdaQuery()
+                .in(RoleMenu::getMenuId, ids)
+                .select(RoleMenu::getId)
+                .list();
+            roleMenuService.removeByIds(roleMenuIds);
         }
         return success;
     }

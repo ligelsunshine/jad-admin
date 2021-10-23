@@ -34,7 +34,4 @@ public class RoleMenu extends BaseEntity {
     @ApiModelProperty(value = "菜单ID")
     private String menuId;
 
-    @ApiModelProperty(value = "未全选")
-    private boolean halfChecked = false;
-
 }
