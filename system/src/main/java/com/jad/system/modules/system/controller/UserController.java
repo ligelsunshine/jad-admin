@@ -81,7 +81,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("分页获取用户")
     @PostMapping("/get/page")
-    @PreAuthorize("hasAuthority('sys:user:get:page')")
+    @PreAuthorize("@auth.hasAuthority('sys:user:get:page')")
     public Result getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", userService.getPageList(searchForm));
     }

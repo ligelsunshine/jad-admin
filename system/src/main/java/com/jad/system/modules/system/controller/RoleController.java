@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -116,15 +115,20 @@ public class RoleController extends BaseController {
     }
 
     @ApiOperation("获取角色菜单ID")
-    @GetMapping("/getRoleMenuIds")
-    public Result getRoleMenuIds(@RequestParam String roleId) {
-        final List<String> menuIds = roleMenuService.lambdaQuery()
+    @GetMapping("/getRoleMenuItems")
+    public Result getRoleMenuItems(@RequestParam String roleId) {
+        final List<RoleMenu> roleMenus = roleMenuService.lambdaQuery()
             .eq(RoleMenu::getRoleId, roleId)
-            .list()
-            .stream()
-            .map(RoleMenu::getMenuId)
-            .collect(Collectors.toList());
-        return Result.success(menuIds);
+            .eq(RoleMenu::isLeaf, true)
+            .list();
+        List<AssignPermissionsDto.MenuItem> menuItems = new ArrayList<>();
+        roleMenus.forEach(roleMenu -> {
+            final AssignPermissionsDto.MenuItem menuItem = new AssignPermissionsDto.MenuItem();
+            menuItem.setMenuId(roleMenu.getMenuId());
+            menuItem.setLeaf(roleMenu.isLeaf());
+            menuItems.add(menuItem);
+        });
+        return Result.success(menuItems);
     }
 
     @ApiOperation("分配权限")
@@ -144,10 +148,11 @@ public class RoleController extends BaseController {
 
         // 再添加
         final List<RoleMenu> roleMenus = new ArrayList<>();
-        dto.getMenuIds().forEach(item -> {
+        dto.getMenuItems().forEach(item -> {
             final RoleMenu roleMenu = new RoleMenu();
             roleMenu.setRoleId(dto.getRoleId());
-            roleMenu.setMenuId(item);
+            roleMenu.setMenuId(item.getMenuId());
+            roleMenu.setLeaf(item.isLeaf());
             roleMenus.add(roleMenu);
         });
         if (!roleMenuService.saveBatch(roleMenus)) {

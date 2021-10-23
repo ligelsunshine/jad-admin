@@ -34,4 +34,6 @@ public class RoleMenu extends BaseEntity {
     @ApiModelProperty(value = "菜单ID")
     private String menuId;
 
+    private boolean leaf = false;
+
 }
