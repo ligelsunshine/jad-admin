@@ -117,10 +117,7 @@ public class RoleController extends BaseController {
     @ApiOperation("获取角色菜单ID")
     @GetMapping("/getRoleMenuItems")
     public Result getRoleMenuItems(@RequestParam String roleId) {
-        final List<RoleMenu> roleMenus = roleMenuService.lambdaQuery()
-            .eq(RoleMenu::getRoleId, roleId)
-            .eq(RoleMenu::isLeaf, true)
-            .list();
+        final List<RoleMenu> roleMenus = roleMenuService.lambdaQuery().eq(RoleMenu::getRoleId, roleId).list();
         List<AssignPermissionsDto.MenuItem> menuItems = new ArrayList<>();
         roleMenus.forEach(roleMenu -> {
             final AssignPermissionsDto.MenuItem menuItem = new AssignPermissionsDto.MenuItem();
