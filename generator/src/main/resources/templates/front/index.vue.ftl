@@ -70,13 +70,14 @@
   import {DownOutlined} from '@ant-design/icons-vue';
   import {useMessage} from '/@/hooks/web/useMessage';
 
-  import {columns, deleteApi, deleteArrApi, getPageApi, searchFormSchema} from '/@';
+  import ${Entity}Drawer from '/@';
+  import ${Entity}Modal, {columns, deleteApi, deleteArrApi, getPageApi, searchFormSchema} from '/@';
 
   export default defineComponent({
     name: 'Index',
     components: {
-      ${Entity}Modal,
       ${Entity}Drawer,
+      ${Entity}Modal,
       PopConfirmButton,
       Icon,
       BasicTable,

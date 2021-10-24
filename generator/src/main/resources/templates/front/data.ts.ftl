@@ -5,7 +5,7 @@
 <#assign hasDateType=false/>
 <#list model.fieldSchema as field>
     <#if field.type=='DATE'>
-        <#assign hasDateType=true/>˚
+        <#assign hasDateType=true/>
     </#if>
 </#list>
 import { BasicColumn, FormSchema } from '/@/components/Table';
@@ -104,6 +104,12 @@ export const columns: BasicColumn[] = [
     </#if>
   </#list>
 </#list>
+  {
+    dataIndex: 'createTime',
+    title: '创建时间',
+    width: '200px',
+    customRender: ({ record }) => (record.createTime ? formatToDateTime(record.createTime) : ''),
+  },
 ];
 
 /**
@@ -436,6 +442,9 @@ export const formSchema: FormSchema[] = [
           <#case 'Switch'>
             <#if field.type == 'BOOLEAN'>
     component: 'Switch',
+                <#if field.require>
+    defaultValue: false,
+                </#if>
             <#else>
     component: 'Input',
             </#if>
