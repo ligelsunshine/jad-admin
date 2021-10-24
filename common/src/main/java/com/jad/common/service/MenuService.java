@@ -53,14 +53,6 @@ public interface MenuService extends IService<Menu> {
     List<Menu> getUserMenuList(String userId);
 
     /**
-     * 获取角色菜单权限列表
-     *
-     * @param roleId 角色ID
-     * @return 用户菜单权限
-     */
-    List<Menu> getRoleMenuList(String roleId);
-
-    /**
      * 获取当前登录用户菜单权限列表
      *
      * @return 用户菜单权限

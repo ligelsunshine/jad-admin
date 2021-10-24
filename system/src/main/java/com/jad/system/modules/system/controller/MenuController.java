@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -90,11 +89,5 @@ public class MenuController extends BaseController {
     public Result getUserMenuTree() {
         List<Menu> menus = menuService.getUserMenuTree();
         return Result.success(menus);
-    }
-
-    @ApiOperation("获取角色菜单权限")
-    @GetMapping("/getRoleMenuList")
-    public Result getRoleMenuList(@RequestParam String id) {
-        return Result.success(menuService.getRoleMenuList(id));
     }
 }

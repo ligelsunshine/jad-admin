@@ -170,29 +170,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     /**
-     * 获取角色菜单权限列表
-     *
-     * @param roleId 角色ID
-     * @return 用户菜单权限
-     */
-    @Override
-    public List<Menu> getRoleMenuList(String roleId) {
-        List<Menu> menus = new ArrayList<>();
-        // 获取菜单id
-        final List<String> menuIds = roleMenuService.lambdaQuery()
-            .eq(RoleMenu::getRoleId, roleId)
-            .list()
-            .stream()
-            .map(RoleMenu::getMenuId)
-            .collect(Collectors.toList());
-        if (menuIds.size() == 0) {
-            return menus;
-        }
-        // 获取菜单
-        return this.lambdaQuery().in(Menu::getId, menuIds).list();
-    }
-
-    /**
      * 获取当前登录用户菜单权限列表
      *
      * @return 用户菜单权限
