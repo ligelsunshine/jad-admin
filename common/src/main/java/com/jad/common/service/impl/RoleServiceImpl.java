@@ -130,7 +130,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             if (maxLevelRole != null) {
                 // 添加level <= maxLevel 条件
                 searchForm.addWhereItem(
-                    new WhereItem().whereItem(Role::getLevel, Condition.LE, maxLevelRole.getLevel()));
+                    new WhereItem().whereItem(Role::getLevel, Condition.LT, maxLevelRole.getLevel()));
                 return super.getPageList(searchForm);
             } else {
                 throw new BadRequestException("您的账号还未分配角色");
