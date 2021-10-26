@@ -26,4 +26,10 @@ public class RedisConst {
 
     // Redis中存放用户菜单树
     public static final String SYSTEM_USER_MENU_TREE = "system-user-menu-tree";
+
+    // Redis中存放角色
+    public static final String SYSTEM_ROLE = "system-role";
+
+    // Redis中存放超级管理员角色
+    public static final String SYSTEM_ROLE_ADMINISTRATOR = "administrator";
 }

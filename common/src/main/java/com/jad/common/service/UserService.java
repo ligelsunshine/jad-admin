@@ -98,6 +98,13 @@ public interface UserService extends BaseService<User> {
     User getCurrentAuthUser();
 
     /**
+     * 获取超级管理员角色
+     *
+     * @return 是否拥有超级管理员身份
+     */
+    Role getAdministrator();
+
+    /**
      * 是否拥有超级管理员身份
      *
      * @return 是否拥有超级管理员身份

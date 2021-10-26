@@ -10,6 +10,7 @@ import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.Result;
 import com.jad.common.service.UserService;
+import com.jad.system.modules.system.vo.PermCodeVo;
 import com.jad.system.modules.system.vo.UserVo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -103,7 +106,10 @@ public class UserController extends BaseController {
     public Result getPermCode() {
         final User user = userService.getCurrentAuthUser();
         final String userAuthority = userService.getUserAuthority(user.getId());
-        final String[] permCode = userAuthority.split(",");
-        return Result.success(permCode);
+        final String[] codes = userAuthority.split(",");
+        PermCodeVo permCodeVo = new PermCodeVo();
+        permCodeVo.setSuperRole("ROLE_" + userService.getAdministrator().getCode());
+        permCodeVo.setCodeList(Arrays.stream(codes).collect(Collectors.toList()));
+        return Result.success(permCodeVo);
     }
 }

@@ -4,6 +4,8 @@
 
 package com.jad.common.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.jad.common.base.form.SearchForm;
@@ -40,7 +42,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.util.StrUtil;
@@ -317,20 +318,38 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
+     * 获取超级管理员角色
+     *
+     * @return 是否拥有超级管理员身份
+     */
+    @Override
+    public Role getAdministrator() {
+        if (redisUtil.hHasKey(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR)) {
+            final String json = (String) redisUtil.hget(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR);
+            return JSONObject.parseObject(json, Role.class);
+        }
+        final Role administrator = roleService.getById(administratorId);
+        redisUtil.hset(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR, JSON.toJSONString(administrator));
+        return administrator;
+    }
+
+    /**
      * 是否拥有超级管理员身份
      *
      * @return 是否拥有超级管理员身份
      */
     @Override
     public boolean hasAdministrator() {
-        // 当前登录用户
-        final User user = this.getCurrentAuthUser();
-        // 过滤是否拥有超级管理员身份
-        final Optional<Role> administrator = this.getRoles(user.getId())
-            .stream()
-            .filter(role -> role.getId().equalsIgnoreCase(administratorId))
-            .findFirst();
-        return administrator.isPresent();
+        final Role administrator = getAdministrator();
+        final User authUser = getCurrentAuthUser();
+        final String authority = getUserAuthority(authUser.getId());
+        final String[] permCode = authority.split(",");
+        for (String perm : permCode) {
+            if (perm.equals("ROLE_" + administrator.getCode())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
