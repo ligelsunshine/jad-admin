@@ -176,6 +176,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @Override
     public User getById(String id) {
         final User user = super.getById(id);
+        if (user == null) {
+            throw new BadRequestException("获取用户信息失败");
+        }
         final List<Role> roles = this.getRoles(user.getId());
         final Dept dept = deptService.getById(user.getDeptId());
         user.setRoles(roles);
