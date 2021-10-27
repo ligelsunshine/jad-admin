@@ -92,7 +92,9 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
                 }
             }
         }
-        list = list.stream().sorted().collect(Collectors.toList());
+        if (StrUtil.isNotBlank(path) && FileUtil.exist(path) && FileUtil.isDirectory(path)) {
+            list = list.stream().sorted().collect(Collectors.toList());
+        }
         list.forEach(item -> {
             Map<String, String> mapResult = new HashMap<>();
             String name = FileUtil.getName(item);
@@ -390,16 +392,12 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
         paramMap.put("drawerFilePath", drawerFilePath);
         paramMap.put("modalFilePath", modalFilePath);
         String[] tempPaths = {
-            "templates/front/api.ts.ftl",
-            "templates/front/data.ts.ftl",
-            "templates/front/index.vue.ftl",
-            "templates/front/drawer.vue.ftl",
-            "templates/front/modal.vue.ftl",
+            "templates/front/api.ts.ftl", "templates/front/data.ts.ftl", "templates/front/index.vue.ftl",
+            "templates/front/drawer.vue.ftl", "templates/front/modal.vue.ftl",
         };
         String[] outputPaths = {
             frontPath + "/src" + apiFilePath + ".ts", frontPath + "/src" + dataFilePath + ".ts",
-            frontPath + "/src" + indexFilePath, frontPath + "/src" + drawerFilePath,
-            frontPath + "/src" + modalFilePath,
+            frontPath + "/src" + indexFilePath, frontPath + "/src" + drawerFilePath, frontPath + "/src" + modalFilePath,
         };
 
         List<Item> itemList = new ArrayList<>();
