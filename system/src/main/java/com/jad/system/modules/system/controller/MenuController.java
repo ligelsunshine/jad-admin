@@ -8,9 +8,9 @@ import com.jad.common.base.controller.BaseController;
 import com.jad.common.entity.Menu;
 import com.jad.common.lang.Result;
 import com.jad.common.service.MenuService;
-import com.jad.common.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,11 +40,10 @@ public class MenuController extends BaseController {
 
     @Autowired
     private MenuService menuService;
-    @Autowired
-    private UserService userService;
 
     @ApiOperation("添加菜单权限")
     @PostMapping("/save")
+    @PreAuthorize("@auth.hasAuthority('sys:menu:save')")
     public Result save(@RequestBody @Valid Menu menu) {
         if (menuService.save(menu)) {
             return Result.success("添加成功");
@@ -54,6 +53,7 @@ public class MenuController extends BaseController {
 
     @ApiOperation("删除菜单权限")
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("@auth.hasAuthority('sys:menu:delete')")
     public Result delete(@PathVariable String id, boolean includeSelf) {
         if (menuService.removeTree(id, includeSelf)) {
             return Result.success("删除成功");
@@ -63,6 +63,7 @@ public class MenuController extends BaseController {
 
     @ApiOperation("修改菜单权限")
     @PutMapping("/update")
+    @PreAuthorize("@auth.hasAuthority('sys:menu:update')")
     public Result update(@RequestBody @Valid Menu menu) {
         if (menuService.updateById(menu)) {
             return Result.success("修改成功");
@@ -72,6 +73,7 @@ public class MenuController extends BaseController {
 
     @ApiOperation("获取单个菜单权限")
     @GetMapping("/get/{id}")
+    @PreAuthorize("@auth.hasAuthority('sys:menu:get')")
     public Result get(@PathVariable String id) {
         final Menu menu = menuService.getById(id);
         return Result.success(menu);

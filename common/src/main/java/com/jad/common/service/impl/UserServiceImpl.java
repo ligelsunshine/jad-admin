@@ -39,9 +39,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.util.StrUtil;
@@ -89,7 +91,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     public boolean save(User user) {
-        // 校验k
+        // 校验
         validate(user, false);
         // 添加用户
         if (!super.save(user)) {
@@ -117,6 +119,16 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     public boolean removeById(String id) {
+        // 不能删除超级管理员
+        if (hasAdministrator(id)) {
+            throw new BadRequestException("不能删除超级管理员");
+        }
+        // 清空缓存的用户
+        final User user = super.getById(id);
+        if (user != null) {
+            clearUserAuthorityByUsername(user.getUsername());
+        }
+        // 删除
         PropertyFunc<UserRole, ?> userIdColumn = UserRole::getUserId;
         final Map<String, Object> map = new HashMap<>();
         map.put(userIdColumn.getColumnName(), id);
@@ -164,6 +176,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         if (!userRoleService.saveBatch(userRoles)) {
             throw new BadRequestException("分配角色失败");
         }
+        // 清空缓存的用户
+        clearUserAuthorityByUsername(user.getUsername());
         return true;
     }
 
@@ -347,12 +361,27 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         final User authUser = getCurrentAuthUser();
         final String authority = getUserAuthority(authUser.getId());
         final String[] permCode = authority.split(",");
-        for (String perm : permCode) {
-            if (perm.equals("ROLE_" + administrator.getCode())) {
-                return true;
-            }
-        }
-        return false;
+        final Optional<String> first = Arrays.stream(permCode)
+            .filter((perm) -> ("ROLE_" + administrator.getCode()).equals(perm))
+            .findFirst();
+        return first.isPresent();
+    }
+
+    /**
+     * 是否拥有超级管理员身份
+     *
+     * @param userId 用户ID
+     * @return 是否拥有超级管理员身份
+     */
+    @Override
+    public boolean hasAdministrator(String userId) {
+        final Role administrator = getAdministrator();
+        final String authority = getUserAuthority(userId);
+        final String[] permCode = authority.split(",");
+        final Optional<String> first = Arrays.stream(permCode)
+            .filter((perm) -> ("ROLE_" + administrator.getCode()).equals(perm))
+            .findFirst();
+        return first.isPresent();
     }
 
     /**

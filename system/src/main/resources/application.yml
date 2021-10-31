@@ -71,7 +71,7 @@ jad:
     secret: cxxwl96 # jwt秘钥
     header: Authorization
   security:
-    url-white-list: /auth/captcha/generator,/test/**,/cxx,/devtools/generator/**,/slave/**
+    url-white-list: /auth/captcha/generator,/test/**
   system:
     auth-config:
       captcha-timeout: 120 # 验证码过期时间（单位：s）

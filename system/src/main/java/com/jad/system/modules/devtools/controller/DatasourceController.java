@@ -24,6 +24,7 @@ import com.jad.common.lang.Result;
 import com.jad.common.service.DatasourceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +56,7 @@ public class DatasourceController extends BaseController {
 
     @ApiOperation("添加数据源")
     @PostMapping("/save")
+    @PreAuthorize("@auth.hasAuthority('sys:datasource:save')")
     public Result save(@RequestBody @Valid Datasource datasource) {
         if (!datasourceService.save(datasource)) {
             return Result.failed("添加失败");
@@ -64,6 +66,7 @@ public class DatasourceController extends BaseController {
 
     @ApiOperation("删除数据源")
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("@auth.hasAuthority('sys:datasource:delete')")
     public Result delete(@PathVariable String id) {
         if (!datasourceService.removeById(id)) {
             return Result.failed("删除失败");
@@ -73,6 +76,7 @@ public class DatasourceController extends BaseController {
 
     @ApiOperation("删除多个数据源")
     @DeleteMapping("/deleteArr")
+    @PreAuthorize("@auth.hasAuthority('sys:datasource:deleteArr')")
     public Result deleteArr(@RequestBody @Valid IDs ids) {
         if (!datasourceService.removeByIds(ids.getIds())) {
             return Result.failed("删除失败");
@@ -82,6 +86,7 @@ public class DatasourceController extends BaseController {
 
     @ApiOperation("修改数据源")
     @PutMapping("/update")
+    @PreAuthorize("@auth.hasAuthority('sys:datasource:update')")
     public Result update(@RequestBody @Valid Datasource datasource) {
         if (!datasourceService.updateById(datasource)) {
             return Result.failed("修改失败");
@@ -91,6 +96,7 @@ public class DatasourceController extends BaseController {
 
     @ApiOperation("获取单个数据源")
     @GetMapping("/get/{id}")
+    @PreAuthorize("@auth.hasAuthority('sys:datasource:get')")
     public Result get(@PathVariable String id) {
         final Datasource datasource = datasourceService.getById(id);
         if (datasource == null) {
@@ -99,8 +105,9 @@ public class DatasourceController extends BaseController {
         return Result.success(datasource);
     }
 
-    @ApiOperation("获取多个数据源")
+    @ApiOperation("获取所有数据源")
     @GetMapping("/getAll")
+    @PreAuthorize("@auth.hasAuthority('sys:datasource:getAll')")
     public Result getAll() {
         final List<Datasource> list = datasourceService.list();
         if (list == null) {
@@ -111,6 +118,7 @@ public class DatasourceController extends BaseController {
 
     @ApiOperation("分页获取数据源")
     @PostMapping("/get/page")
+    @PreAuthorize("@auth.hasAuthority('sys:datasource:get:page')")
     public Result getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", datasourceService.getPageList(searchForm));
     }

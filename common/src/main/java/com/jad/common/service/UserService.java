@@ -112,6 +112,14 @@ public interface UserService extends BaseService<User> {
     boolean hasAdministrator();
 
     /**
+     * 是否拥有超级管理员身份
+     *
+     * @param userId 用户ID
+     * @return 是否拥有超级管理员身份
+     */
+    boolean hasAdministrator(String userId);
+
+    /**
      * 清除用户授权信息
      *
      * @param username 用户名

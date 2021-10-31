@@ -6,6 +6,7 @@ import com.jad.common.lang.Result;
 import com.jad.common.service.DeptService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class DeptController extends BaseController {
 
     @ApiOperation("添加部门")
     @PostMapping("/save")
+    @PreAuthorize("@auth.hasAuthority('sys:dept:save')")
     public Result save(@RequestBody @Valid Dept dept) {
         if (deptService.save(dept)) {
             return Result.success("添加成功");
@@ -46,6 +48,7 @@ public class DeptController extends BaseController {
 
     @ApiOperation("删除部门")
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("@auth.hasAuthority('sys:dept:delete')")
     public Result delete(@PathVariable String id, boolean includeSelf) {
         if (deptService.removeTree(id, includeSelf)) {
             return Result.success("删除成功");
@@ -55,6 +58,7 @@ public class DeptController extends BaseController {
 
     @ApiOperation("修改部门")
     @PutMapping("/update")
+    @PreAuthorize("@auth.hasAuthority('sys:dept:update')")
     public Result update(@RequestBody @Valid Dept dept) {
         if (deptService.updateById(dept)) {
             return Result.success("修改成功");
@@ -64,6 +68,7 @@ public class DeptController extends BaseController {
 
     @ApiOperation("获取部门")
     @GetMapping("/get/{id}")
+        @PreAuthorize("@auth.hasAuthority('sys:dept:get')")
     public Result get(@PathVariable String id) {
         final Dept dept = deptService.getById(id);
         return Result.success(dept);
@@ -71,6 +76,7 @@ public class DeptController extends BaseController {
 
     @ApiOperation("获取部门树")
     @GetMapping("/getDeptTree")
+    @PreAuthorize("@auth.hasAuthority('sys:dept:getDeptTree')")
     public Result getDeptTree() {
         List<Dept> deptTree = deptService.getRootTree();
         return Result.success(deptTree);
