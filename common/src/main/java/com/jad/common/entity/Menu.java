@@ -6,11 +6,11 @@ import com.jad.common.enums.MenuType;
 import com.jad.common.enums.Status;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import cn.hutool.core.util.IdUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -46,7 +46,7 @@ public class Menu extends TreeNode<Menu> implements Serializable {
     private String path;
 
     @ApiModelProperty(value = "路由名称")
-    private String name = UUID.randomUUID().toString().replace("-", "");
+    private String name = IdUtil.getSnowflake().nextIdStr();
 
     @ApiModelProperty(value = "前端组件URL")
     @NotBlank(message = "组件路径不能为空", groups = {MenuValidGroup.class})
