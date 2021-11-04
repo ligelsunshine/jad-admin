@@ -24,6 +24,7 @@ public class AssignPermissionsDto {
     @Data
     public static class MenuItem {
         private String menuId;
+
         private boolean leaf;
     }
 

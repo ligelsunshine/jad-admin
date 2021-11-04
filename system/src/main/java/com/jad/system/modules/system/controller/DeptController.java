@@ -68,7 +68,7 @@ public class DeptController extends BaseController {
 
     @ApiOperation("获取部门")
     @GetMapping("/get/{id}")
-        @PreAuthorize("@auth.hasAuthority('sys:dept:get')")
+    @PreAuthorize("@auth.hasAuthority('sys:dept:get')")
     public Result get(@PathVariable String id) {
         final Dept dept = deptService.getById(id);
         return Result.success(dept);
