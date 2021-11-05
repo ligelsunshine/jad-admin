@@ -59,19 +59,21 @@
   </div>
 </template>
 <script lang="ts">
-  import {defineComponent, ref} from 'vue';
-  import {BasicTable, beforeFetchFun, TableAction, useTable} from '/@/components/Table';
-  import {ExpExcelModal, ExportModalResult, jsonToSheetXlsx} from '/@/components/Excel';
-  import {PopConfirmButton} from '/@/components/Button';
-  import {useDrawer} from '/@/components/Drawer';
-  import {useModal} from '/@/components/Modal';
+  import { defineComponent, ref } from 'vue';
+  import { BasicTable, beforeFetchFun, TableAction, useTable } from '/@/components/Table';
+  import { ExpExcelModal, ExportModalResult, jsonToSheetXlsx } from '/@/components/Excel';
+  import { PopConfirmButton } from '/@/components/Button';
+  import { useDrawer } from '/@/components/Drawer';
+  import { useModal } from '/@/components/Modal';
   import Icon from '/@/components/Icon';
-  import {Dropdown, Menu, MenuItem} from 'ant-design-vue';
-  import {DownOutlined} from '@ant-design/icons-vue';
-  import {useMessage} from '/@/hooks/web/useMessage';
+  import { Dropdown, Menu, MenuItem } from 'ant-design-vue';
+  import { DownOutlined } from '@ant-design/icons-vue';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
-  import ${Entity}Drawer from '/@';
-  import ${Entity}Modal, {columns, deleteApi, deleteArrApi, getPageApi, searchFormSchema} from '/@';
+  import { deleteApi, deleteArrApi, getPageApi } from '/@${apiFilePath}';
+  import { columns, searchFormSchema } from '/@${dataFilePath}';
+  import ${Entity}Drawer from '/@${drawerFilePath}';
+  import ${Entity}Modal from '/@${modalFilePath}';
 
   export default defineComponent({
     name: 'Index',

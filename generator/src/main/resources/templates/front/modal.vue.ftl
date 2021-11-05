@@ -7,11 +7,12 @@
   </BasicModal>
 </template>
 <script lang="ts">
-  import {defineComponent, ref} from 'vue';
-  import {BasicModal, useModalInner} from '/@/components/Modal';
-  import {Description} from '/@/components/Description';
+  import { defineComponent, ref } from 'vue';
+  import { BasicModal, useModalInner } from '/@/components/Modal';
+  import { Description } from '/@/components/Description';
 
-  import {descSchema, getApi} from '/@';
+  import { getApi } from '/@${apiFilePath}';
+  import { descSchema, ${Entity} } from '/@${dataFilePath}';
 
   export default defineComponent({
     name: '${Entity}Modal',
