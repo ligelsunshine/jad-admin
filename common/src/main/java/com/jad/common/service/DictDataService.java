@@ -19,6 +19,8 @@ package com.jad.common.service;
 import com.jad.common.base.service.BaseService;
 import com.jad.common.entity.DictData;
 
+import java.io.Serializable;
+
 /**
  * 字典数据服务接口类
  *
@@ -26,5 +28,27 @@ import com.jad.common.entity.DictData;
  * @since 2021/11/05 21:07
  */
 public interface DictDataService extends BaseService<DictData> {
+    /**
+     * 添加
+     *
+     * @param entity entity
+     * @return 是否添加成功
+     */
+    boolean save(DictData entity);
 
+    /**
+     * 删除
+     *
+     * @param id ID
+     * @return 是否删除成功
+     */
+    boolean removeById(Serializable id);
+
+    /**
+     * 修改
+     *
+     * @param entity entity
+     * @return 是否修改成功
+     */
+    boolean updateById(DictData entity);
 }

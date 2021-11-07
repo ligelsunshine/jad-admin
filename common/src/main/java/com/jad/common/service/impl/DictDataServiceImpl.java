@@ -17,11 +17,19 @@
 package com.jad.common.service.impl;
 
 import com.jad.common.base.service.impl.BaseServiceImpl;
+import com.jad.common.constant.RedisConst;
+import com.jad.common.entity.Dict;
 import com.jad.common.entity.DictData;
+import com.jad.common.exception.BadRequestException;
 import com.jad.common.mapper.DictDataMapper;
 import com.jad.common.service.DictDataService;
+import com.jad.common.service.DictService;
+import com.jad.common.utils.RedisUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
 
 /**
  * 字典数据服务实现类
@@ -31,5 +39,61 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DictDataServiceImpl extends BaseServiceImpl<DictDataMapper, DictData> implements DictDataService {
+    @Autowired
+    private DictService dictService;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
+    /**
+     * 添加
+     *
+     * @param entity entity
+     * @return 是否添加成功
+     */
+    @Override
+    public boolean save(DictData entity) {
+        if (!super.save(entity)) {
+            throw new BadRequestException("添加字典数据失败");
+        }
+        final Dict dict = dictService.getById(entity.getDictId());
+        // 清空缓存
+        redisUtil.hdel(RedisConst.SYSTEM_DICT, dict.getCode());
+        return true;
+    }
+
+    /**
+     * 删除
+     *
+     * @param id ID
+     * @return 是否删除成功
+     */
+    @Override
+    public boolean removeById(Serializable id) {
+        final DictData dictData = getById(id);
+        if (!super.removeById(id)) {
+            throw new BadRequestException("删除字典数据失败");
+        }
+        final Dict dict = dictService.getById(dictData.getDictId());
+        // 清空缓存
+        redisUtil.hdel(RedisConst.SYSTEM_DICT, dict.getCode());
+        return true;
+    }
+
+    /**
+     * 修改
+     *
+     * @param entity entity
+     * @return 是否修改成功
+     */
+    @Override
+    public boolean updateById(DictData entity) {
+        if (!super.updateById(entity)) {
+            throw new BadRequestException("修改字典数据失败");
+        }
+        final Dict dict = dictService.getById(entity.getDictId());
+        // 清空缓存
+        redisUtil.hdel(RedisConst.SYSTEM_DICT, dict.getCode());
+        return true;
+    }
 }
