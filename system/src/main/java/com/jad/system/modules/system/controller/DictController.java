@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.jad.system.modules.devtools.controller;
+package com.jad.system.modules.system.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;
-import com.jad.common.entity.Datasource;
+import com.jad.common.entity.Dict;
 import com.jad.common.lang.IDs;
 import com.jad.common.lang.Result;
-import com.jad.common.service.DatasourceService;
+import com.jad.common.service.DictService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,92 +34,74 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 数据源相关接口
+ * 字典相关接口
  *
  * @author cxxwl96
- * @since 2021/10/17 00:13
+ * @since 2021/11/05 21:07
  */
-@Api(tags = "数据源相关接口")
+@Api(tags = "系统管理 - 字典相关接口")
 @RestController
-@RequestMapping("/sys/datasource")
-public class DatasourceController extends BaseController {
+@RequestMapping("/sys/dict")
+public class DictController extends BaseController {
     @Autowired
-    private DatasourceService datasourceService;
+    private DictService dictService;
 
-    @ApiOperation("添加数据源")
+    @ApiOperation("添加字典")
     @PostMapping("/save")
-    @PreAuthorize("@auth.hasAuthority('sys:datasource:save')")
-    public Result save(@RequestBody @Valid Datasource datasource) {
-        if (!datasourceService.save(datasource)) {
+    @PreAuthorize("@auth.hasAuthority('sys:dict:save')")
+    public Result save(@RequestBody @Valid Dict dict) {
+        if (!dictService.save(dict)) {
             return Result.failed("添加失败");
         }
         return Result.success("添加成功");
     }
 
-    @ApiOperation("删除数据源")
+    @ApiOperation("删除字典")
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("@auth.hasAuthority('sys:datasource:delete')")
+    @PreAuthorize("@auth.hasAuthority('sys:dict:delete')")
     public Result delete(@PathVariable String id) {
-        if (!datasourceService.removeById(id)) {
+        if (!dictService.removeById(id)) {
             return Result.failed("删除失败");
         }
         return Result.success("删除成功");
     }
 
-    @ApiOperation("删除多个数据源")
+    @ApiOperation("删除多个字典")
     @DeleteMapping("/deleteArr")
-    @PreAuthorize("@auth.hasAuthority('sys:datasource:deleteArr')")
+    @PreAuthorize("@auth.hasAuthority('sys:dict:deleteArr')")
     public Result deleteArr(@RequestBody @Valid IDs ids) {
-        if (!datasourceService.removeByIds(ids.getIds())) {
+        if (!dictService.removeByIds(ids.getIds())) {
             return Result.failed("删除失败");
         }
         return Result.success("删除成功");
     }
 
-    @ApiOperation("修改数据源")
+    @ApiOperation("修改字典")
     @PutMapping("/update")
-    @PreAuthorize("@auth.hasAuthority('sys:datasource:update')")
-    public Result update(@RequestBody @Valid Datasource datasource) {
-        if (!datasourceService.updateById(datasource)) {
+    @PreAuthorize("@auth.hasAuthority('sys:dict:update')")
+    public Result update(@RequestBody @Valid Dict dict) {
+        if (!dictService.updateById(dict)) {
             return Result.failed("修改失败");
         }
         return Result.success("修改成功");
     }
 
-    @ApiOperation("获取单个数据源")
-    @GetMapping("/get/{id}")
-    @PreAuthorize("@auth.hasAuthority('sys:datasource:get')")
-    public Result get(@PathVariable String id) {
-        final Datasource datasource = datasourceService.getById(id);
-        if (datasource == null) {
-            return Result.failed("获取数据失败");
-        }
-        return Result.success(datasource);
-    }
-
-    @ApiOperation("获取所有数据源")
-    @GetMapping("/getAll")
-    @PreAuthorize("@auth.hasAuthority('sys:datasource:getAll')")
-    public Result getAll() {
-        final List<Datasource> list = datasourceService.list();
-        if (list == null) {
-            return Result.failed("获取数据失败");
-        }
-        return Result.success(list);
-    }
-
-    @ApiOperation("分页获取数据源")
+    @ApiOperation("分页获取字典")
     @PostMapping("/get/page")
-    @PreAuthorize("@auth.hasAuthority('sys:datasource:get:page')")
+    @PreAuthorize("@auth.hasAuthority('sys:dict:get:page')")
     public Result getPageList(@RequestBody SearchForm searchForm) {
-        return Result.success("查询成功", datasourceService.getPageList(searchForm));
+        return Result.success("查询成功", dictService.getPageList(searchForm));
+    }
+
+    @ApiOperation("通过字典编码获取字典数据")
+    @GetMapping("/getDictData/{code}")
+    public Result getDictData(@PathVariable String code) {
+        return Result.success("获取成功", dictService.getDictDataByCode(code));
     }
 }

@@ -68,6 +68,7 @@ public class TestController extends BaseController {
 
         final Map<Object, Object> resultMap = MapUtil.builder()
             .put("codeKey", codeKey)
+            .put("codeValue", codeValue)
             .put("codeImage", base64Img)
             .build();
         return Result.success(resultMap);

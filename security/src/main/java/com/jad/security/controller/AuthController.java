@@ -8,13 +8,12 @@ import com.google.code.kaptcha.Producer;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
-import com.jad.security.entity.dto.LoginWithCaptchaDto;
+import com.jad.security.entity.LoginForm;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -84,7 +83,7 @@ public class AuthController extends BaseController {
 
     @ApiOperation("登录")
     @PostMapping("/login")
-    public Result login(@RequestBody LoginWithCaptchaDto dto, HttpServletRequest request) {
+    public Result login(LoginForm dto, HttpServletRequest request) {
         // 目的是为了在swagger中显示这个接口
         return null;
     }

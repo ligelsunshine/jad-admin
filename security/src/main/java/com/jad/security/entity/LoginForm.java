@@ -2,7 +2,7 @@
  * Copyright (C), 2021-2021, jad
  */
 
-package com.jad.security.entity.dto;
+package com.jad.security.entity;
 
 import com.jad.common.enums.LoginTypeEnum;
 
@@ -15,7 +15,7 @@ import lombok.Data;
  * @since 2021/6/27 23:45
  */
 @Data
-public class LoginWithCaptchaDto {
+public class LoginForm {
 
     // 用户名
     private String username;

@@ -32,4 +32,7 @@ public class RedisConst {
 
     // Redis中存放超级管理员角色
     public static final String SYSTEM_ROLE_ADMINISTRATOR = "administrator";
+
+    // Redis中存放字典
+    public static final String SYSTEM_DICT = "system-dict";
 }
