@@ -5,6 +5,7 @@
 <#assign Service="${model.bigHump}Service"/>
 <#assign service="${model.smallHump}Service"/>
 <#assign Controller="${model.bigHump}Controller"/>
+<#assign authPrefix="${model.namespaceSmallHump}:${entity}"/>
 <#assign hasValid=false/>
 <#list model.fieldSchema as field>
     <#if field.require?? || field.rules?size gt 0>
@@ -24,6 +25,7 @@ import com.jad.${module}.entity.${Entity};
 import com.jad.${module}.service.${Service};
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +57,7 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("添加${title}")
     @PostMapping("/save")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:save')")
     public Result save(@RequestBody @Valid ${Entity} ${entity}) {
         if (!${service}.save(${entity})) {
             return Result.failed("添加失败");
@@ -64,6 +67,7 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("删除${title}")
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:delete')")
     public Result delete(@PathVariable String id) {
         if (!${service}.removeById(id)) {
             return Result.failed("删除失败");
@@ -73,6 +77,7 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("删除多个${title}")
     @DeleteMapping("/deleteArr")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:deleteArr')")
     public Result deleteArr(@RequestBody @Valid IDs ids) {
         if (!${service}.removeByIds(ids.getIds())) {
             return Result.failed("删除失败");
@@ -82,6 +87,7 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("修改${title}")
     @PutMapping("/update")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:update')")
     public Result update(@RequestBody @Valid ${Entity} ${entity}) {
         if (!${service}.updateById(${entity})) {
             return Result.failed("修改失败");
@@ -91,6 +97,7 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("获取单个${title}")
     @GetMapping("/get/{id}")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:get')")
     public Result get(@PathVariable String id) {
         final ${Entity} ${entity} = ${service}.getById(id);
         if (${entity} == null){
@@ -101,6 +108,7 @@ public class ${Controller} extends BaseController {
 
     @ApiOperation("分页获取${title}")
     @PostMapping("/get/page")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:get:page')")
     public Result getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", ${service}.getPageList(searchForm));
     }
