@@ -4,7 +4,7 @@
 
 package com.jad.common.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.jad.common.base.service.BaseService;
 import com.jad.common.entity.Menu;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
  * @author cxxwl96
  * @since 2021-06-18
  */
-public interface MenuService extends IService<Menu> {
+public interface MenuService extends BaseService<Menu> {
 
     /**
      * 添加菜单
@@ -26,6 +26,16 @@ public interface MenuService extends IService<Menu> {
      * @return 是否添加成功
      */
     boolean save(Menu menu);
+
+    /**
+     * 添加菜单权限按钮
+     *
+     * @param pid 父级菜单
+     * @param modelName 菜单名称
+     * @param authPrefix 菜单权限前缀
+     * @return 是否添加成功
+     */
+    boolean saveAuthButton(String pid, String modelName, String authPrefix);
 
     /**
      * 删除子树

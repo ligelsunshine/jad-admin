@@ -51,6 +51,16 @@ public class MenuController extends BaseController {
         return Result.failed("添加失败");
     }
 
+    @ApiOperation("一键添加权限按钮")
+    @PostMapping("/saveAuthButton")
+    @PreAuthorize("@auth.hasAuthority('sys:menu:saveAuthButton')")
+    public Result saveAuthButton(String pid, String modelName, String authPrefix) {
+        if (menuService.saveAuthButton(pid, modelName, authPrefix)) {
+            return Result.success("添加成功");
+        }
+        return Result.failed("添加失败");
+    }
+
     @ApiOperation("删除菜单权限")
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:menu:delete')")

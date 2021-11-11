@@ -22,7 +22,7 @@ public interface TreeService<T extends TreeNode<T>> extends BaseService<T> {
      *
      * @return 树实例
      */
-    Tree<T> getTreeBean();
+    Tree<T> getTree();
 
     /**
      * 获取完整树

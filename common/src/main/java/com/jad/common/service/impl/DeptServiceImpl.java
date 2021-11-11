@@ -23,6 +23,7 @@ public class DeptServiceImpl extends TreeServiceImpl<DeptMapper, Dept> implement
      * 添加部门
      *
      * @param dept 部门
+     *
      * @return 是否添加成功
      */
     @Override

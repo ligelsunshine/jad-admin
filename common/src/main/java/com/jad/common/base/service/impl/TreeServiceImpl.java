@@ -29,7 +29,7 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      * @return 树实例
      */
     @Override
-    public Tree<T> getTreeBean() {
+    public Tree<T> getTree() {
         // 加上.setEntityClass(super.getEntityClass())，防止can not find lambda cache for this entity
         final List<T> list = super.lambdaQuery()
             .setEntityClass(super.getEntityClass())
@@ -45,7 +45,7 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      */
     @Override
     public List<T> getRootTree() {
-        return getTreeBean().getRootTree();
+        return getTree().getRootTree();
     }
 
     /**
@@ -56,7 +56,7 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      */
     @Override
     public T getSubTree(String id) {
-        return getTreeBean().getSubTree(id);
+        return getTree().getSubTree(id);
     }
 
     /**
@@ -67,7 +67,7 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      */
     @Override
     public List<T> getSubList(String id) {
-        return getTreeBean().getSubList(id);
+        return getTree().getSubList(id);
     }
 
     /**
@@ -78,7 +78,7 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      */
     @Override
     public List<T> getChildrenTree(String id) {
-        return getTreeBean().getChildrenTree(id);
+        return getTree().getChildrenTree(id);
     }
 
     /**
@@ -89,7 +89,7 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
      */
     @Override
     public List<T> getChildrenList(String id) {
-        return getTreeBean().getChildrenList(id);
+        return getTree().getChildrenList(id);
     }
 
     /**

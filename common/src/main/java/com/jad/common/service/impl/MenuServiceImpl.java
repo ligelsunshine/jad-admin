@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.RoleMenu;
@@ -46,7 +46,7 @@ import cn.hutool.core.util.StrUtil;
  * @since 2021-06-18
  */
 @Service
-public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
+public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, Menu> implements MenuService {
 
     @Autowired
     private RedisUtil redisUtil;
@@ -76,6 +76,41 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         clearUserMenuList();
         clearUserMenuTree();
         return success;
+    }
+
+    /**
+     * 添加菜单权限按钮
+     *
+     * @param pid 父级菜单
+     * @param modelName 菜单名称
+     * @param authPrefix 菜单权限前缀
+     * @return 是否添加成功
+     */
+    @Override
+    public boolean saveAuthButton(String pid, String modelName, String authPrefix) {
+        String[] authArray = new String[] {"save", "delete", "deleteArr", "update", "get", "get:page"};
+        String[] titleArray = new String[] {"添加", "删除", "批量删除", "修改", "获取单个", "分页获取"};
+        String title = modelName == null ? "" : modelName;
+        List<Menu> menuList = new ArrayList<>();
+        if (StrUtil.isBlank(authPrefix)) {
+            throw new BadRequestException("菜单权限前缀不能为空");
+        }
+        if (!super.exist(pid)) {
+            throw new BadRequestException("找不到父级菜单");
+        }
+        for (int i = 0; i < 6; i++) {
+            final Menu menu = new Menu();
+            menu.setPId(pid);
+            menu.setType(MenuType.BUTTON);
+            menu.setTitle(titleArray[i] + title);
+            menu.setPermissions(authPrefix + authArray[i]);
+            menu.setOrderNo(i);
+            menuList.add(menu);
+        }
+        // 清空缓存
+        clearUserMenuList();
+        clearUserMenuTree();
+        return this.saveBatch(menuList);
     }
 
     /**
@@ -235,6 +270,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
         return menuTree;
     }
+
     /**
      * 清除用户缓存的菜单列表
      */

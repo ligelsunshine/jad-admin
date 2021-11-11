@@ -193,11 +193,14 @@ public class Tree<T extends TreeNode<T>> {
             return null;
         }
         // 查找子节点
+        List<T> finalChildren = children;
         this.list.forEach(item -> {
             if (pId.equals(item.getPId())) {
-                children.add(item);
+                finalChildren.add(item);
             }
         });
+        // 排序
+        children = children.stream().sorted(Comparator.comparingInt(T::getOrderNo)).collect(Collectors.toList());
         for (T child : children) {
             child.setChildren(findChildren(child.getId()));
         }
