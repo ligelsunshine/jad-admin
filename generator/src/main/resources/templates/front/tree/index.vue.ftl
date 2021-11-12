@@ -32,7 +32,7 @@
           />
         </Card>
       </Col>
-      <Col :span="12" v-auth="'sys:${authPrefix}:get'">
+      <Col :span="12" v-auth="'${authPrefix}:get'">
         <Card title="${title}详情">
           <Spin :spinning="spinning">
             <Empty v-if="!data" />
@@ -122,26 +122,26 @@
             label: '编辑',
             icon: 'clarity:note-edit-line',
             handler: () => handleEdit(),
-            auth: 'sys:${authPrefix}:update',
+            auth: '${authPrefix}:update',
           },
           {
             label: '删除',
             icon: 'ant-design:delete-outlined',
             divider: true,
             handler: () => handleDelete(node.eventKey),
-            auth: 'sys:${authPrefix}:delete',
+            auth: '${authPrefix}:delete',
           },
           {
             label: '添加子${title}',
             icon: 'ant-design:plus-square-filled',
             handler: () => handleCreate(node),
-            auth: 'sys:${authPrefix}:save',
+            auth: '${authPrefix}:save',
           },
           {
             label: '删除子${title}',
             icon: 'ant-design:delete-filled',
             handler: () => handleDeleteChildren(node.eventKey),
-            auth: 'sys:${authPrefix}:delete',
+            auth: '${authPrefix}:delete',
           },
         ];
       }
@@ -170,7 +170,7 @@
               label: '添加${title}',
               icon: 'ant-design:plus-outlined',
               handler: () => handleCreate(),
-              auth: 'sys:${authPrefix}:save',
+              auth: '${authPrefix}:save',
             },
           ],
         });

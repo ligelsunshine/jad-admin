@@ -20,8 +20,8 @@ package ${package};
 import com.jad.common.base.controller.BaseController;
 <#if !model.treeModel>
 import com.jad.common.base.form.SearchForm;
-</#if>
 import com.jad.common.lang.IDs;
+</#if>
 import com.jad.common.lang.Result;
 import com.jad.${module}.entity.${Entity};
 import com.jad.${module}.service.${Service};
