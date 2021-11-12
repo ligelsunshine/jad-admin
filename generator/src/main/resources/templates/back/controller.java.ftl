@@ -127,7 +127,7 @@ public class ${Controller} extends BaseController {
     @ApiOperation("获取${title}树")
     @GetMapping("/getTree")
     @PreAuthorize("@auth.hasAuthority('${authPrefix}:getTree')")
-    public Result get${Entity}Tree() {
+    public Result getTree() {
         List<${Entity}> treeList = ${entity}Service.getRootTree();
         return Result.success(treeList);
     }
