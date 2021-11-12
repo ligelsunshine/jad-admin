@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
@@ -96,8 +94,7 @@ public class DataClassifyController extends BaseController {
     @ApiOperation("获取数据分类树")
     @GetMapping("/getTree")
     @PreAuthorize("@auth.hasAuthority('sys:dataClassify:getTree')")
-    public Result getDataClassifyTree() {
-        List<DataClassify> treeList = dataClassifyService.getRootTree();
-        return Result.success(treeList);
+    public Result getTree(String code, boolean includeSelf) {
+        return dataClassifyService.getTree(code, includeSelf);
     }
 }

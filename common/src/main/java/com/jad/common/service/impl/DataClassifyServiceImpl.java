@@ -18,10 +18,16 @@ package com.jad.common.service.impl;
 
 import com.jad.common.base.service.impl.TreeServiceImpl;
 import com.jad.common.entity.DataClassify;
+import com.jad.common.lang.Result;
 import com.jad.common.mapper.DataClassifyMapper;
 import com.jad.common.service.DataClassifyService;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 数据分类服务实现类
@@ -33,4 +39,34 @@ import org.springframework.stereotype.Service;
 public class DataClassifyServiceImpl extends TreeServiceImpl<DataClassifyMapper, DataClassify>
     implements DataClassifyService {
 
+    /**
+     * 获取数据分类
+     *
+     * @param code 编码
+     * @param includeSelf 是否包含本身
+     * @return 数据分类树
+     */
+    @Override
+    public Result getTree(String code, boolean includeSelf) {
+        if (StrUtil.isBlank(code)) {
+            return Result.success(super.getRootTree());
+        }
+        // 通过编码查询
+        final List<DataClassify> list = super.lambdaQuery()
+            .eq(DataClassify::getCode, code)
+            .select(DataClassify::getId)
+            .list();
+        if (CollUtil.isEmpty(list)) {
+            return Result.formatFailed("编码%s的数据分类不存在", code);
+        }
+        if (list.size() > 1) {
+            return Result.formatFailed("编码%s的数据分类存在多个", code);
+        }
+        // 得到ID
+        final String id = list.get(0).getId();
+        if (includeSelf) {
+            return Result.success(super.getSubTree(id));
+        }
+        return Result.success(super.getChildrenTree(id));
+    }
 }

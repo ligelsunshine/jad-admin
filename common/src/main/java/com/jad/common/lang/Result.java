@@ -30,6 +30,14 @@ public class Result implements Serializable {
     @ApiModelProperty(value = "响应数据")
     private Object data;
 
+    public static Result formatFailed(String format, Object... args) {
+        return Result.failed(String.format(format, args));
+    }
+
+    public static Result formatSuccess(String format, Object... args) {
+        return Result.success(String.format(format, args));
+    }
+
     public static Result success() {
         return success(200, "操作成功", null);
     }

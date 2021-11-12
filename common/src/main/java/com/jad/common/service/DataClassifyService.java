@@ -18,6 +18,7 @@ package com.jad.common.service;
 
 import com.jad.common.base.service.TreeService;
 import com.jad.common.entity.DataClassify;
+import com.jad.common.lang.Result;
 
 /**
  * 数据分类服务接口类
@@ -26,5 +27,12 @@ import com.jad.common.entity.DataClassify;
  * @since 2021/11/12 23:21
  */
 public interface DataClassifyService extends TreeService<DataClassify> {
-
+    /**
+     * 获取数据分类
+     *
+     * @param code 编码
+     * @param includeSelf 是否包含本身
+     * @return 数据分类树
+     */
+    Result getTree(String code, boolean includeSelf);
 }

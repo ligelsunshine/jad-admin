@@ -71,7 +71,7 @@
   import ${Entity}Modal from '/@${modalFilePath}';
 
   export default defineComponent({
-    name: '1455552881344921682',
+    name: 'Index',
     components: {
       ${Entity}Modal,
       BasicTree,
