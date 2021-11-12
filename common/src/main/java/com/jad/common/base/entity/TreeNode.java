@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.validation.constraints.Pattern;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -36,6 +38,7 @@ public class TreeNode<T> extends BaseEntity implements Serializable {
     private Integer orderNo = 0;
 
     @ApiModelProperty(value = "编码")
+    @Pattern(message = "编码仅数字、字母、中横线组成", regexp = "^[a-zA-Z0-9\\-]*$")
     private String code = null;
 
     @ApiModelProperty(value = "子节点")

@@ -381,27 +381,41 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
             model.getNamespaceLowerCaseDash(), model.getLowerCaseDash(), model.getBigHump());
         String indexFilePath = String.format("/views/%s/%s/%s/Index.vue", model.getModule(),
             model.getNamespaceLowerCaseDash(), model.getLowerCaseDash());
-        String drawerFilePath = String.format("/views/%s/%s/%s/%sDrawer.vue", model.getModule(),
-            model.getNamespaceLowerCaseDash(), model.getLowerCaseDash(), model.getBigHump());
         String modalFilePath = String.format("/views/%s/%s/%s/%sModal.vue", model.getModule(),
             model.getNamespaceLowerCaseDash(), model.getLowerCaseDash(), model.getBigHump());
         final Map<String, Object> paramMap = getParamMap(model);
         paramMap.put("apiFilePath", apiFilePath);
         paramMap.put("dataFilePath", dataFilePath);
         paramMap.put("indexFilePath", indexFilePath);
-        paramMap.put("drawerFilePath", drawerFilePath);
         paramMap.put("modalFilePath", modalFilePath);
-        String[] tempPaths = {
-            "templates/front/api.ts.ftl", "templates/front/data.ts.ftl", "templates/front/index.vue.ftl",
-            "templates/front/drawer.vue.ftl", "templates/front/modal.vue.ftl",
-        };
-        String[] outputPaths = {
-            frontPath + "/src" + apiFilePath + ".ts", frontPath + "/src" + dataFilePath + ".ts",
-            frontPath + "/src" + indexFilePath, frontPath + "/src" + drawerFilePath, frontPath + "/src" + modalFilePath,
-        };
+        String[] outputPaths;
+        String[] tempPaths;
+        if (model.isTreeModel()) {
+            tempPaths = new String[] {
+                "templates/front/api.ts.ftl", "templates/front/data.ts.ftl", "templates/front/tree/index.vue.ftl",
+                "templates/front/tree/modal.vue.ftl",
+            };
+            outputPaths = new String[] {
+                frontPath + "/src" + apiFilePath + ".ts", frontPath + "/src" + dataFilePath + ".ts",
+                frontPath + "/src" + indexFilePath, frontPath + "/src" + modalFilePath,
+            };
+        } else {
+            String drawerFilePath = String.format("/views/%s/%s/%s/%sDrawer.vue", model.getModule(),
+                model.getNamespaceLowerCaseDash(), model.getLowerCaseDash(), model.getBigHump());
+            paramMap.put("drawerFilePath", drawerFilePath);
+            tempPaths = new String[] {
+                "templates/front/api.ts.ftl", "templates/front/data.ts.ftl", "templates/front/list/index.vue.ftl",
+                "templates/front/list/drawer.vue.ftl", "templates/front/list/modal.vue.ftl",
+            };
+            outputPaths = new String[] {
+                frontPath + "/src" + apiFilePath + ".ts", frontPath + "/src" + dataFilePath + ".ts",
+                frontPath + "/src" + indexFilePath, frontPath + "/src" + drawerFilePath,
+                frontPath + "/src" + modalFilePath,
+            };
+        }
 
         List<Item> itemList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < outputPaths.length; i++) {
             final Item item = new Item();
             item.setTempPath(tempPaths[i]);
             item.setOutputPath(outputPaths[i]);

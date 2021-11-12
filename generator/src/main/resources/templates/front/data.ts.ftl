@@ -8,7 +8,7 @@
         <#assign hasDateType=true/>
     </#if>
 </#list>
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import { <#if !model.treeModel>BasicColumn, </#if>FormSchema } from '/@/components/Table';
 import { DescItem } from '/@/components/Description';
 import { formatToDateTime } from '/@/utils/dateUtil';
 
@@ -17,6 +17,11 @@ import { formatToDateTime } from '/@/utils/dateUtil';
  */
 export interface ${Entity} {
   id: string;
+<#if model.treeModel>
+  pId?: string;
+  code?: string;
+  orderNo?: number;
+</#if>
 <#list model.fieldSchema as field>
   <#switch field.type!"">
     <#case "STRING">
@@ -45,6 +50,9 @@ export interface ${Entity} {
       <#break>
   </#switch>
 </#list>
+<#if model.treeModel>
+  children?: ${Entity}[];
+</#if>
 }
 <#list model.fieldSchema as field>
   <#if field.type=='ENUM'>
@@ -75,6 +83,7 @@ export function renderOf${field.bigHump}(${field.smallHump}) {
 }
   </#if>
 </#list>
+<#if !model.treeModel>
 
 /**
  * 列表显示字段
@@ -259,6 +268,7 @@ export const searchFormSchema: FormSchema[] = [
     colProps: { span: 8 },
   },
 ];
+</#if>
 
 /**
  * 添加/编辑表单
@@ -276,6 +286,35 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     show: false,
   },
+<#if model.treeModel>
+  {
+    field: 'pid',
+    label: '上级${title}',
+    component: 'TreeSelect',
+    componentProps: {
+      replaceFields: {
+        title: 'id',
+        key: 'id',
+        value: 'id',
+      },
+      getPopupContainer: () => document.body,
+    },
+  },
+  {
+    field: 'code',
+    label: '编码',
+    component: 'Input',
+    rules: [
+      {
+        required: false,
+        pattern: /[a-zA-Z0-9\-]/,
+        message: '仅数字、字母、中横线组成',
+        trigger: 'blur',
+      },
+    ],
+    helpMessage: '唯一标识码，仅数字、字母、中横线组成',
+  },
+</#if>
 <#list model.fieldSchema as field>
   <#assign addForm=false/>
   <#assign editForm=false/>
@@ -518,6 +557,15 @@ export const formSchema: FormSchema[] = [
   },
   </#if>
 </#list>
+<#if model.treeModel>
+  {
+    field: 'orderNo',
+    label: '排序',
+    component: 'InputNumber',
+    defaultValue: 0,
+    helpMessage: '默认排序为升序',
+  },
+</#if>
 ];
 
 /**
@@ -542,6 +590,16 @@ export const descSchema: DescItem[] = [
         </#if>
     </#list>
 </#list>
+<#if model.treeModel>
+  {
+    field: 'code',
+    label: '编码',
+  },
+  {
+    field: 'orderNo',
+    label: '排序',
+  },
+</#if>
   {
     field: 'createTime',
     label: '创建时间',

@@ -18,7 +18,9 @@
 package ${package};
 
 import com.jad.common.base.controller.BaseController;
+<#if !model.treeModel>
 import com.jad.common.base.form.SearchForm;
+</#if>
 import com.jad.common.lang.IDs;
 import com.jad.common.lang.Result;
 import com.jad.${module}.entity.${Entity};
@@ -34,11 +36,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+<#if model.treeModel>
 
-<#if hasValid>
-import javax.validation.Valid;
-
+import java.util.List;
 </#if>
+<#if hasValid>
+
+import javax.validation.Valid;
+</#if>
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -65,6 +71,17 @@ public class ${Controller} extends BaseController {
         return Result.success("添加成功");
     }
 
+<#if model.treeModel>
+    @ApiOperation("删除${title}")
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:delete')")
+    public Result delete(@PathVariable String id, boolean includeSelf) {
+        if (!${service}.removeTree(id, includeSelf)) {
+            return Result.failed("删除失败");
+        }
+        return Result.success("删除成功");
+    }
+<#else>
     @ApiOperation("删除${title}")
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('${authPrefix}:delete')")
@@ -84,6 +101,7 @@ public class ${Controller} extends BaseController {
         }
         return Result.success("删除成功");
     }
+</#if>
 
     @ApiOperation("修改${title}")
     @PutMapping("/update")
@@ -105,11 +123,20 @@ public class ${Controller} extends BaseController {
         }
         return Result.success(${entity});
     }
-
+<#if model.treeModel>
+    @ApiOperation("获取${title}树")
+    @GetMapping("/getTree")
+    @PreAuthorize("@auth.hasAuthority('${authPrefix}:getTree')")
+    public Result get${Entity}Tree() {
+        List<${Entity}> treeList = ${entity}Service.getRootTree();
+        return Result.success(treeList);
+    }
+<#else>
     @ApiOperation("分页获取${title}")
     @PostMapping("/get/page")
     @PreAuthorize("@auth.hasAuthority('${authPrefix}:get:page')")
     public Result getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", ${service}.getPageList(searchForm));
     }
+</#if>
 }
