@@ -7,3 +7,4 @@ ${AnsiColor.BRIGHT_CYAN}
  ╚═══╝     ╚═╝  ╚═╝  ╚═════╝
 ${jad.system.info.app-name} Published ${jad.system.info.version} @ ${jad.system.info.uri}
 Email: ${jad.system.info.email}
+${AnsiColor.DEFAULT}
