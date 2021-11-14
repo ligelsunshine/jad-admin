@@ -79,4 +79,4 @@ CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` 
     `enable` bit(1) DEFAULT NULL COMMENT '是否启用【未启用：0,已启用：1】',
 </#if>
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='${model.title}';
