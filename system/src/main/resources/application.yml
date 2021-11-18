@@ -62,7 +62,15 @@ mybatis-plus:
   type-enums-package: com.jad.**.enums # 枚举转换
   configuration:
     default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler # 使用ordinal处理枚举转换
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志，打印sql
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志，打印sql
+
+# FileStore Configuration
+file-store:
+  source: minio # local | minio | qiniu
+  url: http://127.0.0.1:9000
+  accessKey: admin
+  secretKey: cxxwl96@sina.com
+  bucket: jad-admin
 
 # JAD Configuration
 jad:

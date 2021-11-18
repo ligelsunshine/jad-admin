@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>generator</artifactId>
+    <artifactId>file-store</artifactId>
     <version>1.0.0</version>
     <name>${project.artifactId}</name>
     <packaging>jar</packaging>
@@ -27,6 +27,11 @@
             <artifactId>common</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <!-- minio -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.2.1</version>
+        </dependency>
     </dependencies>
-
 </project>

@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiOperation;
  * @author cxxwl96
  * @since 2021/11/12 23:21
  */
-@Api(tags = "数据分类相关接口")
+@Api(tags = "系统管理 - 数据分类相关接口")
 @RestController
 @RequestMapping("/sys/dataClassify")
 public class DataClassifyController extends BaseController {

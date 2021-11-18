@@ -29,6 +29,26 @@
       "name": "spring.devtools.restart.enabled",
       "type": "java.lang.String",
       "description": "Description for spring.devtools.restart.enabled."
+    },
+    {
+      "name": "minio.url",
+      "type": "java.lang.String",
+      "description": "Description for minio.url."
+    },
+    {
+      "name": "minio.accessKey",
+      "type": "java.lang.String",
+      "description": "Description for minio.accessKey."
+    },
+    {
+      "name": "minio.secretKey",
+      "type": "java.lang.String",
+      "description": "Description for minio.secretKey."
+    },
+    {
+      "name": "minio.bucketName",
+      "type": "java.lang.String",
+      "description": "Description for minio.bucketName."
     }
   ]
 }

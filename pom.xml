@@ -25,6 +25,7 @@
         <module>common</module>
         <module>generator</module>
         <module>security</module>
+        <module>file-store</module>
         <module>system</module>
     </modules>
 

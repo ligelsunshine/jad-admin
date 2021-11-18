@@ -166,6 +166,18 @@ public class GlobalExceptionHandler {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "数据库异常", e);
     }
 
+    /**
+     * 总异常
+     *
+     * @param e 异常
+     * @return 响应结果 500
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = Exception.class)
+    public Result handler(Exception e) {
+        return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "未知异常", e);
+    }
+
     private Result processFailed(int httpStatus, String msg, Exception e) {
         log.error("{}：{}", msg, e.getMessage());
         e.printStackTrace();

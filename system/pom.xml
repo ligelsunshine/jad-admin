@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>jad-admin</artifactId>
         <groupId>com.jad</groupId>
+        <artifactId>jad-admin</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -21,6 +21,12 @@
     </properties>
 
     <dependencies>
+        <!-- common -->
+        <dependency>
+            <groupId>com.jad</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!-- jad security -->
         <dependency>
             <groupId>com.jad</groupId>
@@ -31,6 +37,12 @@
         <dependency>
             <groupId>com.jad</groupId>
             <artifactId>generator</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- file-store -->
+        <dependency>
+            <groupId>com.jad</groupId>
+            <artifactId>file-store</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
