@@ -297,10 +297,10 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
             // 添加enum生成数据
             final List<FieldSchema> fieldSchemas = model.getFieldSchema();
             if (!CollUtil.isEmpty(fieldSchemas)) {
-                final Map<String, Object> enumParamMap = getParamMap(model);
-                enumParamMap.put("package", pathConfig.getEnumPackage());
                 fieldSchemas.forEach(fieldSchema -> {
                     if (fieldSchema.getType() == FieldType.ENUM) {
+                        final Map<String, Object> enumParamMap = getParamMap(model);
+                        enumParamMap.put("package", pathConfig.getEnumPackage());
                         enumParamMap.put("enumParam", fieldSchema);
                         final Item enumItem = new Item();
                         enumItem.setTempPath("templates/back/enum.java.ftl");
