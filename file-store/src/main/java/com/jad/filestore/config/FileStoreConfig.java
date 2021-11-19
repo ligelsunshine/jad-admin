@@ -33,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @ConfigurationProperties(prefix = "file-store")
 public class FileStoreConfig {
-    private String source;
+    private String store;
 
     private String url = "";
 

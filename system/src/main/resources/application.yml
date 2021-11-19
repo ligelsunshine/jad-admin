@@ -66,7 +66,7 @@ mybatis-plus:
 
 # FileStore Configuration
 file-store:
-  source: minio # local | minio | qiniu
+  store: minio # local | minio | qiniu
   url: http://127.0.0.1:9000
   accessKey: admin
   secretKey: cxxwl96@sina.com
