@@ -1,5 +1,5 @@
 <#assign title="${model.title}"/>
-<#assign module="${model.module}"/>
+<#assign module="${model.moduleLowerCase}"/>
 <#assign Entity="${model.bigHump}"/>
 <#assign entity="${model.smallHump}"/>
 <#assign Service="${model.bigHump}Service"/>

@@ -4,6 +4,8 @@
 
 package com.jad.generator.config;
 
+import com.jad.common.utils.NamingUtil;
+
 import lombok.Getter;
 
 /**
@@ -35,8 +37,9 @@ public class PathConfig {
     private final String rootPath;
 
     public PathConfig(String module) {
-        this.basePackage = concat(".", "com.jad", module);
-        this.rootPath = concat("/", System.getProperty("user.dir"), module, "src/main/java", "com/jad", module);
+        String pkg = NamingUtil.toLowerCase(module);
+        this.basePackage = concat(".", "com.jad", pkg);
+        this.rootPath = concat("/", System.getProperty("user.dir"), module, "src/main/java", "com/jad", pkg);
     }
 
     public String getEntityPackage() {

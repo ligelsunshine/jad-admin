@@ -7,7 +7,7 @@ import com.jad.common.base.service.TreeService;
 <#else>
 import com.jad.common.base.service.BaseService;
 </#if>
-import com.jad.${model.module}.entity.${model.bigHump};
+import com.jad.${model.moduleLowerCase}.entity.${model.bigHump};
 
 /**
  * ${model.title}服务接口类

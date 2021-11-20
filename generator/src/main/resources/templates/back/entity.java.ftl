@@ -48,7 +48,7 @@ import com.jad.common.base.entity.BaseEntity;
 <#if hasEnum>
     <#list model.fieldSchema as field>
         <#if field.type=="ENUM">
-import com.jad.${model.module}.enums.${field.bigHump};
+import com.jad.${model.moduleLowerCase}.enums.${field.bigHump};
         </#if>
     </#list>
 </#if>

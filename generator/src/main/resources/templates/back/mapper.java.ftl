@@ -3,7 +3,7 @@
 package ${package};
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jad.${model.module}.entity.${model.bigHump};
+import com.jad.${model.moduleLowerCase}.entity.${model.bigHump};
 
 /**
  * ${model.title} Mapper 接口

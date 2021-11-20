@@ -83,6 +83,10 @@ public class Model {
         return NamingUtil.toBigHump(this.namespace);
     }
 
+    public String getModuleLowerCase(){
+        return NamingUtil.toLowerCase(module);
+    }
+
     public List<FieldSchema> getFieldSchema() {
         if (CollUtil.isNotEmpty(fieldSchema)) {
             // 字段排序

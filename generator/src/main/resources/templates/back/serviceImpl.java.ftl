@@ -7,9 +7,9 @@ import com.jad.common.base.service.impl.TreeServiceImpl;
 <#else>
 import com.jad.common.base.service.impl.BaseServiceImpl;
 </#if>
-import com.jad.${model.module}.entity.${model.bigHump};
-import com.jad.${model.module}.mapper.${model.bigHump}Mapper;
-import com.jad.${model.module}.service.${model.bigHump}Service;
+import com.jad.${model.moduleLowerCase}.entity.${model.bigHump};
+import com.jad.${model.moduleLowerCase}.mapper.${model.bigHump}Mapper;
+import com.jad.${model.moduleLowerCase}.service.${model.bigHump}Service;
 
 import org.springframework.stereotype.Service;
 

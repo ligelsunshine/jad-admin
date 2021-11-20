@@ -3,6 +3,7 @@ package com.jad.common.utils;
 import com.jad.common.enums.ConvertType;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import cn.hutool.core.util.StrUtil;
 
@@ -72,6 +73,32 @@ public class NamingUtil {
      */
     public static String toLowerCaseDash(String name) {
         return convert(name, ConvertType.LowerCaseDash, "-");
+    }
+
+    /**
+     * 转小写
+     *
+     * @param name 名称
+     * @return 结果
+     */
+    public static String toLowerCase(String name) {
+        if (StrUtil.isBlank(name)) {
+            return null;
+        }
+        return name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * 转大写
+     *
+     * @param name 名称
+     * @return 结果
+     */
+    public static String toUpperCase(String name) {
+        if (StrUtil.isBlank(name)) {
+            return null;
+        }
+        return name.replaceAll("[^a-zA-Z0-9]", "").toUpperCase(Locale.ROOT);
     }
 
     /**
