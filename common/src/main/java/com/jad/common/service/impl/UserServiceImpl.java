@@ -335,6 +335,16 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
+     * 是否已认证
+     *
+     * @return 是否已认证
+     */
+    @Override
+    public boolean Authenticated() {
+        return getCurrentAuthUser() != null;
+    }
+
+    /**
      * 获取超级管理员角色
      *
      * @return 是否拥有超级管理员身份

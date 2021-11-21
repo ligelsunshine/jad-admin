@@ -37,7 +37,7 @@ import sun.misc.BASE64Encoder;
  * @author cxxwl96
  * @since 2021/6/20 12:13
  */
-@Api(tags = "身份认证相关接口")
+@Api(tags = "公共接口 - 身份认证相关接口")
 @RestController
 @RequestMapping("/auth")
 public class AuthController extends BaseController {

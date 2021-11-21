@@ -16,6 +16,7 @@
 
 package com.jad.filestore.utils;
 
+import com.jad.common.exception.BadRequestException;
 import com.jad.filestore.config.FileStoreConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,6 @@ import io.minio.http.Method;
 import io.minio.messages.Bucket;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -81,14 +81,16 @@ public class MinIoUtil {
      *
      * @param bucket 文件桶
      */
-    @SneakyThrows
     public void makeBucket(String bucket) {
-        if (!bucketExist(bucket)) {
-            client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
-            log.info("make bucket '{}'.", bucket);
-            return;
+        try {
+            if (!bucketExist(bucket)) {
+                client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+                log.info("make bucket '{}'.", bucket);
+            }
+            log.warn("make bucket '{}' error, it it already exists.", bucket);
+        } catch (Exception e) {
+            log.error("make bucket '{}' error: {}", bucket, e.getMessage());
         }
-        log.warn("make bucket '{}' error, it it already exists.", bucket);
     }
 
     /**
@@ -96,14 +98,17 @@ public class MinIoUtil {
      *
      * @param bucket 文件桶
      */
-    @SneakyThrows
     public void removeBucket(String bucket) {
-        if (bucketExist(bucket)) {
-            client.removeBucket(RemoveBucketArgs.builder().bucket(bucket).build());
-            log.info("remove bucket '{}'.", bucket);
-            return;
+        try {
+            if (bucketExist(bucket)) {
+                client.removeBucket(RemoveBucketArgs.builder().bucket(bucket).build());
+                log.info("remove bucket '{}'.", bucket);
+                return;
+            }
+            log.warn("remove bucket '{}' error, it doesn't  exists.", bucket);
+        } catch (Exception e) {
+            log.error("remove bucket '{}' error: {}", bucket, e.getMessage());
         }
-        log.warn("remove bucket '{}' error, it doesn't  exists.", bucket);
     }
 
     /**
@@ -112,9 +117,13 @@ public class MinIoUtil {
      * @param bucket 文件桶
      * @return 是否存在
      */
-    @SneakyThrows
     public boolean bucketExist(String bucket) {
-        return client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+        try {
+            return client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+        } catch (Exception e) {
+            log.error("bucket '{}' exist error: {}", bucket, e.getMessage());
+        }
+        return true;
     }
 
     /**
@@ -155,6 +164,7 @@ public class MinIoUtil {
             log.info("upload file '{}' to '{}'.", filename, object);
         } catch (Exception e) {
             log.error("upload file to '{}' error: {}", object, e.getMessage());
+            throw new BadRequestException("上传失败");
         }
     }
 
@@ -186,6 +196,7 @@ public class MinIoUtil {
             log.info("upload file to '{}'.", object);
         } catch (Exception e) {
             log.error("upload file to '{}' error: {}", object, e.getMessage());
+            throw new BadRequestException("上传失败");
         }
     }
 
@@ -211,6 +222,7 @@ public class MinIoUtil {
             log.info("remove file '{}'.", object);
         } catch (Exception e) {
             log.error("remove file '{}' error: {}", object, e.getMessage());
+            throw new BadRequestException("上传失败");
         }
     }
 
@@ -247,6 +259,7 @@ public class MinIoUtil {
             }
         } catch (Exception e) {
             log.error("remove multiple files error: {}", e.getMessage());
+            throw new BadRequestException("删除失败");
         }
     }
 

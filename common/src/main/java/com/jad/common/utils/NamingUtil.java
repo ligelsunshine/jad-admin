@@ -162,8 +162,8 @@ public class NamingUtil {
             .replaceAll("[^A-Za-z0-9\\s_-]", "")
             // 去掉开头的数字
             .replaceFirst("\\d*", "")
-            // 替换数字\d为_\d_，方便分割
-            .replaceAll("(\\d)", "_$1_")
+            // 替换数字\d+为\d+_，方便分割
+            .replaceAll("(\\d+)", "$1_")
             // 替换大写字母A-Z为_A-Z，方便分割
             .replaceAll("([A-Z])", "_$1")
             // 以空白字符、数字、下划线、短横线分割

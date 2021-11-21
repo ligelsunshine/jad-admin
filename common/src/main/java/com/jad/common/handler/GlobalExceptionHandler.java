@@ -5,6 +5,7 @@
 package com.jad.common.handler;
 
 import com.jad.common.exception.BadRequestException;
+import com.jad.common.exception.UnauthorizedException;
 import com.jad.common.lang.Result;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentConversionNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.nio.file.AccessDeniedException;
@@ -47,7 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {
         IllegalArgumentException.class, HttpMessageNotReadableException.class,
         MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class,
-        MethodArgumentConversionNotSupportedException.class, IllegalStateException.class
+        MethodArgumentConversionNotSupportedException.class, IllegalStateException.class, MultipartException.class
     })
     public Result illegalDataHandler(Exception e) {
         return processFailed(HttpStatus.BAD_REQUEST.value(), "非法数据请求", e);
@@ -79,7 +81,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = BadRequestException.class)
     public Result handler(BadRequestException e) {
         processFailed(HttpStatus.BAD_REQUEST.value(), "错误的请求", e);
-        return Result.failed(e.getMessage());
+        return e.getResult() != null ? e.getResult() : Result.failed(e.getMessage());
+    }
+
+    /**
+     * 错误请求异常
+     *
+     * @param e 异常
+     * @return 响应结果 400
+     */
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(value = UnauthorizedException.class)
+    public Result handler(UnauthorizedException e) {
+        return processFailed(HttpStatus.UNAUTHORIZED.value(), "未认证", e);
     }
 
     /**

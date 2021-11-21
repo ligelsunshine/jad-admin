@@ -37,12 +37,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 代码生成 - 代码生成相关接口
+ * 代码生成相关接口
  *
  * @author cxxwl96
  * @since 2021/9/11 23:18
  */
-@Api(tags = "代码生成 - 代码生成相关接口")
+@Api(tags = "系统管理 - 代码生成相关接口")
 @RestController
 @RequestMapping("/devtools/generator")
 public class GeneratorController extends BaseController {
