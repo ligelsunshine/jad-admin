@@ -193,8 +193,7 @@ public class GlobalExceptionHandler {
     }
 
     private Result processFailed(int httpStatus, String msg, Exception e) {
-        log.error("{}：{}", msg, e.getMessage());
-        e.printStackTrace();
+        log.error(msg, e);
         return Result.failed(httpStatus, msg, e.getMessage());
     }
 
