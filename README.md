@@ -60,9 +60,8 @@ Dashboard
 
 #### 使用说明
 
-1. xxxx
-2. xxxx
-3. xxxx
++ VM Opiton
+> -Djasypt.encryptor.password=cxxwl96@sina.com
 
 #### 参与贡献
 

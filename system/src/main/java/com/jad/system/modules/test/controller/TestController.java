@@ -9,10 +9,12 @@ import com.jad.common.base.controller.BaseController;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.awt.image.BufferedImage;
@@ -41,9 +43,6 @@ public class TestController extends BaseController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    /**
-     * 验证码生成器
-     */
     @Autowired
     private Producer producer;
 
@@ -71,13 +70,28 @@ public class TestController extends BaseController {
             .put("codeValue", codeValue)
             .put("codeImage", base64Img)
             .build();
-        return Result.success(resultMap);
+        return Result.success("生成成功", resultMap);
     }
 
     @ApiOperation("密码加密")
     @GetMapping("/encoder")
     public Result encoder(String password) {
-        return Result.success(bCryptPasswordEncoder.encode(password));
+        return Result.success("生成成功", bCryptPasswordEncoder.encode(password));
     }
 
+    @ApiOperation("yaml配置信息加密")
+    @GetMapping("/encrypt")
+    public Result encrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
+        BasicTextEncryptor encryptor = new BasicTextEncryptor();
+        encryptor.setPassword(salt);
+        return Result.success("生成成功", encryptor.encrypt(text));
+    }
+
+    @ApiOperation("yaml配置信息解密")
+    @GetMapping("/decrypt")
+    public Result decrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
+        BasicTextEncryptor encryptor = new BasicTextEncryptor();
+        encryptor.setPassword(salt);
+        return Result.success("生成成功", encryptor.decrypt(text));
+    }
 }

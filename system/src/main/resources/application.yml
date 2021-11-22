@@ -16,13 +16,13 @@ spring:
       datasource:
         master:
           url: jdbc:mysql://localhost:3306/dev_jad_admin?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=true&allowMultiQueries=true&autoReconnect=true&useAffectRows=true
-          username: root
-          password: cxxwl96@sina.com
+          username: ENC(/eZhUIr+ffsTngGPv9yz/w==)
+          password: ENC(MK4ReXTiYz7q0dqyUIO++dx7Botc7KwMl9Ivsg0rf+A=)
           driver-class-name: com.mysql.cj.jdbc.Driver
         slave:
           url: jdbc:mysql://localhost:3306/dev_jad_slave?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=true&allowMultiQueries=true&autoReconnect=true&useAffectRows=true
-          username: root
-          password: cxxwl96@sina.com
+          username: ENC(H60S7RDrCdLIxrTVM34MGA==)
+          password: ENC(qMmFipiBbgoCmMEVR9KBfiMHrJOp/nQeTn2CED2gElE=)
           driver-class-name: com.mysql.cj.jdbc.Driver
   #    url: jdbc:mysql://localhost:3306/dev_jad_admin?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=true&allowMultiQueries=true&autoReconnect=true&useAffectRows=true
   #    username: root
@@ -36,7 +36,7 @@ spring:
   redis:
     host: localhost
     port: 6379
-    password: cxxwl96@sina.com
+    password: ENC(fMB457oYUKtRV08C3Ytwk/QOPVmIx/chvnYR10SxA6I=)
     database: 0
     timeout: 3000 # 连接超时时间（毫秒）
     jedis:
@@ -69,19 +69,25 @@ mybatis-plus:
     default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler # 使用ordinal处理枚举转换
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志，打印sql
 
+# jasypt Configuration
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+
 # FileStore Configuration
 file-store:
   store: minio # local | minio | qiniu | aliyun | tencentyun
   url: http://127.0.0.1:9000
-  accessKey: admin
-  secretKey: cxxwl96@sina.com
+  accessKey: ENC(TCZcL15AkbfcPfJuk2brQw==)
+  secretKey: ENC(6H416RiFYfeWk1oBptgod97p8FfZ3MVZW7sAZb7cIvY=)
   bucket: jad-admin
 
 # JAD Configuration
 jad:
   jwt:
     expire-milliseconds: 86400000 # 过期时间（单位：ms）
-    secret: cxxwl96 # jwt秘钥
+    secret: ENC(3A8xvsAiuRAwxoie8pF1LLWpVvUAhR6R5TKEC+Fo81A=) # jwt秘钥
     header: Authorization
   security:
     url-white-list: /auth/captcha/generator,/test/**,/sys/file/**
