@@ -17,10 +17,13 @@
 package com.jad.filestore.service;
 
 import com.jad.common.base.service.BaseService;
+import com.jad.filestore.dto.DownloadConfig;
 import com.jad.filestore.dto.UploadConfig;
 import com.jad.filestore.entity.FileStore;
 
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 对象存储服务接口类
@@ -37,4 +40,12 @@ public interface FileStoreService extends BaseService<FileStore> {
      * @return 文件信息
      */
     FileStore upload(MultipartFile file, UploadConfig uploadConfig);
+
+    /**
+     * 文件下载
+     *
+     * @param config 下载配置
+     * @param response 响应
+     */
+    void download(DownloadConfig config, HttpServletResponse response);
 }

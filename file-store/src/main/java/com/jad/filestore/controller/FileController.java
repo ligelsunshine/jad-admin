@@ -18,15 +18,19 @@ package com.jad.filestore.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.lang.Result;
+import com.jad.filestore.dto.DownloadConfig;
 import com.jad.filestore.dto.UploadConfig;
 import com.jad.filestore.entity.FileStore;
 import com.jad.filestore.service.FileStoreService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,5 +53,12 @@ public class FileController extends BaseController {
     public Result upload(MultipartFile file, UploadConfig config) {
         final FileStore fileStore = service.upload(file, config);
         return Result.success("上传成功", fileStore);
+    }
+
+    @ApiOperation("下载文件")
+    @GetMapping("/download")
+    public void download(DownloadConfig config, HttpServletResponse response) {
+        service.download(config, response);
+        // return Result.success("下载成功");
     }
 }
