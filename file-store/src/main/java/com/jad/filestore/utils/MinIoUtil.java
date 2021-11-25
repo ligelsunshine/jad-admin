@@ -18,6 +18,7 @@ package com.jad.filestore.utils;
 
 import com.jad.common.exception.BadRequestException;
 import com.jad.filestore.config.FileStoreConfig;
+import com.jad.filestore.enums.Store;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,10 +71,13 @@ public class MinIoUtil {
 
     @PostConstruct
     public void init() {
-        client = MinioClient.builder()
-            .endpoint(config.getUrl())
-            .credentials(config.getAccessKey(), config.getSecretKey())
-            .build();
+        if (Store.valueOfName(config.getStore()) == Store.MINIO) {
+            client = MinioClient.builder()
+                .endpoint(config.getUrl())
+                .credentials(config.getAccessKey(), config.getSecretKey())
+                .build();
+            makeBucket(config.getBucket());
+        }
     }
 
     /**

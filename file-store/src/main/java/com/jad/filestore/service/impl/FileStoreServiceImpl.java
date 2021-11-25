@@ -29,6 +29,7 @@ import com.jad.filestore.enums.AccessPolicy;
 import com.jad.filestore.enums.Store;
 import com.jad.filestore.mapper.FileStoreMapper;
 import com.jad.filestore.service.FileStoreService;
+import com.jad.filestore.utils.LocalUtil;
 import com.jad.filestore.utils.MinIoUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,6 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
@@ -70,6 +70,9 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
 
     @Autowired
     private MinIoUtil minIoUtil;
+
+    @Autowired
+    private LocalUtil localUtil;
 
     /**
      * 文件上传
@@ -152,7 +155,6 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         }
         switch (config.getType()) {
             case STREAM:
-                // TODO
                 transfer2Response(fileStore, is, response);
                 break;
             case BASE64:
@@ -179,8 +181,8 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             int len;
             while ((len = is.read(buff)) != -1) {
                 os.write(buff, 0, len);
+                os.flush();
             }
-            os.flush();
         } catch (IOException e) {
             log.error("下载文件异常失败", e);
             throw new BadRequestException("下载文件异常失败");
@@ -195,18 +197,10 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         }
         final Store store = Store.valueOfName(fileStoreConfig.getStore());
         String path = fileStore.getPath();
-        if (store == Store.LOCAL) {
-            final File localFile = new File(fileStoreConfig.getUrl() + File.separator + path);
-            if (!FileUtil.exist(path) && !new File(path).mkdirs()) {
-                log.error("创建文件失败: {}", path);
-                throw new BadRequestException("创建文件失败");
-            }
-            file.transferTo(localFile);
-            return;
-        }
         switch (store) {
             case LOCAL:
-                // TODO
+                String localPath = fileStoreConfig.getUrl() + File.separator + path;
+                localUtil.upload(file, localPath);
                 break;
             case MINIO:
                 minIoUtil.upload(file.getInputStream(), path);
