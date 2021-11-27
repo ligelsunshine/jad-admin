@@ -17,7 +17,11 @@
 package com.jad.filestore.utils;
 
 import com.jad.common.exception.BadRequestException;
+import com.jad.common.exception.ExecutionException;
+import com.jad.filestore.config.FileStoreConfig;
+import com.jad.filestore.enums.Store;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,18 +31,41 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.annotation.PostConstruct;
+
 import cn.hutool.core.io.FileUtil;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * LocalUtil
+ * Local工具类
  *
  * @author cxxwl96
- * @since 2021/11/25 23:01
+ * @since 2021/11/16 17:19
  */
 @Log4j2
 @Component
 public class LocalUtil {
+
+    @Autowired
+    private FileStoreConfig config;
+
+    private String url;
+
+    @PostConstruct
+    public void init() {
+        if (Store.valueOfName(config.getStore()) == Store.LOCAL) {
+            url = config.getUrl();
+            File file = new File(url);
+            if (!file.exists()) {
+                if (!file.mkdirs()) {
+                    log.error("make local store '{}' fail", url);
+                    throw new BadRequestException("make local store '%s' fail", url);
+                }
+                log.info("make local store '{}'", url);
+            }
+        }
+    }
+
     /**
      * 上传文件
      *
@@ -46,22 +73,23 @@ public class LocalUtil {
      * @param path 路径
      */
     public void upload(InputStream is, String path) {
+        String localPath = url + File.separator + path;
         FileOutputStream fos = null;
         try {
             if (is == null) {
-                log.error("上传失败,文件流为null");
-                throw new RuntimeException("上传失败");
+                throw new ExecutionException("the file stream is null.");
             }
-            createFile(path);
-            fos = new FileOutputStream(path);
+            createFile(localPath);
+            fos = new FileOutputStream(localPath);
             byte[] bytes = new byte[1024];
             while (is.read(bytes) != -1) {
                 fos.write(bytes);
                 fos.flush();
             }
-        } catch (IOException e) {
-            log.error(e);
-            throw new RuntimeException("上传失败");
+            log.info("upload file to '{}'.", localPath);
+        } catch (IOException | ExecutionException e) {
+            log.error("upload file to '{}' error: {}", localPath, e);
+            throw new BadRequestException("上传失败");
         } finally {
             closeStream(fos);
         }
@@ -74,23 +102,44 @@ public class LocalUtil {
      * @param path 本地路径
      */
     public void upload(MultipartFile file, String path) {
+        String localPath = url + File.separator + path;
         try {
-            final File localFile = new File(path);
-            createFile(path);
-            file.transferTo(localFile);
-        } catch (IOException e) {
-            log.error("上传本地文件失败: {}", path, e);
+            createFile(localPath);
+            file.transferTo(new File(localPath));
+            log.info("upload file to '{}'.", localPath);
+        } catch (IOException | ExecutionException e) {
+            log.error("upload file to '{}' error: {}", localPath, e);
             throw new BadRequestException("上传失败");
         }
     }
 
-    private void createFile(String path) throws IOException {
+    /**
+     * 下载文件
+     *
+     * @param path 本地路径
+     * @return 文件流
+     */
+    public InputStream download2Stream(String path) {
+        String localPath = url + File.separator + path;
+        try {
+            File file = new File(localPath);
+            if (!file.exists()) {
+                throw new ExecutionException("file not exist.");
+            }
+            log.info("download file '{}'.", localPath);
+            return FileUtil.getInputStream(file);
+        } catch (ExecutionException e) {
+            log.error("download file '{}' error: ", localPath, e);
+        }
+        return null;
+    }
+
+    private void createFile(String path) throws IOException, ExecutionException {
         File file = new File(path);
         if (!file.exists()) {
             FileUtil.mkParentDirs(file);
             if (!file.createNewFile()) {
-                log.error("上传失败,创建文件失败,path:{}", path);
-                throw new RuntimeException("上传失败");
+                throw new ExecutionException("make file '%s' error.", path);
             }
         }
     }
@@ -100,9 +149,10 @@ public class LocalUtil {
             try {
                 closeable.close();
             } catch (IOException e) {
-                log.error(e);
-                throw new RuntimeException("上传失败");
+                log.error("关闭流失败", e);
+                throw new BadRequestException("上传失败");
             }
         }
     }
 }
+

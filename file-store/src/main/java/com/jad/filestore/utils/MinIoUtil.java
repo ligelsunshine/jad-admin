@@ -63,6 +63,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class MinIoUtil {
+    private final static int URL_EXPIRE = 1000 * 60;
 
     @Autowired
     private FileStoreConfig config;
@@ -89,11 +90,10 @@ public class MinIoUtil {
         try {
             if (!bucketExist(bucket)) {
                 client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
-                log.info("make bucket '{}'.", bucket);
+                log.info("make minio bucket '{}'.", bucket);
             }
-            log.warn("make bucket '{}' error, it it already exists.", bucket);
         } catch (Exception e) {
-            log.error("make bucket '{}' error: {}", bucket, e.getMessage());
+            log.error("make minio bucket '{}' error: ", bucket, e);
         }
     }
 
@@ -111,7 +111,7 @@ public class MinIoUtil {
             }
             log.warn("remove bucket '{}' error, it doesn't  exists.", bucket);
         } catch (Exception e) {
-            log.error("remove bucket '{}' error: {}", bucket, e.getMessage());
+            log.error("remove bucket '{}' error: ", bucket, e);
         }
     }
 
@@ -125,7 +125,7 @@ public class MinIoUtil {
         try {
             return client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
         } catch (Exception e) {
-            log.error("bucket '{}' exist error: {}", bucket, e.getMessage());
+            log.error("bucket '{}' exist error: ", bucket, e);
         }
         return true;
     }
@@ -139,7 +139,7 @@ public class MinIoUtil {
         try {
             return client.listBuckets();
         } catch (Exception e) {
-            log.error("get bucket list error: {}", e.getMessage());
+            log.error("get bucket list error: ", e);
         }
         return new ArrayList<>();
     }
@@ -167,7 +167,7 @@ public class MinIoUtil {
             client.uploadObject(args);
             log.info("upload file '{}' to '{}'.", filename, object);
         } catch (Exception e) {
-            log.error("upload file to '{}' error: {}", object, e.getMessage());
+            log.error("upload file to '{}' error: ", object, e);
             throw new BadRequestException("上传失败");
         }
     }
@@ -191,15 +191,24 @@ public class MinIoUtil {
      */
     public void upload(String bucket, InputStream is, String object) {
         try {
+            long minimum = 5242880;
+            long partSize = -1;
+            long available = is.available();
+            // 若文件大于5M则采用分片上传
+            if (available > minimum) {
+                // 二分查找计算最少分片数量的分片大小
+                partSize = deepPartSize(available, 0, 1000);
+                available = -1;
+            }
             PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(bucket)
-                .stream(is, is.available(), -1)
+                .stream(is, available, partSize)
                 .object(object)
                 .build();
             client.putObject(args);
             log.info("upload file to '{}'.", object);
         } catch (Exception e) {
-            log.error("upload file to '{}' error: {}", object, e.getMessage());
+            log.error("upload file to '{}' error: ", object, e);
             throw new BadRequestException("上传失败");
         }
     }
@@ -225,7 +234,7 @@ public class MinIoUtil {
             client.removeObject(args);
             log.info("remove file '{}'.", object);
         } catch (Exception e) {
-            log.error("remove file '{}' error: {}", object, e.getMessage());
+            log.error("remove file '{}' error: ", object, e);
             throw new BadRequestException("上传失败");
         }
     }
@@ -262,7 +271,7 @@ public class MinIoUtil {
                 }
             }
         } catch (Exception e) {
-            log.error("remove multiple files error: {}", e.getMessage());
+            log.error("remove multiple files error: ", e);
             throw new BadRequestException("删除失败");
         }
     }
@@ -294,7 +303,7 @@ public class MinIoUtil {
             client.downloadObject(args);
             log.info("download file '{}' to '{}'.", object, filename);
         } catch (Exception e) {
-            log.error("download file '{}' error: {}", object, e.getMessage());
+            log.error("download file '{}' error: ", object, e);
         }
     }
 
@@ -302,7 +311,7 @@ public class MinIoUtil {
      * 下载文件
      *
      * @param object 对象，云端文件全路径
-     * @return 输入流
+     * @return 文件流
      */
     public InputStream download2Stream(String object) {
         return download2Stream(config.getBucket(), object);
@@ -322,7 +331,7 @@ public class MinIoUtil {
             log.info("download file '{}'.", object);
             return stream;
         } catch (Exception e) {
-            log.error("download file '{}' error: {}", object, e.getMessage());
+            log.error("download file '{}' error: ", object, e);
         }
         return null;
     }
@@ -347,8 +356,8 @@ public class MinIoUtil {
             client.copyObject(args);
             return true;
         } catch (Exception e) {
-            log.error("copy file [{} {}] to [{} {}] error: {}", sourceBucket, sourceObject, targetBucket, targetObject,
-                e.getMessage());
+            log.error("copy file [{} {}] to [{} {}] error: ", sourceBucket, sourceObject, targetBucket, targetObject,
+                e);
         }
         return false;
     }
@@ -375,7 +384,7 @@ public class MinIoUtil {
             StatObjectArgs args = StatObjectArgs.builder().bucket(bucket).object(object).build();
             return client.statObject(args);
         } catch (Exception e) {
-            log.error("get file stat error: {}", e.getMessage());
+            log.error("get file stat error: ", e);
         }
         return null;
     }
@@ -387,7 +396,7 @@ public class MinIoUtil {
      * @return 文件链接
      */
     public String getUrl(String object) {
-        return getUrl(config.getBucket(), object, 60 * 60 * 24);
+        return getUrl(config.getBucket(), object, URL_EXPIRE);
     }
 
     /**
@@ -421,8 +430,33 @@ public class MinIoUtil {
             log.info("get url '{}'.", url);
             return url;
         } catch (Exception e) {
-            log.error("get url error: {}", e.getMessage());
+            log.error("get url error: ", e);
         }
         return "";
+    }
+
+    /**
+     * 二分查找计算最少分片数量的分片大小
+     *
+     * @param available 总大小
+     * @param left 左边界
+     * @param right 右边界
+     * @return 最大分片大小
+     */
+    private long deepPartSize(long available, long left, long right) {
+        long part = (left + right) / 2;
+        long minimum = 5242880;
+        if (available < minimum || part == 0) {
+            return available;
+        }
+        long partSize = available / part;
+        if (left + 1 == right) {
+            return partSize;
+        }
+        if (partSize < minimum) {
+            return deepPartSize(available, left, part);
+        } else {
+            return deepPartSize(available, part, right);
+        }
     }
 }

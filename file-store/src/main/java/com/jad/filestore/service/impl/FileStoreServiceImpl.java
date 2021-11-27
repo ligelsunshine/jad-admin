@@ -19,7 +19,9 @@ package com.jad.filestore.service.impl;
 import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.entity.User;
 import com.jad.common.exception.BadRequestException;
+import com.jad.common.exception.ExecutionException;
 import com.jad.common.exception.UnauthorizedException;
+import com.jad.common.lang.Result;
 import com.jad.common.service.UserService;
 import com.jad.filestore.config.FileStoreConfig;
 import com.jad.filestore.dto.DownloadConfig;
@@ -37,16 +39,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
@@ -62,6 +67,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service
 public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileStore> implements FileStoreService {
+    // base64最大限制20M
+    private static final int BASE64_MAXIMUM = 20971520;
+
     @Autowired
     private FileStoreConfig fileStoreConfig;
 
@@ -101,18 +109,14 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
      *
      * @param config 下载配置
      * @param response 响应
+     * @return 下载结果
      */
     @Override
-    public void download(DownloadConfig config, HttpServletResponse response) {
+    public Result download(DownloadConfig config, HttpServletResponse response) {
         final FileStore fileStore = super.getById(config.getFileId());
         if (fileStore == null) {
             throw new BadRequestException("文件不存在");
         }
-        // 下载文件
-        downloadFile(fileStore, config, response);
-    }
-
-    private void downloadFile(FileStore fileStore, DownloadConfig config, HttpServletResponse response) {
         // 如文件为私有文件
         if (fileStore.getAccessPolicy() == AccessPolicy.PRIVATE) {
             // 需要认证
@@ -128,10 +132,15 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                 throw new BadRequestException("您没有权限下载该文件");
             }
         }
+        // 下载文件
+        return downloadFile(fileStore, config, response);
+    }
+
+    private Result downloadFile(FileStore fileStore, DownloadConfig config, HttpServletResponse response) {
         InputStream is = null;
         switch (fileStore.getStore()) {
             case LOCAL:
-                // TODO
+                is = localUtil.download2Stream(fileStore.getPath());
                 break;
             case MINIO:
                 is = minIoUtil.download2Stream(fileStore.getPath());
@@ -155,38 +164,92 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         }
         switch (config.getType()) {
             case STREAM:
-                transfer2Response(fileStore, is, response);
-                break;
+                transferStream(fileStore, is, response);
+                return Result.success("下载成功");
             case BASE64:
-                // TODO
-                break;
+                String base64 = "data:" + fileStore.getMemi() + ";base64," + transferBase64(fileStore, is);
+                return Result.success("下载成功", base64);
             case URL:
-                // TODO
-                break;
+                String url = transferUrl(fileStore, is);
+                return Result.success("下载成功", url);
             default:
                 log.error("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL], fileID: {}", config.getFileId());
                 throw new BadRequestException("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL]");
         }
     }
 
-    private void transfer2Response(FileStore fileStore, InputStream is, HttpServletResponse response) {
-        //响应头设置
-        response.setHeader("content-type", fileStore.getMemi());
-        response.setContentType(fileStore.getMemi());
-        response.setHeader("Content-Disposition", "attachment;filename=" + fileStore.getName());
-        OutputStream os;
+    private void transferStream(FileStore fileStore, InputStream is, HttpServletResponse response) {
+        OutputStream os = null;
         try {
+            String contentDisposition = String.format("attachment;fileName=%s;filename*=utf-8''%s", fileStore.getName(),
+                URLEncoder.encode(fileStore.getName(), "UTF-8"));
+            //响应头设置
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.setHeader("content-type", fileStore.getMemi());
+            response.setContentType(fileStore.getMemi() + ";charset=UTF-8");
+            response.setHeader("Content-Disposition", contentDisposition);
+            // response.addHeader("Access-Control-Allow-Origin", "*"); // 实现跨域
             os = response.getOutputStream();
             byte[] buff = new byte[1024];
             int len;
             while ((len = is.read(buff)) != -1) {
                 os.write(buff, 0, len);
-                os.flush();
             }
+            os.flush();
+        } catch (IOException e) {
+            log.error("下载文件异常失败", e);
+            throw new BadRequestException("下载文件异常失败");
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+            } catch (IOException e) {
+                log.error("下载文件异常失败", e);
+            }
+        }
+    }
+
+    private String transferBase64(FileStore fileStore, InputStream is) {
+        try {
+            if (is.available() > BASE64_MAXIMUM) {
+                log.error("BASE64下载最大大小为20M, fileID: {}, fileSize: {}", fileStore.getId(), is.available());
+                throw new BadRequestException("BASE64下载最大大小为20M");
+            }
+            byte[] bytes = IoUtil.readBytes(is);
+            return Base64.getEncoder().encodeToString(bytes);
         } catch (IOException e) {
             log.error("下载文件异常失败", e);
             throw new BadRequestException("下载文件异常失败");
         }
+    }
+
+    private String transferUrl(FileStore fileStore, InputStream is) {
+        String url = null;
+        try {
+            switch (fileStore.getStore()) {
+                case LOCAL:
+                    throw new ExecutionException("不能获取本地文件URL，请使用流方式下载或使用BASE64方式下载");
+                case MINIO:
+                    url = minIoUtil.getUrl(fileStore.getPath());
+                    break;
+                case QINIU:
+                    // TODO
+                    break;
+                case ALIYUN:
+                    // TODO
+                    break;
+                case TENCENTYUN:
+                    // TODO
+                    break;
+                default:
+                    log.error("获取文件URL失败，该文件未设置任何存储源，fileID: {}", fileStore.getId());
+                    throw new BadRequestException("获取URL失败");
+            }
+        } catch (ExecutionException e) {
+            log.error(e);
+        }
+        return url;
     }
 
     private void uploadFile(MultipartFile file, FileStore fileStore, UploadConfig uploadConfig) throws IOException {
@@ -199,8 +262,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         String path = fileStore.getPath();
         switch (store) {
             case LOCAL:
-                String localPath = fileStoreConfig.getUrl() + File.separator + path;
-                localUtil.upload(file, localPath);
+                localUtil.upload(file, path);
                 break;
             case MINIO:
                 minIoUtil.upload(file.getInputStream(), path);
@@ -241,8 +303,11 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             fileStore.setGroupId(IdUtil.fastSimpleUUID());
         }
         final InputStream inputStream = file.getInputStream();
-        final String suffix = filename.substring(filename.lastIndexOf("."));
-        final String path = getPath(uploadConfig, suffix);
+        String suffix = "";
+        if (filename.contains(".")) {
+            suffix = filename.substring(filename.lastIndexOf("."));
+        }
+        String path = getPath(uploadConfig, suffix);
         fileStore.setName(filename);
         fileStore.setType(suffix);
         fileStore.setSize(file.getSize());

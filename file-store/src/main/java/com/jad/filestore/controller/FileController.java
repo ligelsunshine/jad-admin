@@ -21,10 +21,12 @@ import com.jad.common.lang.Result;
 import com.jad.filestore.dto.DownloadConfig;
 import com.jad.filestore.dto.UploadConfig;
 import com.jad.filestore.entity.FileStore;
+import com.jad.filestore.enums.DownloadType;
 import com.jad.filestore.service.FileStoreService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,9 +58,23 @@ public class FileController extends BaseController {
     }
 
     @ApiOperation("下载文件")
-    @GetMapping("/download")
-    public void download(DownloadConfig config, HttpServletResponse response) {
+    @GetMapping("/download/{fileId}")
+    public void download(@PathVariable String fileId, HttpServletResponse response) {
+        final DownloadConfig config = new DownloadConfig(fileId, DownloadType.STREAM);
         service.download(config, response);
-        // return Result.success("下载成功");
+    }
+
+    @ApiOperation("获取文件BASE64")
+    @GetMapping("/base64/{fileId}")
+    public Result base64(@PathVariable String fileId) {
+        final DownloadConfig config = new DownloadConfig(fileId, DownloadType.BASE64);
+        return service.download(config, response);
+    }
+
+    @ApiOperation("获取文件URL")
+    @GetMapping("/url/{fileId}")
+    public Result url(@PathVariable String fileId) {
+        final DownloadConfig config = new DownloadConfig(fileId, DownloadType.URL);
+        return service.download(config, response);
     }
 }

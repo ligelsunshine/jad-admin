@@ -17,6 +17,7 @@
 package com.jad.filestore.service;
 
 import com.jad.common.base.service.BaseService;
+import com.jad.common.lang.Result;
 import com.jad.filestore.dto.DownloadConfig;
 import com.jad.filestore.dto.UploadConfig;
 import com.jad.filestore.entity.FileStore;
@@ -46,6 +47,7 @@ public interface FileStoreService extends BaseService<FileStore> {
      *
      * @param config 下载配置
      * @param response 响应
+     * @return 下载结果
      */
-    void download(DownloadConfig config, HttpServletResponse response);
+    Result download(DownloadConfig config, HttpServletResponse response);
 }

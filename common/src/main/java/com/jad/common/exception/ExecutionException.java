@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package com.jad.filestore.dto;
+package com.jad.common.exception;
 
-import com.jad.filestore.enums.DownloadType;
-
-import javax.validation.constraints.NotEmpty;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import java.util.Locale;
 
 /**
- * DownloadConfig
+ * ExecutionException
  *
  * @author cxxwl96
- * @since 2021/11/22 23:18
+ * @since 2021/11/27 11:45
  */
-@Data
-@AllArgsConstructor
-public class DownloadConfig {
-    @NotEmpty(message = "文件ID不能为空")
-    private String fileId;
-
-    private DownloadType type;
+public class ExecutionException extends Exception {
+    public ExecutionException(String msg, Object... obj) {
+        super(String.format(Locale.ROOT, msg, obj));
+    }
 }
