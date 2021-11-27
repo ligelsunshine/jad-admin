@@ -57,6 +57,15 @@ public class FileController extends BaseController {
         return Result.success("上传成功", fileStore);
     }
 
+    @ApiOperation("删除文件")
+    @PostMapping("/delete/{fileId}")
+    public Result delete(@PathVariable String fileId) {
+        if (!service.delete(fileId)) {
+            return Result.failed("删除失败");
+        }
+        return Result.success("删除成功");
+    }
+
     @ApiOperation("下载文件")
     @GetMapping("/download/{fileId}")
     public void download(@PathVariable String fileId, HttpServletResponse response) {

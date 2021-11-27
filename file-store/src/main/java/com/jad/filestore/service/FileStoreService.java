@@ -43,6 +43,22 @@ public interface FileStoreService extends BaseService<FileStore> {
     FileStore upload(MultipartFile file, UploadConfig uploadConfig);
 
     /**
+     * 删除文件
+     *
+     * @param fileId 文件ID
+     * @return 是否删除成功
+     */
+    boolean delete(String fileId);
+
+    /**
+     * 获取文件
+     *
+     * @param fileId 文件ID
+     * @return 文件
+     */
+    FileStore getFileStore(String fileId);
+
+    /**
      * 文件下载
      *
      * @param config 下载配置

@@ -114,6 +114,30 @@ public class LocalUtil {
     }
 
     /**
+     * 删除文件
+     *
+     * @param path 本地路径
+     */
+    public void delete(String path) {
+        String localPath = url + File.separator + path;
+        try {
+            final File file = new File(localPath);
+            if (!file.exists()) {
+                log.warn("delete warn, file '{}' not exist.", localPath);
+                return;
+                // throw new ExecutionException("file not exist.");
+            }
+            if (!file.delete()) {
+                throw new ExecutionException("delete fail.");
+            }
+            log.info("delete file '{}' success.", localPath);
+        } catch (ExecutionException e) {
+            log.error("delete file '{}' error: {}", localPath, e);
+            throw new BadRequestException("删除失败");
+        }
+    }
+
+    /**
      * 下载文件
      *
      * @param path 本地路径

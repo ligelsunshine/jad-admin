@@ -105,6 +105,72 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
     }
 
     /**
+     * 删除文件
+     *
+     * @param fileId 文件ID
+     * @return 是否删除成功
+     */
+    @Override
+    @Transactional
+    public boolean delete(String fileId) {
+        final FileStore fileStore = getFileStore(fileId);
+        switch (fileStore.getStore()) {
+            case LOCAL:
+                localUtil.delete(fileStore.getPath());
+                break;
+            case MINIO:
+                minIoUtil.removeObject(fileStore.getPath());
+                break;
+            case QINIU:
+                // TODO QINIU delete
+                break;
+            case ALIYUN:
+                // TODO ALIYUN delete
+                break;
+            case TENCENTYUN:
+                // TODO TENCENTYUN delete
+                break;
+            default:
+                log.error("删除文件失败，该文件未设置任何存储源，fileID: {}", fileStore.getId());
+                throw new BadRequestException("删除失败");
+        }
+        if (!super.removeById(fileId)) {
+            throw new BadRequestException("删除失败");
+        }
+        return true;
+    }
+
+    /**
+     * 获取文件
+     *
+     * @param fileId 文件ID
+     * @return 文件
+     */
+    @Override
+    public FileStore getFileStore(String fileId) {
+        final FileStore fileStore = super.getById(fileId);
+        if (fileStore == null) {
+            throw new BadRequestException("文件不存在");
+        }
+        // 如文件为私有文件
+        if (fileStore.getAccessPolicy() == AccessPolicy.PRIVATE) {
+            // 需要认证
+            if (!userService.Authenticated()) {
+                log.error("未登录认证，文件的访问策略为PRIVATE需要登录认证，fileID: {}", fileStore.getId());
+                throw new UnauthorizedException();
+            }
+            // 只能文件所有者下载
+            final User authUser = userService.getCurrentAuthUser();
+            if (!authUser.getId().equalsIgnoreCase(fileStore.getCreateBy())) {
+                log.error("文件的访问策略为PRIVATE，只能文件所有者才有权限，fileID: {}，requestUserID: {}", fileStore.getId(),
+                    authUser.getId());
+                throw new BadRequestException("您没有权限下载该文件");
+            }
+        }
+        return fileStore;
+    }
+
+    /**
      * 文件下载
      *
      * @param config 下载配置
@@ -113,25 +179,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
      */
     @Override
     public Result download(DownloadConfig config, HttpServletResponse response) {
-        final FileStore fileStore = super.getById(config.getFileId());
-        if (fileStore == null) {
-            throw new BadRequestException("文件不存在");
-        }
-        // 如文件为私有文件
-        if (fileStore.getAccessPolicy() == AccessPolicy.PRIVATE) {
-            // 需要认证
-            if (!userService.Authenticated()) {
-                log.error("未登录认证，下载文件的访问策略为PRIVATE需要登录认证，fileID: {}", fileStore.getId());
-                throw new UnauthorizedException();
-            }
-            // 只能文件所有者下载
-            final User authUser = userService.getCurrentAuthUser();
-            if (!authUser.getId().equalsIgnoreCase(fileStore.getCreateBy())) {
-                log.error("下载文件的访问策略为PRIVATE，只能文件所有者才有权限下载，fileID: {}，requestUserID: {}", fileStore.getId(),
-                    authUser.getId());
-                throw new BadRequestException("您没有权限下载该文件");
-            }
-        }
+        final FileStore fileStore = getFileStore(config.getFileId());
         // 下载文件
         return downloadFile(fileStore, config, response);
     }
@@ -146,13 +194,13 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                 is = minIoUtil.download2Stream(fileStore.getPath());
                 break;
             case QINIU:
-                // TODO
+                // TODO QINIU download
                 break;
             case ALIYUN:
-                // TODO
+                // TODO ALIYUN download
                 break;
             case TENCENTYUN:
-                // TODO
+                // TODO TENCENTYUN download
                 break;
             default:
                 log.error("下载文件失败，该文件未设置任何存储源，fileID: {}", fileStore.getId());
@@ -170,7 +218,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                 String base64 = "data:" + fileStore.getMemi() + ";base64," + transferBase64(fileStore, is);
                 return Result.success("下载成功", base64);
             case URL:
-                String url = transferUrl(fileStore, is);
+                String url = transferUrl(fileStore);
                 return Result.success("下载成功", url);
             default:
                 log.error("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL], fileID: {}", config.getFileId());
@@ -224,7 +272,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         }
     }
 
-    private String transferUrl(FileStore fileStore, InputStream is) {
+    private String transferUrl(FileStore fileStore) {
         String url = null;
         try {
             switch (fileStore.getStore()) {
@@ -234,13 +282,13 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                     url = minIoUtil.getUrl(fileStore.getPath());
                     break;
                 case QINIU:
-                    // TODO
+                    // TODO QINIU getUrl
                     break;
                 case ALIYUN:
-                    // TODO
+                    // TODO ALIYUN getUrl
                     break;
                 case TENCENTYUN:
-                    // TODO
+                    // TODO TENCENTYUN getUrl
                     break;
                 default:
                     log.error("获取文件URL失败，该文件未设置任何存储源，fileID: {}", fileStore.getId());
@@ -268,13 +316,13 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                 minIoUtil.upload(file.getInputStream(), path);
                 break;
             case QINIU:
-                // TODO
+                // TODO QINIU upload
                 break;
             case ALIYUN:
-                // TODO
+                // TODO ALIYUN upload
                 break;
             case TENCENTYUN:
-                // TODO
+                // TODO TENCENTYUN upload
                 break;
             default:
                 log.error("上传文件失败，请设置系统对象存储源");
