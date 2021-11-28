@@ -74,7 +74,7 @@
   import { useModal } from '/@/components/Modal';
   import Icon from '/@/components/Icon';
   import { usePermission } from '/@/hooks/web/usePermission';
-  import { Dropdown, Menu, MenuItem } from 'ant-design-vue';
+  import { Dropdown, Menu } from 'ant-design-vue';
   import { DownOutlined } from '@ant-design/icons-vue';
   import { useMessage } from '/@/hooks/web/useMessage';
 
@@ -82,6 +82,8 @@
   import { columns, searchFormSchema } from '/@${dataFilePath}';
   import ${Entity}Drawer from '/@${drawerFilePath}';
   import ${Entity}Modal from '/@${modalFilePath}';
+
+  const MenuItem = Menu.Item;
 
   export default defineComponent({
     name: 'Index',
