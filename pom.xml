@@ -28,45 +28,4 @@
         <module>file-store</module>
         <module>system</module>
     </modules>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.4.0</version>
-                <configuration>
-                    <mainClass>com.jad.AppRun</mainClass>
-                    <fork>true</fork> <!--开启热部署-->
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <resources>
-            <!--xml放在java目录下-->
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*Mapper.xml</include>
-                </includes>
-            </resource>
-            <!--指定资源的位置（xml放在resources下，可以不用指定）-->
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
-    </build>
-
 </project>
