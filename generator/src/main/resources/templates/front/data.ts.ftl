@@ -533,7 +533,7 @@ export const formSchema: FormSchema[] = [
       { required: true, message: '${field.title}不是小数', pattern: /^-?\\d+\\.\\d+$/, trigger: 'blur' },
               <#break>
             <#case "URL">
-      { required: true, message: '${field.title}不是URL', pattern: /^[a-zA-z]+://[^S]*$/, trigger: 'blur' },
+      { required: true, message: '${field.title}不是URL', pattern: /^[a-zA-z]+:\/\/[\S]*$/, trigger: 'blur' },
               <#break>
             <#case "EMAIL">
       { required: true, message: '${field.title}邮箱格式不对', pattern: /^(\\w+@(\\w+\\.)+(\\w+))?$/, trigger: 'blur' },

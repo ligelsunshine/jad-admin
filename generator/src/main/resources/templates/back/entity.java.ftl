@@ -136,7 +136,7 @@ public class ${model.bigHump} extends BaseEntity implements Serializable {
     @Pattern(message = "${field.title}不是小数", regexp = "^-?\\d+\\.\\d+$")
                     <#break>
                 <#case "URL">
-    @Pattern(message = "${field.title}不是URL", regexp = "^[a-zA-z]+://[^S]*$")
+    @Pattern(message = "${field.title}不是URL", regexp = "^[a-zA-z]+://[\\S]*$")
                     <#break>
                 <#case "EMAIL">
     @Pattern(message = "${field.title}邮箱格式不对", regexp = "^(\\w+@(\\w+\\.)+(\\w+))?$")
