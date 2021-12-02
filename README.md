@@ -60,9 +60,6 @@ Dashboard
 
 #### 使用说明
 
-+ VM Opiton
-> -Djasypt.encryptor.password=cxxwl96@sina.com
-
 #### 参与贡献
 
 1. Fork 本仓库
