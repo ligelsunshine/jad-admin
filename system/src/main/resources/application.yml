@@ -48,8 +48,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 10GB # 单文件大小
-      max-request-size: 10GB # 连续上传文件大小
+      max-file-size: 100MB # 单文件大小
+      max-request-size: 1GB # 连续上传文件大小
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss # 返回json的全局时间格式
     time-zone: GMT+8 # 时区
