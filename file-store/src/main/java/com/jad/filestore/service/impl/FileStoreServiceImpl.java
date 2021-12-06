@@ -341,14 +341,9 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         }
         final FileStore fileStore = new FileStore();
         if (StrUtil.isNotBlank(groupId)) {
-            final Long count = super.lambdaQuery().eq(FileStore::getGroupId, groupId).count();
-            if (count == 0) {
-                log.error("GroupID '{}' 不存在", groupId);
-                throw new BadRequestException("GroupID不存在");
-            }
             fileStore.setGroupId(groupId);
         } else {
-            fileStore.setGroupId(IdUtil.fastSimpleUUID());
+            fileStore.setGroupId(IdUtil.nanoId());
         }
         final InputStream inputStream = file.getInputStream();
         String suffix = "";
