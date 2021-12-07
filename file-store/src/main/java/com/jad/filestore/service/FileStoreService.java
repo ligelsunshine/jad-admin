@@ -24,6 +24,8 @@ import com.jad.filestore.entity.FileStore;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -49,6 +51,14 @@ public interface FileStoreService extends BaseService<FileStore> {
      * @return 是否删除成功
      */
     boolean delete(String fileId);
+
+    /**
+     * 批量删除文件
+     *
+     * @param ids 文件ID
+     * @return 是否删除成功
+     */
+    boolean deleteArr(Collection<String> ids);
 
     /**
      * 获取文件

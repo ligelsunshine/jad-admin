@@ -66,7 +66,7 @@ public class FileStoreController extends BaseController {
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:delete')")
     public Result delete(@PathVariable String id) {
-        if (!fileStoreService.removeById(id)) {
+        if (!fileStoreService.delete(id)) {
             return Result.failed("删除失败");
         }
         return Result.success("删除成功");
@@ -76,7 +76,7 @@ public class FileStoreController extends BaseController {
     @DeleteMapping("/deleteArr")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:deleteArr')")
     public Result deleteArr(@RequestBody @Valid IDs ids) {
-        if (!fileStoreService.removeByIds(ids.getIds())) {
+        if (!fileStoreService.deleteArr(ids.getIds())) {
             return Result.failed("删除失败");
         }
         return Result.success("删除成功");
@@ -97,11 +97,12 @@ public class FileStoreController extends BaseController {
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:get')")
     public Result get(@PathVariable String id) {
         final FileStore fileStore = fileStoreService.getById(id);
-        if (fileStore == null){
+        if (fileStore == null) {
             return Result.failed("获取数据失败");
         }
         return Result.success(fileStore);
     }
+
     @ApiOperation("分页获取对象存储")
     @PostMapping("/get/page")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:get:page')")

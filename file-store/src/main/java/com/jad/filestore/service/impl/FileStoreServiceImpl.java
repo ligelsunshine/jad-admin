@@ -16,6 +16,7 @@
 
 package com.jad.filestore.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.entity.User;
 import com.jad.common.exception.BadRequestException;
@@ -44,7 +45,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
@@ -141,6 +144,31 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
     }
 
     /**
+     * 批量删除文件
+     *
+     * @param ids 文件ID
+     * @return 是否删除成功
+     */
+    @Override
+    public boolean deleteArr(Collection<String> ids) {
+        final ArrayList<String> success = new ArrayList<>();
+        final ArrayList<String> failed = new ArrayList<>();
+        for (String id : ids) {
+            if (this.delete(id)) {
+                success.add(id);
+            } else {
+                failed.add(id);
+            }
+        }
+        if (failed.size() > 0) {
+            final String msg = String.format("成功删除%d个，失败%d个", success.size(), failed.size());
+            log.info("success: {}, failed: {}", JSON.toJSONString(success), JSON.toJSONString(failed));
+            throw new BadRequestException(msg);
+        }
+        return true;
+    }
+
+    /**
      * 获取文件
      *
      * @param fileId 文件ID
@@ -164,7 +192,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             if (!authUser.getId().equalsIgnoreCase(fileStore.getCreateBy())) {
                 log.error("文件的访问策略为PRIVATE，只能文件所有者才有权限，fileID: {}，requestUserID: {}", fileStore.getId(),
                     authUser.getId());
-                throw new BadRequestException("您没有权限下载该文件");
+                throw new BadRequestException("您没有权限");
             }
         }
         return fileStore;
