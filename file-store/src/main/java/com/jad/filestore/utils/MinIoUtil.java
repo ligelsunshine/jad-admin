@@ -235,7 +235,7 @@ public class MinIoUtil {
             log.info("remove file '{}'.", object);
         } catch (Exception e) {
             log.error("remove file '{}' error: ", object, e);
-            throw new BadRequestException("上传失败");
+            throw new BadRequestException("删除失败");
         }
     }
 

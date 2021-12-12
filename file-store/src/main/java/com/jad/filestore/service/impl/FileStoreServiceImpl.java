@@ -264,7 +264,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             response.setHeader("content-type", fileStore.getMemi());
             response.setContentType(fileStore.getMemi() + ";charset=UTF-8");
             response.setHeader("Content-Disposition", contentDisposition);
-            // response.addHeader("Access-Control-Allow-Origin", "*"); // 实现跨域
+            response.addHeader("Access-Control-Allow-Origin", "*"); // 实现跨域
             os = response.getOutputStream();
             byte[] buff = new byte[1024];
             int len;
