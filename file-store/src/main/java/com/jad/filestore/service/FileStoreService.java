@@ -25,6 +25,7 @@ import com.jad.filestore.entity.FileStore;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,6 +68,14 @@ public interface FileStoreService extends BaseService<FileStore> {
      * @return 文件
      */
     FileStore getFileStore(String fileId);
+
+    /**
+     * 分组获取FileStore
+     *
+     * @param groupId 分组ID
+     * @return FileStore
+     */
+    List<FileStore> getFileStoreByGroup(String groupId);
 
     /**
      * 文件下载

@@ -49,7 +49,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -196,6 +198,35 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             }
         }
         return fileStore;
+    }
+
+    /**
+     * 分组获取FileStore
+     *
+     * @param groupId 分组ID
+     * @return FileStore
+     */
+    @Override
+    public List<FileStore> getFileStoreByGroup(String groupId) {
+        final List<FileStore> list = super.lambdaQuery().eq(FileStore::getGroupId, groupId).list();
+        // 获取公有的file
+        final List<FileStore> stores = list.stream()
+            .filter(item -> item.getAccessPolicy() == AccessPolicy.PUBLIC)
+            .collect(Collectors.toList());
+        // 获取私有的file
+        final List<FileStore> privateStores = list.stream()
+            .filter(item -> item.getAccessPolicy() == AccessPolicy.PRIVATE)
+            .collect(Collectors.toList());
+        // 如文件为私有文件需要认证
+        if (privateStores.size() > 0 && userService.Authenticated()) {
+            final User authUser = userService.getCurrentAuthUser();
+            // 获取文件所有者的文件
+            final List<FileStore> authedFileStores = privateStores.stream()
+                .filter(item -> authUser.getId().equalsIgnoreCase(item.getCreateBy()))
+                .collect(Collectors.toList());
+            stores.addAll(authedFileStores);
+        }
+        return stores;
     }
 
     /**
