@@ -110,8 +110,8 @@ public class FileStoreController extends BaseController {
         return Result.success("查询成功", fileStoreService.getPageList(searchForm));
     }
 
-    @ApiOperation("获取对象存储")
-    @PostMapping("/get/list/{groupId}")
+    @ApiOperation("分组获取对象存储")
+    @GetMapping("/getList/{groupId}")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:get:list:groupId')")
     public Result getListByGroup(@PathVariable String groupId) {
         return Result.success("查询成功", fileStoreService.getFileStoreByGroup(groupId));

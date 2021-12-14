@@ -242,6 +242,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     public User getByUsername(String username) {
+        // TODO 缓存用户
         return getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
     }
 
