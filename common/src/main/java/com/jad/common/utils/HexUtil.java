@@ -27,13 +27,15 @@ import cn.hutool.core.util.StrUtil;
  * @since 2021/12/18 23:26
  */
 public class HexUtil {
+    private static final String PREFIX = "0X";
+
     public static String prettify(String hexStr) {
         if (StrUtil.isBlank(hexStr)) {
             return "";
         }
         String text = hexStr.toUpperCase(Locale.ROOT).replaceAll("\\s", "");
         String regex = "[0-9a-zA-Z]{2}";
-        if (text.startsWith("0X")) {
+        if (text.startsWith(PREFIX)) {
             text = text.substring(2);
         }
         if (text.length() % 2 == 1) {
