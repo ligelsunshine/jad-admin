@@ -99,7 +99,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             if (maxLevelRole != null) {
                 // 添加level <= maxLevel, order by level desc条件
                 return super.lambdaQuery()
-                    .le(Role::getLevel, maxLevelRole.getLevel())
+                    .lt(Role::getLevel, maxLevelRole.getLevel())
                     .orderByDesc(Role::getLevel)
                     .list();
             } else {
