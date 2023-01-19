@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn" name="XInclude">
     <Properties>
-        <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%t] %-40.40c{1.} : %m%n"/>
+        <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] [%t] [%-40.40c{2.}:%-.40F:%L] > %m%n"/>
         <Property name="logPath" value="logs"/>
         <Property name="size" value="1G"/>
     </Properties>

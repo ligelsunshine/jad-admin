@@ -28,10 +28,10 @@ public class SystemUtil {
      * - 其次获取操作系统用户名
      *
      * @return 用户名
-     * @throws BadRequestException
+     * @throws BadRequestException 请求失败
      */
     public static String getUsername() throws BadRequestException {
-        Result result = Result.success();
+        Result<?> result = Result.success();
         String author;
         Process exec = null;
         InputStream is = null;

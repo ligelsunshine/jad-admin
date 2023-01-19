@@ -243,7 +243,14 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         return downloadFile(fileStore, config, response);
     }
 
-    private Result downloadFile(FileStore fileStore, DownloadConfig config, HttpServletResponse response) {
+    /**
+     * 获取文件流
+     *
+     * @param fileStore fileStore
+     * @return 文件流
+     */
+    @Override
+    public InputStream getFileInputStream(FileStore fileStore) {
         InputStream is = null;
         switch (fileStore.getStore()) {
             case LOCAL:
@@ -269,16 +276,21 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             log.error("下载文件失败，获取文件流为null，fileID: {}", fileStore.getId());
             throw new BadRequestException("下载失败");
         }
+        return is;
+    }
+
+    private Result<?> downloadFile(FileStore fileStore, DownloadConfig config, HttpServletResponse response) {
+        final InputStream is = getFileInputStream(fileStore);
         switch (config.getType()) {
             case STREAM:
                 transferStream(fileStore, is, response);
                 return Result.success("下载成功");
             case BASE64:
                 String base64 = "data:" + fileStore.getMemi() + ";base64," + transferBase64(fileStore, is);
-                return Result.success("下载成功", base64);
+                return Result.success("", base64);
             case URL:
                 String url = transferUrl(fileStore);
-                return Result.success("下载成功", url);
+                return Result.success("", url);
             default:
                 log.error("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL], fileID: {}", config.getFileId());
                 throw new BadRequestException("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL]");

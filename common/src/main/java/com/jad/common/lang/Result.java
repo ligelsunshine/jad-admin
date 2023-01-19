@@ -16,7 +16,7 @@ import lombok.Data;
  * @since 2021/6/18 23:41
  */
 @Data
-public class Result implements Serializable {
+public class Result<T> implements Serializable {
     public static final int CODE_SUCCESS = 200;
 
     public static final int CODE_FAILED = 400;
@@ -28,50 +28,50 @@ public class Result implements Serializable {
     private String msg;
 
     @ApiModelProperty(value = "响应数据")
-    private Object data;
+    private T data;
 
-    public static Result formatFailed(String format, Object... args) {
+    public static Result<?> formatFailed(String format, Object... args) {
         return Result.failed(String.format(format, args));
     }
 
-    public static Result formatSuccess(String format, Object... args) {
+    public static Result<?> formatSuccess(String format, Object... args) {
         return Result.success(String.format(format, args));
     }
 
-    public static Result success() {
-        return success(200, "操作成功", null);
+    public static <T> Result<?> success() {
+        return success(CODE_SUCCESS, "操作成功", null);
     }
 
-    public static Result success(String msg) {
-        return success(200, msg, null);
+    public static <T> Result<?> success(String msg) {
+        return success(CODE_SUCCESS, msg, null);
     }
 
-    public static Result success(Object data) {
-        return success(200, "操作成功", data);
+    public static <T> Result<?> success(T data) {
+        return success(CODE_SUCCESS, "操作成功", data);
     }
 
-    public static Result success(String msg, Object data) {
-        return success(200, msg, data);
+    public static <T> Result<T> success(String msg, T data) {
+        return success(CODE_SUCCESS, msg, data);
     }
 
-    public static Result success(int code, String msg, Object data) {
-        Result result = new Result();
+    public static <T> Result<T> success(int code, String msg, T data) {
+        Result<T> result = new Result<>();
         result.setCode(code);
         result.setMsg(msg);
         result.setData(data);
         return result;
     }
 
-    public static Result failed() {
-        return failed(400, "操作失败", null);
+    public static <T> Result<T> failed() {
+        return failed(CODE_FAILED, "操作失败", null);
     }
 
-    public static Result failed(String msg) {
-        return failed(400, msg, null);
+    public static <T> Result<T> failed(String msg) {
+        return failed(CODE_FAILED, msg, null);
     }
 
-    public static Result failed(int code, String msg, Object data) {
-        Result result = new Result();
+    public static <T> Result<T> failed(int code, String msg, T data) {
+        Result<T> result = new Result<>();
         result.setCode(code);
         result.setMsg(msg);
         result.setData(data);
