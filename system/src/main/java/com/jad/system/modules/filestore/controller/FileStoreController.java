@@ -82,16 +82,6 @@ public class FileStoreController extends BaseController {
         return Result.success("删除成功");
     }
 
-    @ApiOperation("修改对象存储")
-    @PutMapping("/update")
-    @PreAuthorize("@auth.hasAuthority('sys:fileStore:update')")
-    public Result update(@RequestBody @Valid FileStore fileStore) {
-        if (!fileStoreService.updateById(fileStore)) {
-            return Result.failed("修改失败");
-        }
-        return Result.success("修改成功");
-    }
-
     @ApiOperation("获取单个对象存储")
     @GetMapping("/get/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:get')")
