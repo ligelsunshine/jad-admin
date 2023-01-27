@@ -83,7 +83,7 @@ public class Model {
         return NamingUtil.toBigHump(this.namespace);
     }
 
-    public String getModuleLowerCase(){
+    public String getModuleLowerCase() {
         return NamingUtil.toLowerCase(module);
     }
 

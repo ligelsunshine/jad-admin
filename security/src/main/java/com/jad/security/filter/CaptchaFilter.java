@@ -38,10 +38,10 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private static final String CODE_VALUE = "codeValue";
 
     @Autowired
-    private RedisUtil redisUtil;
+    JadAuthenticationFailureHandler authenticationFailureHandler;
 
     @Autowired
-    JadAuthenticationFailureHandler authenticationFailureHandler;
+    private RedisUtil redisUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

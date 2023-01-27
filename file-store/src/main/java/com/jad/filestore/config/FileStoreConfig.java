@@ -33,6 +33,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @ConfigurationProperties(prefix = "file-store")
 public class FileStoreConfig {
+    public String bucket = "";
+
     private String store;
 
     private String url = "";
@@ -40,7 +42,5 @@ public class FileStoreConfig {
     private String accessKey = "";
 
     private String secretKey = "";
-
-    public String bucket = "";
 
 }

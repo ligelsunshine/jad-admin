@@ -47,7 +47,7 @@ public class DataClassifyServiceImpl extends TreeServiceImpl<DataClassifyMapper,
      * @return 数据分类树
      */
     @Override
-    public Result getTree(String code, boolean includeSelf) {
+    public Result<?> getTree(String code, boolean includeSelf) {
         if (StrUtil.isBlank(code)) {
             return Result.success(super.getRootTree());
         }

@@ -48,7 +48,7 @@ public class TestController extends BaseController {
 
     @ApiOperation("生成测试图片验证码验证码")
     @GetMapping("/captcha/generator")
-    public Result generatorCaptcha() throws IOException {
+    public Result<?> generatorCaptcha() throws IOException {
         String codeKey = "key";
         String codeValue = "value";
 
@@ -75,13 +75,13 @@ public class TestController extends BaseController {
 
     @ApiOperation("密码加密")
     @GetMapping("/encoder")
-    public Result encoder(String password) {
+    public Result<?> encoder(String password) {
         return Result.success("生成成功", bCryptPasswordEncoder.encode(password));
     }
 
     @ApiOperation("yaml配置信息加密")
     @GetMapping("/encrypt")
-    public Result encrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
+    public Result<?> encrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
         BasicTextEncryptor encryptor = new BasicTextEncryptor();
         encryptor.setPassword(salt);
         return Result.success("生成成功", encryptor.encrypt(text));
@@ -89,7 +89,7 @@ public class TestController extends BaseController {
 
     @ApiOperation("yaml配置信息解密")
     @GetMapping("/decrypt")
-    public Result decrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
+    public Result<?> decrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
         BasicTextEncryptor encryptor = new BasicTextEncryptor();
         encryptor.setPassword(salt);
         return Result.success("生成成功", encryptor.decrypt(text));

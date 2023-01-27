@@ -30,13 +30,13 @@ public enum DBType {
     @JsonValue
     private final int index;
 
-    public int getIndex() {
-        return index;
-    }
-
     DBType(int index, String driver) {
         this.index = index;
         this.driver = driver;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public String getDriver() {

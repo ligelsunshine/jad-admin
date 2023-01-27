@@ -18,9 +18,9 @@ import lombok.Getter;
  */
 @Getter
 public class BadRequestException extends RuntimeException {
-    private final Result result;
+    private final Result<?> result;
 
-    public BadRequestException(Result result) {
+    public BadRequestException(Result<?> result) {
         super(result.getMsg());
         this.result = result;
     }

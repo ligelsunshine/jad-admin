@@ -85,7 +85,7 @@ public interface FileStoreService extends BaseService<FileStore> {
      * @param response 响应
      * @return 下载结果
      */
-    Result download(DownloadConfig config, HttpServletResponse response);
+    Result<?> download(DownloadConfig config, HttpServletResponse response);
 
     /**
      * 获取文件流

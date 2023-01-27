@@ -41,7 +41,7 @@ public class JadLogoutSuccessHandler implements LogoutSuccessHandler {
         // 清除header
         response.setHeader(jwtUtil.getHeader(), "");
 
-        final Result result = Result.success(200, "退出成功", null);
+        final Result<?> result = Result.success(200, "退出成功", null);
         outputStream.write(JsonUtil.toJSONString(result).getBytes(StandardCharsets.UTF_8));
 
         outputStream.flush();

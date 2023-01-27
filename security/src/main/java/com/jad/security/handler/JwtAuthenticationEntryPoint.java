@@ -41,7 +41,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         msg = StringUtils.isBlank(msg) ? "未登录认证" : msg;
 
         final ServletOutputStream outputStream = response.getOutputStream();
-        final Result result = Result.failed(HttpServletResponse.SC_UNAUTHORIZED, msg, null);
+        final Result<?> result = Result.failed(HttpServletResponse.SC_UNAUTHORIZED, msg, null);
         outputStream.write(JsonUtil.toJSONString(result).getBytes(StandardCharsets.UTF_8));
         outputStream.flush();
         outputStream.close();

@@ -33,7 +33,7 @@ public interface GeneratorService extends BaseService<Generator> {
      * @param path path
      * @return 本地路径
      */
-    Result getLocalPath(String path);
+    Result<?> getLocalPath(String path);
 
     /**
      * 生成数据库表DDL
@@ -48,7 +48,7 @@ public interface GeneratorService extends BaseService<Generator> {
      * @param model model
      * @return 预览结果
      */
-    Result viewTable(Model model);
+    Result<?> viewTable(Model model);
 
     /**
      * 生成后端代码
@@ -56,7 +56,7 @@ public interface GeneratorService extends BaseService<Generator> {
      * @param model model
      * @return 生成结果
      */
-    Result generateBack(Model model, GenerateConfig config);
+    Result<?> generateBack(Model model, GenerateConfig config);
 
     /**
      * 预览后端代码
@@ -65,7 +65,7 @@ public interface GeneratorService extends BaseService<Generator> {
      * @param config config
      * @return 预览结果
      */
-    Result viewBack(Model model, GenerateConfig config);
+    Result<?> viewBack(Model model, GenerateConfig config);
 
     /**
      * 生成前端代码
@@ -74,7 +74,7 @@ public interface GeneratorService extends BaseService<Generator> {
      * @param frontPath frontPath
      * @return 生成结果
      */
-    Result generateFront(Model model, String frontPath);
+    Result<?> generateFront(Model model, String frontPath);
 
     /**
      * 预览前端代码
@@ -83,5 +83,5 @@ public interface GeneratorService extends BaseService<Generator> {
      * @param frontPath frontPath
      * @return 预览结果
      */
-    Result viewFront(Model model, String frontPath);
+    Result<?> viewFront(Model model, String frontPath);
 }

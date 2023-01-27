@@ -41,7 +41,7 @@ public class JadAuthenticationFailureHandler implements AuthenticationFailureHan
         }
 
         final ServletOutputStream outputStream = response.getOutputStream();
-        final Result result = Result.failed(HttpServletResponse.SC_BAD_REQUEST, errorMsg, null);
+        final Result<?> result = Result.failed(HttpServletResponse.SC_BAD_REQUEST, errorMsg, null);
         outputStream.write(JsonUtil.toJSONString(result).getBytes(StandardCharsets.UTF_8));
         outputStream.flush();
         outputStream.close();

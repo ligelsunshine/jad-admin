@@ -1,12 +1,19 @@
 # 开发笔记
+
 ***
+
 ## 一、系统配置
+
 ### jvm参数
+
 ```text
 -Djasypt.encryptor.password=cxxwl96@sina.com
 ```
+
 ### 启动命令
+
 + minio启动
+
 ```shell
 # mac 启动
 nohup minio server \
@@ -17,6 +24,7 @@ nohup minio server \
 export MINIO_ACCESS_KEY=xxx
 export MINIO_SECRET_KEY=xxx
 ```
+
 ``` shell
 # docker启动
 docker run --name minio \
@@ -33,8 +41,11 @@ localhost/minio server /data \
 ```
 
 ## 二、HuTool使用笔记
+
 ### IdUtil
+
 + ID生成样例
+
 ```text
 IdUtil.fastUUID()                                                      // d1f92c23-2eeb-4300-97df-4b3f72436263
 IdUtil.randomUUID()                                                    // 2129fce1-3abf-4228-a375-0882fe42b9ea
@@ -51,7 +62,9 @@ IdUtil.getSnowflake().getGenerateDateTime(System.currentTimeMillis())  // 128883
 ```
 
 ## 三、springboot使用笔记
+
 ### springboot starter validation
+
 + 约束性注解(简单)说明
 
 | 注解 | 功能 |

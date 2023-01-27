@@ -72,7 +72,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @return 本地路径
      */
     @Override
-    public Result getLocalPath(String path) {
+    public Result<?> getLocalPath(String path) {
         List<Map<String, String>> result = new ArrayList<>();
         List<String> list = new ArrayList<>();
         File[] files = new File[0];
@@ -127,7 +127,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @return 预览结果
      */
     @Override
-    public Result viewTable(Model model) {
+    public Result<?> viewTable(Model model) {
         final Map<String, Object> paramMap = getParamMap(model);
         final String tableSql = new FreemarkerGenerator("templates/db/table.sql.ftl").process(paramMap);
         final Map<String, String> map = new HashMap<>();
@@ -145,7 +145,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @param model model
      */
     @Override
-    public Result generateBack(Model model, GenerateConfig config) {
+    public Result<?> generateBack(Model model, GenerateConfig config) {
         List<String> result = new ArrayList<>();
         getBackItems(model, config).forEach(item -> {
             new FreemarkerGenerator(item.getTempPath()).processFile(item.getParamMap(), item.getOutputPath());
@@ -162,7 +162,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @return 预览结果
      */
     @Override
-    public Result viewBack(Model model, GenerateConfig config) {
+    public Result<?> viewBack(Model model, GenerateConfig config) {
         List<Map<String, String>> viewList = new ArrayList<>();
         getBackItems(model, config).forEach(item -> {
             final String content = new FreemarkerGenerator(item.getTempPath()).process(item.getParamMap());
@@ -183,7 +183,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @return 生成结果
      */
     @Override
-    public Result generateFront(Model model, String frontPath) {
+    public Result<?> generateFront(Model model, String frontPath) {
         List<String> result = new ArrayList<>();
         getFrontItems(model, frontPath).forEach(item -> {
             new FreemarkerGenerator(item.getTempPath()).processFile(item.getParamMap(), item.getOutputPath());
@@ -200,7 +200,7 @@ public class GeneratorServiceImpl extends BaseServiceImpl<GeneratorMapper, Gener
      * @return 预览结果
      */
     @Override
-    public Result viewFront(Model model, String frontPath) {
+    public Result<?> viewFront(Model model, String frontPath) {
         List<Map<String, String>> viewList = new ArrayList<>();
         getFrontItems(model, frontPath).forEach(item -> {
             final String content = new FreemarkerGenerator(item.getTempPath()).process(item.getParamMap());

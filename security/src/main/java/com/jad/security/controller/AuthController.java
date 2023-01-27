@@ -54,7 +54,7 @@ public class AuthController extends BaseController {
 
     @ApiOperation("获取图片验证码")
     @GetMapping("/captcha")
-    public Result captcha() throws IOException {
+    public Result<?> captcha() throws IOException {
         // 验证码key
         final String codeKey = UUID.randomUUID().toString();
         // 验证码
@@ -83,14 +83,14 @@ public class AuthController extends BaseController {
 
     @ApiOperation("登录")
     @PostMapping("/login")
-    public Result login(LoginForm dto, HttpServletRequest request) {
+    public Result<?> login(LoginForm dto, HttpServletRequest request) {
         // 目的是为了在swagger中显示这个接口
         return null;
     }
 
     @ApiOperation("退出登录")
     @PostMapping("/logout")
-    public Result logout(HttpServletRequest request) {
+    public Result<?> logout(HttpServletRequest request) {
         // 目的是为了在swagger中显示这个接口
         return null;
     }

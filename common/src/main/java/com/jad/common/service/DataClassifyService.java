@@ -34,5 +34,5 @@ public interface DataClassifyService extends TreeService<DataClassify> {
      * @param includeSelf 是否包含本身
      * @return 数据分类树
      */
-    Result getTree(String code, boolean includeSelf);
+    Result<?> getTree(String code, boolean includeSelf);
 }

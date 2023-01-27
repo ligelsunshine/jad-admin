@@ -63,7 +63,7 @@ public class RoleController extends BaseController {
     @ApiOperation("添加系统角色")
     @PostMapping("/save")
     @PreAuthorize("@auth.hasAuthority('sys:role:save')")
-    public Result save(@RequestBody @Valid Role role) {
+    public Result<?> save(@RequestBody @Valid Role role) {
         if (roleService.save(role)) {
             return Result.success("添加成功");
         }
@@ -73,7 +73,7 @@ public class RoleController extends BaseController {
     @ApiOperation("删除系统角色")
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:role:delete')")
-    public Result delete(@PathVariable String id) {
+    public Result<?> delete(@PathVariable String id) {
         if (roleService.removeById(id)) {
             return Result.success("删除成功");
         }
@@ -83,7 +83,7 @@ public class RoleController extends BaseController {
     @ApiOperation("修改系统角色")
     @PutMapping("/update")
     @PreAuthorize("@auth.hasAuthority('sys:role:update')")
-    public Result update(@RequestBody @Valid Role role) {
+    public Result<?> update(@RequestBody @Valid Role role) {
         if (roleService.updateById(role)) {
             return Result.success("修改成功");
         }
@@ -93,7 +93,7 @@ public class RoleController extends BaseController {
     @ApiOperation("修改状态")
     @PutMapping("/update/status")
     @PreAuthorize("@auth.hasAuthority('sys:role:update:status')")
-    public Result updateStatus(@RequestParam String id, @RequestParam String status) {
+    public Result<?> updateStatus(@RequestParam String id, @RequestParam String status) {
         if (roleService.updateStatus(id, Status.valueOf(status))) {
             return Result.success("已成功修改角色状态");
         }
@@ -103,14 +103,14 @@ public class RoleController extends BaseController {
     @ApiOperation("获取所有系统角色")
     @GetMapping("/get/list")
     @PreAuthorize("@auth.hasAuthority('sys:role:get:list')")
-    public Result getList() {
+    public Result<?> getList() {
         return Result.success(roleService.getList());
     }
 
     @ApiOperation("分页获取系统角色")
     @PostMapping("/get/page")
     @PreAuthorize("@auth.hasAuthority('sys:get:page')")
-    public Result getPageList(@RequestBody SearchForm searchForm) {
+    public Result<?> getPageList(@RequestBody SearchForm searchForm) {
         final SearchResult<Role> searchResult = roleService.getPageList(searchForm);
         return Result.success("查询成功", searchResult);
     }
@@ -118,7 +118,7 @@ public class RoleController extends BaseController {
     @ApiOperation("获取角色菜单ID")
     @GetMapping("/getRoleMenuItems")
     @PreAuthorize("@auth.hasAuthority('sys:role:assignPermissions')")
-    public Result getRoleMenuItems(@RequestParam String roleId) {
+    public Result<?> getRoleMenuItems(@RequestParam String roleId) {
         final List<RoleMenu> roleMenus = roleMenuService.lambdaQuery().eq(RoleMenu::getRoleId, roleId).list();
         List<AssignPermissionsDto.MenuItem> menuItems = new ArrayList<>();
         roleMenus.forEach(roleMenu -> {
@@ -134,7 +134,7 @@ public class RoleController extends BaseController {
     @PutMapping("/assignPermissions")
     @Transactional
     @PreAuthorize("@auth.hasAuthority('sys:role:assignPermissions')")
-    public Result assignPermissions(@RequestBody @Valid AssignPermissionsDto dto) {
+    public Result<?> assignPermissions(@RequestBody @Valid AssignPermissionsDto dto) {
         // 先全部删除
         long count = roleMenuService.lambdaQuery().eq(RoleMenu::getRoleId, dto.getRoleId()).count();
         if (count > 0) {

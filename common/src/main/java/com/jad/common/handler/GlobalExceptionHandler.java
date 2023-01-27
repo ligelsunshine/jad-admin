@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
         MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class,
         MethodArgumentConversionNotSupportedException.class, IllegalStateException.class, MultipartException.class
     })
-    public Result illegalDataHandler(Exception e) {
+    public Result<?> illegalDataHandler(Exception e) {
         return processFailed(HttpStatus.BAD_REQUEST.value(), "非法数据请求", e);
     }
 
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public Result handler(MethodArgumentNotValidException e) {
+    public Result<?> handler(MethodArgumentNotValidException e) {
         ObjectError objectError = e.getBindingResult().getAllErrors().stream().findFirst().orElse(null);
         if (objectError != null) {
             return processFailed(HttpStatus.BAD_REQUEST.value(), objectError.getDefaultMessage(), e);
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BadRequestException.class)
-    public Result handler(BadRequestException e) {
+    public Result<?> handler(BadRequestException e) {
         processFailed(HttpStatus.BAD_REQUEST.value(), "错误的请求", e);
         return e.getResult() != null ? e.getResult() : Result.failed(e.getMessage());
     }
@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = UnauthorizedException.class)
-    public Result handler(UnauthorizedException e) {
+    public Result<?> handler(UnauthorizedException e) {
         return processFailed(HttpStatus.UNAUTHORIZED.value(), "未认证", e);
     }
 
@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AccessDeniedException.class)
-    public Result handler(AccessDeniedException e) {
+    public Result<?> handler(AccessDeniedException e) {
         return processFailed(HttpStatus.FORBIDDEN.value(), "权限不足", e);
     }
 
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Result handler(HttpRequestMethodNotSupportedException e) {
+    public Result<?> handler(HttpRequestMethodNotSupportedException e) {
         return processFailed(HttpStatus.NOT_FOUND.value(), "不支持的请求方式", e);
     }
 
@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
-    public Result handler(NoHandlerFoundException e) {
+    public Result<?> handler(NoHandlerFoundException e) {
         return processFailed(HttpStatus.NOT_FOUND.value(), "您访问的资源不存在", e);
     }
 
@@ -140,7 +140,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = RedisConnectionFailureException.class)
-    public Result handler(RedisConnectionFailureException e) {
+    public Result<?> handler(RedisConnectionFailureException e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误：Redis连接失败异常", e);
     }
 
@@ -152,7 +152,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = DuplicateKeyException.class)
-    public Result handler(DuplicateKeyException e) {
+    public Result<?> handler(DuplicateKeyException e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误：数据库添加多个key重复异常", e);
     }
 
@@ -164,7 +164,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = NullPointerException.class)
-    public Result handler(NullPointerException e) {
+    public Result<?> handler(NullPointerException e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统错误：空指针异常", e);
     }
 
@@ -176,7 +176,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = SQLSyntaxErrorException.class)
-    public Result handler(SQLSyntaxErrorException e) {
+    public Result<?> handler(SQLSyntaxErrorException e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "数据库异常", e);
     }
 
@@ -188,11 +188,11 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
-    public Result handler(Exception e) {
+    public Result<?> handler(Exception e) {
         return processFailed(HttpStatus.INTERNAL_SERVER_ERROR.value(), "未知异常", e);
     }
 
-    private Result processFailed(int httpStatus, String msg, Exception e) {
+    private Result<?> processFailed(int httpStatus, String msg, Exception e) {
         log.error(msg, e);
         return Result.failed(httpStatus, msg, e.getMessage());
     }

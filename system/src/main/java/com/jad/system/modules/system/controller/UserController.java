@@ -52,7 +52,7 @@ public class UserController extends BaseController {
     @PostMapping("/save")
     @PreAuthorize("@auth.hasAuthority('sys:user:save')")
     @Transactional
-    public Result save(@RequestBody @Valid User user) {
+    public Result<?> save(@RequestBody @Valid User user) {
         userService.save(user);
         return Result.success("添加成功");
     }
@@ -61,7 +61,7 @@ public class UserController extends BaseController {
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:user:delete')")
     @Transactional
-    public Result delete(@PathVariable String id) {
+    public Result<?> delete(@PathVariable String id) {
         userService.removeById(id);
         return Result.success("删除成功");
     }
@@ -70,7 +70,7 @@ public class UserController extends BaseController {
     @PutMapping("/update")
     @PreAuthorize("@auth.hasAuthority('sys:user:update')")
     @Transactional
-    public Result update(@RequestBody @Valid User user) {
+    public Result<?> update(@RequestBody @Valid User user) {
         userService.update(user);
         return Result.success("修改成功");
     }
@@ -78,20 +78,20 @@ public class UserController extends BaseController {
     @ApiOperation("获取单个用户")
     @GetMapping("/get/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:user:get')")
-    public Result get(@PathVariable String id) {
+    public Result<?> get(@PathVariable String id) {
         return Result.success(userService.getById(id));
     }
 
     @ApiOperation("分页获取用户")
     @PostMapping("/get/page")
     @PreAuthorize("@auth.hasAuthority('sys:user:get:page')")
-    public Result getPageList(@RequestBody SearchForm searchForm) {
+    public Result<?> getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", userService.getPageList(searchForm));
     }
 
     @ApiOperation("获取当前登录的用户信息")
     @GetMapping("/currentUser")
-    public Result currentUser() {
+    public Result<?> currentUser() {
         final User user = userService.getCurrentAuthUser();
         final List<Role> roles = userService.getRoles(user.getId());
         final UserVo userInfo = new UserVo();
@@ -103,7 +103,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("获取当前登录的权限码")
     @GetMapping("/getPermCode")
-    public Result getPermCode() {
+    public Result<?> getPermCode() {
         final User user = userService.getCurrentAuthUser();
         final String userAuthority = userService.getUserAuthority(user.getId());
         final String[] codes = userAuthority.split(",");

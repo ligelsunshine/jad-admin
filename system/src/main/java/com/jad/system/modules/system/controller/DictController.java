@@ -55,7 +55,7 @@ public class DictController extends BaseController {
     @ApiOperation("添加字典")
     @PostMapping("/save")
     @PreAuthorize("@auth.hasAuthority('sys:dict:save')")
-    public Result save(@RequestBody @Valid Dict dict) {
+    public Result<?> save(@RequestBody @Valid Dict dict) {
         if (!dictService.save(dict)) {
             return Result.failed("添加失败");
         }
@@ -65,7 +65,7 @@ public class DictController extends BaseController {
     @ApiOperation("删除字典")
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:dict:delete')")
-    public Result delete(@PathVariable String id) {
+    public Result<?> delete(@PathVariable String id) {
         if (!dictService.removeById(id)) {
             return Result.failed("删除失败");
         }
@@ -75,7 +75,7 @@ public class DictController extends BaseController {
     @ApiOperation("删除多个字典")
     @DeleteMapping("/deleteArr")
     @PreAuthorize("@auth.hasAuthority('sys:dict:deleteArr')")
-    public Result deleteArr(@RequestBody @Valid IDs ids) {
+    public Result<?> deleteArr(@RequestBody @Valid IDs ids) {
         if (!dictService.removeByIds(ids.getIds())) {
             return Result.failed("删除失败");
         }
@@ -85,7 +85,7 @@ public class DictController extends BaseController {
     @ApiOperation("修改字典")
     @PutMapping("/update")
     @PreAuthorize("@auth.hasAuthority('sys:dict:update')")
-    public Result update(@RequestBody @Valid Dict dict) {
+    public Result<?> update(@RequestBody @Valid Dict dict) {
         if (!dictService.updateById(dict)) {
             return Result.failed("修改失败");
         }
@@ -95,13 +95,13 @@ public class DictController extends BaseController {
     @ApiOperation("分页获取字典")
     @PostMapping("/get/page")
     @PreAuthorize("@auth.hasAuthority('sys:dict:get:page')")
-    public Result getPageList(@RequestBody SearchForm searchForm) {
+    public Result<?> getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", dictService.getPageList(searchForm));
     }
 
     @ApiOperation("通过字典编码获取字典数据")
     @GetMapping("/getDictData/{code}")
-    public Result getDictData(@PathVariable String code) {
+    public Result<?> getDictData(@PathVariable String code) {
         return Result.success("获取成功", dictService.getDictDataByCode(code));
     }
 }

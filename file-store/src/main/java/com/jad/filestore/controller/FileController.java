@@ -57,7 +57,7 @@ public class FileController extends BaseController {
 
     @ApiOperation("上传文件")
     @PostMapping("/upload")
-    public Result upload(MultipartFile file, UploadConfig config) {
+    public Result<?> upload(MultipartFile file, UploadConfig config) {
         final FileStore fileStore = service.upload(file, config);
         return Result.success("上传成功", fileStore);
     }
@@ -71,14 +71,14 @@ public class FileController extends BaseController {
 
     @ApiOperation("获取文件BASE64")
     @GetMapping("/base64/{fileId}")
-    public Result base64(@PathVariable String fileId) {
+    public Result<?> base64(@PathVariable String fileId) {
         final DownloadConfig config = new DownloadConfig(fileId, DownloadType.BASE64);
         return service.download(config, response);
     }
 
     @ApiOperation("获取文件URL")
     @GetMapping("/url/{fileId}")
-    public Result url(@PathVariable String fileId) {
+    public Result<?> url(@PathVariable String fileId) {
         final DownloadConfig config = new DownloadConfig(fileId, DownloadType.URL);
         return service.download(config, response);
     }

@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +54,7 @@ public class FileStoreController extends BaseController {
     @ApiOperation("添加对象存储")
     @PostMapping("/save")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:save')")
-    public Result save(@RequestBody @Valid FileStore fileStore) {
+    public Result<?> save(@RequestBody @Valid FileStore fileStore) {
         if (!fileStoreService.save(fileStore)) {
             return Result.failed("添加失败");
         }
@@ -65,7 +64,7 @@ public class FileStoreController extends BaseController {
     @ApiOperation("删除对象存储")
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:delete')")
-    public Result delete(@PathVariable String id) {
+    public Result<?> delete(@PathVariable String id) {
         if (!fileStoreService.delete(id)) {
             return Result.failed("删除失败");
         }
@@ -75,7 +74,7 @@ public class FileStoreController extends BaseController {
     @ApiOperation("删除多个对象存储")
     @DeleteMapping("/deleteArr")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:deleteArr')")
-    public Result deleteArr(@RequestBody @Valid IDs ids) {
+    public Result<?> deleteArr(@RequestBody @Valid IDs ids) {
         if (!fileStoreService.deleteArr(ids.getIds())) {
             return Result.failed("删除失败");
         }
@@ -85,7 +84,7 @@ public class FileStoreController extends BaseController {
     @ApiOperation("获取单个对象存储")
     @GetMapping("/get/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:get')")
-    public Result get(@PathVariable String id) {
+    public Result<?> get(@PathVariable String id) {
         final FileStore fileStore = fileStoreService.getById(id);
         if (fileStore == null) {
             return Result.failed("获取数据失败");
@@ -96,14 +95,14 @@ public class FileStoreController extends BaseController {
     @ApiOperation("分页获取对象存储")
     @PostMapping("/get/page")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:get:page')")
-    public Result getPageList(@RequestBody SearchForm searchForm) {
+    public Result<?> getPageList(@RequestBody SearchForm searchForm) {
         return Result.success("查询成功", fileStoreService.getPageList(searchForm));
     }
 
     @ApiOperation("分组获取对象存储")
     @GetMapping("/getList/{groupId}")
     @PreAuthorize("@auth.hasAuthority('sys:fileStore:get:list:groupId')")
-    public Result getListByGroup(@PathVariable String groupId) {
+    public Result<?> getListByGroup(@PathVariable String groupId) {
         return Result.success("查询成功", fileStoreService.getFileStoreByGroup(groupId));
     }
 }

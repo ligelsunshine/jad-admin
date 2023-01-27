@@ -237,7 +237,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
      * @return 下载结果
      */
     @Override
-    public Result download(DownloadConfig config, HttpServletResponse response) {
+    public Result<?> download(DownloadConfig config, HttpServletResponse response) {
         final FileStore fileStore = getFileStore(config.getFileId());
         // 下载文件
         return downloadFile(fileStore, config, response);

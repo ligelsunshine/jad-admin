@@ -7,20 +7,22 @@
     </Properties>
     <Appenders>
         <!-- Error -->
-        <RollingFile name="Error" fileName="${logPath}/error/error.log" filePattern="${logPath}/archives/error/error-%d{yyyy-MM-dd}-%i.log.zip">
+        <RollingFile name="Error" fileName="${logPath}/error/error.log"
+                     filePattern="${logPath}/archives/error/error-%d{yyyy-MM-dd}-%i.log.zip">
             <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${pattern}"/>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+                <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="${size}"/>
             </Policies>
         </RollingFile>
         <!-- Warn -->
-        <RollingFile name="Warn" fileName="${logPath}/warn/warn.log" filePattern="${logPath}/archives/warn/warn-%d{yyyy-MM-dd}-%i.log.zip">
+        <RollingFile name="Warn" fileName="${logPath}/warn/warn.log"
+                     filePattern="${logPath}/archives/warn/warn-%d{yyyy-MM-dd}-%i.log.zip">
             <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${pattern}"/>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+                <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="${size}"/>
             </Policies>
         </RollingFile>
@@ -30,30 +32,33 @@
             <PatternLayout pattern="${pattern}"/>
         </Console>
         <!-- APP_LOG -->
-        <RollingFile name="APP_LOG" fileName="${logPath}/app.log" filePattern="${logPath}/archives/app-%d{yyyy-MM-dd}-%i.log.zip">
+        <RollingFile name="APP_LOG" fileName="${logPath}/app.log"
+                     filePattern="${logPath}/archives/app-%d{yyyy-MM-dd}-%i.log.zip">
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${pattern}"/>
             <Policies>
                 <!--默认一天一个文件-->
-                <TimeBasedTriggeringPolicy />
+                <TimeBasedTriggeringPolicy/>
                 <!--一天内大于size就单独分隔-->
                 <SizeBasedTriggeringPolicy size="${size}"/>
             </Policies>
         </RollingFile>
         <!-- Debug -->
-        <RollingFile name="Debug" fileName="${logPath}/debug/debug.log" filePattern="${logPath}/archives/debug/debug-%d{yyyy-MM-dd}-%i.log.zip">
+        <RollingFile name="Debug" fileName="${logPath}/debug/debug.log"
+                     filePattern="${logPath}/archives/debug/debug-%d{yyyy-MM-dd}-%i.log.zip">
             <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${pattern}"/>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+                <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="${size}"/>
             </Policies>
         </RollingFile>
         <!-- SQL -->
-        <RollingFile name="SQL" fileName="${logPath}/sql/sql.log" filePattern="${logPath}/archives/sql/sql-%d{yyyy-MM-dd}-%i.log.zip">
+        <RollingFile name="SQL" fileName="${logPath}/sql/sql.log"
+                     filePattern="${logPath}/archives/sql/sql-%d{yyyy-MM-dd}-%i.log.zip">
             <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+                <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="${size}"/>
             </Policies>
         </RollingFile>

@@ -79,7 +79,7 @@ jasypt:
 file-store:
   store: minio # local | minio | qiniu | aliyun | tencentyun
   url: http://127.0.0.1:9000
-#  url: /Users/chengyingkui/、FileStore/jad-admin
+  #  url: /Users/chengyingkui/、FileStore/jad-admin
   accessKey: ENC(TCZcL15AkbfcPfJuk2brQw==)
   secretKey: ENC(6H416RiFYfeWk1oBptgod97p8FfZ3MVZW7sAZb7cIvY=)
   bucket: jad-admin

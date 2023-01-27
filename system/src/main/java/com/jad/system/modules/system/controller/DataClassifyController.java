@@ -53,7 +53,7 @@ public class DataClassifyController extends BaseController {
     @ApiOperation("添加数据分类")
     @PostMapping("/save")
     @PreAuthorize("@auth.hasAuthority('sys:dataClassify:save')")
-    public Result save(@RequestBody @Valid DataClassify dataClassify) {
+    public Result<?> save(@RequestBody @Valid DataClassify dataClassify) {
         if (!dataClassifyService.save(dataClassify)) {
             return Result.failed("添加失败");
         }
@@ -63,7 +63,7 @@ public class DataClassifyController extends BaseController {
     @ApiOperation("删除数据分类")
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:dataClassify:delete')")
-    public Result delete(@PathVariable String id, boolean includeSelf) {
+    public Result<?> delete(@PathVariable String id, boolean includeSelf) {
         if (!dataClassifyService.removeTree(id, includeSelf)) {
             return Result.failed("删除失败");
         }
@@ -73,7 +73,7 @@ public class DataClassifyController extends BaseController {
     @ApiOperation("修改数据分类")
     @PutMapping("/update")
     @PreAuthorize("@auth.hasAuthority('sys:dataClassify:update')")
-    public Result update(@RequestBody @Valid DataClassify dataClassify) {
+    public Result<?> update(@RequestBody @Valid DataClassify dataClassify) {
         if (!dataClassifyService.updateById(dataClassify)) {
             return Result.failed("修改失败");
         }
@@ -83,7 +83,7 @@ public class DataClassifyController extends BaseController {
     @ApiOperation("获取单个数据分类")
     @GetMapping("/get/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:dataClassify:get')")
-    public Result get(@PathVariable String id) {
+    public Result<?> get(@PathVariable String id) {
         final DataClassify dataClassify = dataClassifyService.getById(id);
         if (dataClassify == null) {
             return Result.failed("获取数据失败");
@@ -94,7 +94,7 @@ public class DataClassifyController extends BaseController {
     @ApiOperation("获取数据分类树")
     @GetMapping("/getTree")
     @PreAuthorize("@auth.hasAuthority('sys:dataClassify:getTree')")
-    public Result getTree(String code, boolean includeSelf) {
+    public Result<?> getTree(String code, boolean includeSelf) {
         return dataClassifyService.getTree(code, includeSelf);
     }
 }

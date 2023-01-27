@@ -21,13 +21,6 @@ import lombok.Data;
 @Data
 public class AssignPermissionsDto {
 
-    @Data
-    public static class MenuItem {
-        private String menuId;
-
-        private boolean leaf;
-    }
-
     @ApiModelProperty("角色ID")
     @NotBlank(message = "角色ID不能为空")
     private String roleId;
@@ -35,4 +28,11 @@ public class AssignPermissionsDto {
     @ApiModelProperty("菜单ID")
     @NotEmpty(message = "至少分配一个菜单")
     private List<MenuItem> menuItems;
+
+    @Data
+    public static class MenuItem {
+        private String menuId;
+
+        private boolean leaf;
+    }
 }

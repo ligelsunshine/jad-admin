@@ -46,10 +46,6 @@ public enum Store {
         this.index = index;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
     public static Store valueOfName(String store) {
         for (Store value : Store.values()) {
             if (value.name().equalsIgnoreCase(store)) {
@@ -57,5 +53,9 @@ public enum Store {
             }
         }
         throw new BadRequestException("找不到存储源: %s", store);
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

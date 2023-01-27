@@ -51,7 +51,7 @@ public class JadAuthenticationSuccessHandler implements AuthenticationSuccessHan
         redisUtil.set(RedisConst.SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX + authentication.getName(), token,
             jwtUtil.getExpireMilliseconds() / 1000);
 
-        final Result result = Result.success(200, "登录成功", token);
+        final Result<?> result = Result.success(200, "登录成功", token);
         outputStream.write(JsonUtil.toJSONString(result).getBytes(StandardCharsets.UTF_8));
 
         outputStream.flush();
