@@ -94,6 +94,8 @@ public class UserController extends BaseController {
     public Result<?> currentUser() {
         final User user = userService.getCurrentAuthUser();
         final List<Role> roles = userService.getRoles(user.getId());
+        user.setRoles(roles);
+        user.setRoleIds(roles.stream().map(Role::getId).collect(Collectors.toList()));
         final UserVo userInfo = new UserVo();
         userInfo.setUser(user);
         userInfo.setRoles(roles);

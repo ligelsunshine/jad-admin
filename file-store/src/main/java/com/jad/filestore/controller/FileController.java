@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,8 +71,8 @@ public class FileController extends BaseController {
     }
 
     @ApiOperation("获取文件BASE64")
-    @GetMapping("/base64/{fileId}")
-    public Result<?> base64(@PathVariable String fileId) {
+    @GetMapping("/base64")
+    public Result<?> base64(@RequestParam String fileId) {
         final DownloadConfig config = new DownloadConfig(fileId, DownloadType.BASE64);
         return service.download(config, response);
     }
