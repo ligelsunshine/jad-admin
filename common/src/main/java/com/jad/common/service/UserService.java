@@ -25,6 +25,7 @@ public interface UserService extends BaseService<User> {
      * @param user 用户
      * @return 是否添加成功
      */
+    @Override
     boolean save(User user);
 
     /**
@@ -57,6 +58,7 @@ public interface UserService extends BaseService<User> {
      * @param searchForm 查询表单
      * @return 分页结果
      */
+    @Override
     SearchResult<User> getPageList(SearchForm searchForm);
 
     /**
