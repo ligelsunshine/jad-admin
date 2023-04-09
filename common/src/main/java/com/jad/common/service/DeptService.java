@@ -16,6 +16,7 @@ public interface DeptService extends TreeService<Dept> {
      * @param dept 部门
      * @return 是否添加成功
      */
+    @Override
     boolean save(Dept dept);
 
     /**
@@ -24,5 +25,6 @@ public interface DeptService extends TreeService<Dept> {
      * @param dept 部门
      * @return 是否修改成功
      */
+    @Override
     boolean updateById(Dept dept);
 }

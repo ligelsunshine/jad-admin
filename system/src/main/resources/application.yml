@@ -77,8 +77,8 @@ jasypt:
 
 # FileStore Configuration
 file-store:
-  store: minio # local | minio | qiniu | aliyun | tencentyun
-  url: http://127.0.0.1:9000
+  store: local # local | minio | qiniu | aliyun | tencentyun
+  url: /Users/chengyingkui/FileStore
   #  url: /Users/chengyingkui/、FileStore/jad-admin
   accessKey: ENC(TCZcL15AkbfcPfJuk2brQw==)
   secretKey: ENC(6H416RiFYfeWk1oBptgod97p8FfZ3MVZW7sAZb7cIvY=)

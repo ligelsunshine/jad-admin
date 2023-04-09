@@ -34,6 +34,7 @@ public interface DictDataService extends BaseService<DictData> {
      * @param entity entity
      * @return 是否添加成功
      */
+    @Override
     boolean save(DictData entity);
 
     /**
@@ -42,6 +43,7 @@ public interface DictDataService extends BaseService<DictData> {
      * @param id ID
      * @return 是否删除成功
      */
+    @Override
     boolean removeById(Serializable id);
 
     /**
@@ -50,5 +52,6 @@ public interface DictDataService extends BaseService<DictData> {
      * @param entity entity
      * @return 是否修改成功
      */
+    @Override
     boolean updateById(DictData entity);
 }

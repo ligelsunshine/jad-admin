@@ -38,6 +38,7 @@ public interface DictService extends BaseService<Dict> {
      * @param id ID
      * @return 是否删除成功
      */
+    @Override
     boolean removeById(Serializable id);
 
     /**
@@ -46,6 +47,7 @@ public interface DictService extends BaseService<Dict> {
      * @param ids IDS
      * @return 是否删除成功
      */
+    @Override
     boolean removeByIds(Collection<? extends Serializable> ids);
 
     /**
@@ -54,6 +56,7 @@ public interface DictService extends BaseService<Dict> {
      * @param entity entity
      * @return 是否修改成功
      */
+    @Override
     boolean updateById(Dict entity);
 
     /**

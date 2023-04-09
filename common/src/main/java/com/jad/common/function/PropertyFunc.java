@@ -24,6 +24,10 @@ import lombok.SneakyThrows;
 public interface PropertyFunc<T, R> extends Function<T, R>, Serializable {
     @SneakyThrows
     default String getFieldName() {
+        // 利用序列化隐藏的writeReplace方法返回值的对象。
+        // 如果一个序列化类中含有Object writeReplace()方法，
+        // 那么实际序列化的对象将是作为writeReplace方法返回值的对象，
+        // 而且序列化过程的依据是实际被序列化对象的序列化实现。
         Method method = ReflectUtil.getMethodByName(this.getClass(), "writeReplace");
         method.setAccessible(true);
         SerializedLambda serializedLambda = (SerializedLambda) method.invoke(this);

@@ -6,6 +6,7 @@ package com.jad.common.service;
 
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.base.service.BaseService;
+import com.jad.common.entity.Dept;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.SearchResult;
@@ -83,6 +84,21 @@ public interface UserService extends BaseService<User> {
      * @return 用户角色列表
      */
     List<Role> getRoles();
+
+    /**
+     * 获取用户部门
+     *
+     * @param userId 用户ID
+     * @return 用户部门
+     */
+    Dept getDept(String userId);
+
+    /**
+     * 获取当前用户部门
+     *
+     * @return 用户部门
+     */
+    Dept getDept();
 
     /**
      * 获取用户权限列表

@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 
 /**
@@ -279,6 +280,36 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     public List<Role> getRoles() {
         final User authUser = getCurrentAuthUser();
         return getRoles(authUser.getId());
+    }
+
+    /**
+     * 获取用户部门
+     *
+     * @param userId 用户ID
+     * @return 用户部门
+     */
+    @Override
+    public Dept getDept(String userId) {
+        final User user = super.getById(userId);
+        final String deptId = Assert.notNull(user, () -> {
+            log.error("User " + userId + " not exist in database");
+            return new BadRequestException("用户不存在");
+        }).getDeptId();
+        return deptService.getById(deptId);
+    }
+
+    /**
+     * 获取当前用户部门
+     *
+     * @return 用户部门
+     */
+    @Override
+    public Dept getDept() {
+        final User authUser = this.getCurrentAuthUser();
+        if (authUser==null) {
+            return null;
+        }
+        return getDept(authUser.getDeptId());
     }
 
     /**

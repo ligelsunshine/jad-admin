@@ -25,6 +25,7 @@ public interface MenuService extends BaseService<Menu> {
      * @param menu 菜单
      * @return 是否添加成功
      */
+    @Override
     boolean save(Menu menu);
 
     /**
@@ -52,6 +53,7 @@ public interface MenuService extends BaseService<Menu> {
      * @param menu 菜单
      * @return 是否修改成功
      */
+    @Override
     boolean updateById(Menu menu);
 
     /**

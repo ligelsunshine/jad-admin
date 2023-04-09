@@ -9,6 +9,7 @@ import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.Result;
+import com.jad.common.service.DeptService;
 import com.jad.common.service.UserService;
 import com.jad.system.modules.system.vo.PermCodeVo;
 import com.jad.system.modules.system.vo.UserVo;
@@ -47,6 +48,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DeptService deptService;
 
     @ApiOperation("添加用户")
     @PostMapping("/save")
@@ -96,10 +100,10 @@ public class UserController extends BaseController {
         final List<Role> roles = userService.getRoles(user.getId());
         user.setRoles(roles);
         user.setRoleIds(roles.stream().map(Role::getId).collect(Collectors.toList()));
+        user.setDept(userService.getDept(user.getId()));
         final UserVo userInfo = new UserVo();
         userInfo.setUser(user);
         userInfo.setRoles(roles);
-
         return Result.success(userInfo);
     }
 

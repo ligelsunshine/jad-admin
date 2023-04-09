@@ -26,6 +26,7 @@ public interface RoleService extends BaseService<Role> {
      * @param role 角色
      * @return 是否添加成功
      */
+    @Override
     boolean save(Role role);
 
     /**
@@ -44,6 +45,7 @@ public interface RoleService extends BaseService<Role> {
      * @param role 角色
      * @return 是否修改成功
      */
+    @Override
     boolean updateById(Role role);
 
     /**
@@ -63,6 +65,7 @@ public interface RoleService extends BaseService<Role> {
      * @param searchForm 查询表单
      * @return 角色列表
      */
+    @Override
     SearchResult<Role> getPageList(SearchForm searchForm);
 
     /**
