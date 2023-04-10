@@ -9,6 +9,7 @@ import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.Result;
+import com.jad.common.model.dto.UserBaseInfo;
 import com.jad.common.service.DeptService;
 import com.jad.common.service.UserService;
 import com.jad.system.modules.system.vo.PermCodeVo;
@@ -83,8 +84,8 @@ public class UserController extends BaseController {
     @PutMapping("/updateBaseInfo")
     @PreAuthorize("@auth.hasAuthority('sys:user:update')")
     @Transactional
-    public Result<?> updateBaseInfo(@RequestBody @Valid User user) {
-        userService.update(user);
+    public Result<?> updateBaseInfo(@RequestBody @Valid UserBaseInfo userBaseInfo) {
+        userService.updateBaseInfo(userBaseInfo);
         return Result.success("修改成功");
     }
 

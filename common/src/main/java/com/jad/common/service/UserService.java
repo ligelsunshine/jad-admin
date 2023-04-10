@@ -47,12 +47,12 @@ public interface UserService extends BaseService<User> {
     boolean update(User user);
 
     /**
-     * 更新用户基础信息
+     * 更新当前登录用户基础信息
      *
-     * @param user 用户
+     * @param userBaseInfo 用户
      * @return 是否更新成功
      */
-    boolean updateBaseInfo(UserBaseInfo user);
+    boolean updateBaseInfo(UserBaseInfo userBaseInfo);
 
     /**
      * 获取用户

@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 
@@ -184,14 +185,21 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
-     * 更新用户基础信息
+     * 更新当前登录用户基础信息
      *
-     * @param user 用户
+     * @param userBaseInfo 用户
      * @return 是否更新成功
      */
     @Override
-    public boolean updateBaseInfo(UserBaseInfo user) {
-        return false;
+    public boolean updateBaseInfo(UserBaseInfo userBaseInfo) {
+        final User user = getCurrentAuthUser();
+        BeanUtil.copyProperties(userBaseInfo, user);
+        if (!super.updateById(user)) {
+            throw new BadRequestException("修改用户失败");
+        }
+        // 清空缓存的用户
+        clearUserAuthorityByUsername(user.getUsername());
+        return true;
     }
 
     /**
