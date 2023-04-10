@@ -8,10 +8,10 @@ import com.google.code.kaptcha.Producer;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
+import com.jad.common.service.UserService;
 
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,12 +39,11 @@ import sun.misc.BASE64Encoder;
 @RestController
 @RequestMapping("/test")
 public class TestController extends BaseController {
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @Autowired
     private Producer producer;
+
+    @Autowired
+    private UserService userService;
 
     @ApiOperation("生成测试图片验证码验证码")
     @GetMapping("/captcha/generator")
@@ -73,10 +72,10 @@ public class TestController extends BaseController {
         return Result.success("生成成功", resultMap);
     }
 
-    @ApiOperation("密码加密")
+    @ApiOperation("用户密码加密")
     @GetMapping("/encoder")
-    public Result<?> encoder(String password) {
-        return Result.success("生成成功", bCryptPasswordEncoder.encode(password));
+    public Result<?> encoder(String username, String password) {
+        return Result.success("生成成功", userService.encodeUserPassword(username, password));
     }
 
     @ApiOperation("yaml配置信息加密")

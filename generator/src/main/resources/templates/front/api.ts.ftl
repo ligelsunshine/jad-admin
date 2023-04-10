@@ -8,107 +8,107 @@
     <#assign requestPath="/${model.smallHump}"/>
 </#if>
 <#if !model.treeModel>
-import { SearchForm } from '/@/components/Table';
+    import { SearchForm } from '/@/components/Table';
 </#if>
 import { defHttp } from '/@/utils/http/axios';
 import { ${model.bigHump} } from '/@${dataFilePath}';
 
 enum Api {
-  Save = '${requestPath}/save',
-  Delete = '${requestPath}/delete',
+Save = '${requestPath}/save',
+Delete = '${requestPath}/delete',
 <#if !model.treeModel>
-  DeleteArr = '${requestPath}/deleteArr',
+    DeleteArr = '${requestPath}/deleteArr',
 </#if>
-  Update = '${requestPath}/update',
-  Get = '${requestPath}/get',
+Update = '${requestPath}/update',
+Get = '${requestPath}/get',
 <#if !model.treeModel>
-  GetPage = '${requestPath}/get/page',
+    GetPage = '${requestPath}/get/page',
 <#else>
-  GetTree = '${requestPath}/getTree',
+    GetTree = '${requestPath}/getTree',
 </#if>
 }
 
 /**
- * 添加${model.title}
- */
+* 添加${model.title}
+*/
 export const saveApi = (${entity}: ${Entity}) => {
-  return defHttp.post({ url: Api.Save, params: ${entity} }, { isTransformResponse: true });
+return defHttp.post({ url: Api.Save, params: ${entity} }, { isTransformResponse: true });
 };
 
 <#if model.treeModel>
-/**
- * 删除${model.title}
- */
-export const deleteApi = (id: string) => {
-  return defHttp.delete(
+    /**
+    * 删除${model.title}
+    */
+    export const deleteApi = (id: string) => {
+    return defHttp.delete(
     { url: Api.Delete + '/' + id + '?includeSelf=true' },
     { isTransformResponse: true }
-  );
-};
+    );
+    };
 
-/**
- * 删除子${model.title}
- */
-export const deleteChildrenApi = (id: string) => {
-  return defHttp.delete(
+    /**
+    * 删除子${model.title}
+    */
+    export const deleteChildrenApi = (id: string) => {
+    return defHttp.delete(
     { url: Api.Delete + '/' + id + '?includeSelf=false' },
     { isTransformResponse: true }
-  );
-};
+    );
+    };
 <#else>
-/**
- * 删除${model.title}
- */
-export const deleteApi = (id: string) => {
-  return defHttp.delete({ url: Api.Delete + '/' + id }, { isTransformResponse: true });
-};
+    /**
+    * 删除${model.title}
+    */
+    export const deleteApi = (id: string) => {
+    return defHttp.delete({ url: Api.Delete + '/' + id }, { isTransformResponse: true });
+    };
 
-/**
- * 删除多个${model.title}
- */
-export const deleteArrApi = (ids: string[]) => {
-  return defHttp.delete(
+    /**
+    * 删除多个${model.title}
+    */
+    export const deleteArrApi = (ids: string[]) => {
+    return defHttp.delete(
     { url: Api.DeleteArr, params: { ids: ids } },
     { isTransformResponse: true }
-  );
-};
+    );
+    };
 </#if>
 
 /**
- * 修改${model.title}
- */
+* 修改${model.title}
+*/
 export const updateApi = (${entity}: ${Entity}) => {
-  return defHttp.put({ url: Api.Update, params: ${entity} }, { isTransformResponse: true });
+return defHttp.put({ url: Api.Update, params: ${entity} }, { isTransformResponse: true });
 };
 
 /**
- * 获取单条${model.title}
- */
+* 获取单条${model.title}
+*/
 export const getApi = async (id: string) => {
-  const response = await defHttp.get({ url: Api.Get + '/' + id });
-  return response.data?.data;
+const response = await defHttp.get({ url: Api.Get + '/' + id });
+return response.data?.data;
 };
 
 <#if model.treeModel>
-/**
- * 获取${model.title}树
- */
-export const getTreeApi = async () => {
-  const response = await defHttp.get({ url: Api.GetTree });
-  return response.data?.data;
-};
-/**
- * 获取${model.title}树
- */
-export const getTreeAsPromiseApi = async () => {
-  return defHttp.get({ url: Api.GetTree });
-};
+    /**
+    * 获取${model.title}树
+    */
+    export const getTreeApi = async () => {
+    const response = await defHttp.get({ url: Api.GetTree });
+    return response.data?.data;
+    };
+    /**
+    * 获取${model.title}树
+    */
+    export const getTreeAsPromiseApi = async () => {
+    return defHttp.get({ url: Api.GetTree });
+    };
 <#else>
-/**
- * 分页获取${model.title}
- */
-export const getPageApi = async (params?: SearchForm) => {
-  const response = await defHttp.post({ url: Api.GetPage, params: params });
-  return response.data?.data;
-};
+    /**
+    * 分页获取${model.title}
+    */
+    export const getPageApi = async (params?: SearchForm) => {
+    const response = await defHttp.post({ url: Api.GetPage, params: params });
+    return response.data?.data;
+    };
 </#if>

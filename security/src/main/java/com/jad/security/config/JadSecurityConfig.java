@@ -8,12 +8,12 @@ import com.jad.common.config.UrlConfig;
 import com.jad.security.filter.CaptchaFilter;
 import com.jad.security.filter.JwtAuthenticationFilter;
 import com.jad.security.handler.JadAuthenticationFailureHandler;
+import com.jad.security.handler.JadAuthenticationProvider;
 import com.jad.security.handler.JadAuthenticationSuccessHandler;
 import com.jad.security.handler.JadLogoutHandler;
 import com.jad.security.handler.JadLogoutSuccessHandler;
 import com.jad.security.handler.JwtAccessDeniedHandler;
 import com.jad.security.handler.JwtAuthenticationEntryPoint;
-import com.jad.security.service.impl.UserDetailsServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -62,8 +62,9 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    // 自定义认证
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private JadAuthenticationProvider authenticationProvider;
 
     @Bean
     JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
@@ -124,8 +125,8 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authenticationProvider);
     }
 
 }

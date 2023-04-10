@@ -1,9 +1,9 @@
 <#if model.namespace?trim?length == 0>
-CREATE TABLE `${model.lowerCaseUnderline}` (
+    CREATE TABLE `${model.lowerCaseUnderline}` (
 <#elseif model.namespace?trim?length gt 0>
-CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` (
+    CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` (
 </#if>
-    `id` varchar(64) NOT NULL COMMENT '主键',
+`id` varchar(64) NOT NULL COMMENT '主键',
 <#if model.treeModel>
     `p_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '父级菜单ID',
     `order_no` int DEFAULT NULL COMMENT '排序',
@@ -24,31 +24,31 @@ CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` 
                         </#if>
                     </#list>
                 </#if>
-    `${fieldName}` varchar(${strLen}) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` varchar(${strLen}) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "TEXT">
-    `${fieldName}` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '${field.title}',
+                `${fieldName}` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '${field.title}',
                 <#break>
             <#case "INT">
-    `${fieldName}` int DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` int DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "FLOAT">
-    `${fieldName}` float DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` float DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "DOUBLE">
-    `${fieldName}` double DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` double DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "LONG">
-    `${fieldName}` bigint DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` bigint DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "DECIMAL">
-    `${fieldName}` decimal(10,0) DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` decimal(10,0) DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "BOOLEAN">
-    `${fieldName}` bit(1) DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` bit(1) DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "DATE">
-    `${fieldName}` datetime DEFAULT NULL COMMENT '${field.title}',
+                `${fieldName}` datetime DEFAULT NULL COMMENT '${field.title}',
                 <#break>
             <#case "ENUM">
                 <#assign enumComent = ""/>
@@ -65,18 +65,18 @@ CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` 
                     </#list>
                     <#assign enumComent += "】"/>
                 </#if>
-    `${fieldName}` tinyint DEFAULT '0' COMMENT '${field.title}${enumComent}',
+                `${fieldName}` tinyint DEFAULT '0' COMMENT '${field.title}${enumComent}',
                 <#break>
         </#switch>
     </#list>
 </#if>
-    `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注',
-    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-    `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '创建人',
-    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-    `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
+`remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注',
+`create_time` datetime DEFAULT NULL COMMENT '创建时间',
+`create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '创建人',
+`update_time` datetime DEFAULT NULL COMMENT '更新时间',
+`update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
 <#if model.logic>
     `enable` bit(1) DEFAULT NULL COMMENT '是否启用【未启用：0,已启用：1】',
 </#if>
-    PRIMARY KEY (`id`) USING BTREE
+PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='${model.title}';

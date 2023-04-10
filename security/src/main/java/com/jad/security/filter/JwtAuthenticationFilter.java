@@ -11,7 +11,7 @@ import com.jad.common.entity.User;
 import com.jad.common.service.UserService;
 import com.jad.common.utils.JwtUtil;
 import com.jad.common.utils.RedisUtil;
-import com.jad.security.service.impl.UserDetailsServiceImpl;
+import com.jad.security.service.AuthorityPermissionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     private UrlConfig urlConfig;
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private AuthorityPermissionService authorityPermissionService;
 
     @Autowired
     private UserService userService;
@@ -114,7 +114,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         // 将用户的权限等信息保存到security中
         final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-            user.getUsername(), user.getPassword(), userDetailsService.getUserAuthority(user.getId()));
+            user.getUsername(), user.getPassword(), authorityPermissionService.getUserAuthority(user.getId()));
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 

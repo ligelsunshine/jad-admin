@@ -10,6 +10,7 @@ import com.jad.common.entity.Dept;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.SearchResult;
+import com.jad.common.model.dto.UserBaseInfo;
 
 import java.util.List;
 
@@ -44,6 +45,14 @@ public interface UserService extends BaseService<User> {
      * @return 是否更新成功
      */
     boolean update(User user);
+
+    /**
+     * 更新用户基础信息
+     *
+     * @param user 用户
+     * @return 是否更新成功
+     */
+    boolean updateBaseInfo(UserBaseInfo user);
 
     /**
      * 获取用户
@@ -165,4 +174,22 @@ public interface UserService extends BaseService<User> {
      */
     void clearUserAuthorityByMenuId(String menuId);
 
+    /**
+     * 用户密码加密
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return 加密密码
+     */
+    String encodeUserPassword(String username, String password);
+
+    /**
+     * 验证用户密码是否正确
+     *
+     * @param username 用户名
+     * @param password 未加密密码
+     * @param encodedPassword 已加密密码
+     * @return 用户密码是否正确
+     */
+    boolean matchesUserPassword(String username, String password, String encodedPassword);
 }

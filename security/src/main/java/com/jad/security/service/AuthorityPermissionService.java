@@ -16,6 +16,10 @@
 
 package com.jad.security.service;
 
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.List;
+
 /**
  * 自定义鉴权 - 接口
  *
@@ -30,4 +34,12 @@ public interface AuthorityPermissionService {
      * @return 是否有权限
      */
     boolean hasAuthority(String authority);
+
+    /**
+     * 获取用户授权信息
+     *
+     * @param userId 用户ID
+     * @return 用户授权信息
+     */
+    List<GrantedAuthority> getUserAuthority(String userId);
 }

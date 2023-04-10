@@ -79,6 +79,15 @@ public class UserController extends BaseController {
         return Result.success("修改成功");
     }
 
+    @ApiOperation("修改用户基础信息")
+    @PutMapping("/updateBaseInfo")
+    @PreAuthorize("@auth.hasAuthority('sys:user:update')")
+    @Transactional
+    public Result<?> updateBaseInfo(@RequestBody @Valid User user) {
+        userService.update(user);
+        return Result.success("修改成功");
+    }
+
     @ApiOperation("获取单个用户")
     @GetMapping("/get/{id}")
     @PreAuthorize("@auth.hasAuthority('sys:user:get')")

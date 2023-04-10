@@ -21,6 +21,7 @@ import com.jad.common.exception.BadRequestException;
 import com.jad.common.function.PropertyFunc;
 import com.jad.common.lang.SearchResult;
 import com.jad.common.mapper.UserMapper;
+import com.jad.common.model.dto.UserBaseInfo;
 import com.jad.common.service.DeptService;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
@@ -183,6 +184,17 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
+     * 更新用户基础信息
+     *
+     * @param user 用户
+     * @return 是否更新成功
+     */
+    @Override
+    public boolean updateBaseInfo(UserBaseInfo user) {
+        return false;
+    }
+
+    /**
      * 获取用户
      *
      * @param id 用户ID
@@ -306,7 +318,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @Override
     public Dept getDept() {
         final User authUser = this.getCurrentAuthUser();
-        if (authUser==null) {
+        if (authUser == null) {
             return null;
         }
         return getDept(authUser.getDeptId());
@@ -491,6 +503,31 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
+     * 用户密码加密
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return 加密密码
+     */
+    @Override
+    public String encodeUserPassword(String username, String password) {
+        return passwordEncoder.encode(username + password);
+    }
+
+    /**
+     * 验证用户密码是否正确
+     *
+     * @param username 用户名
+     * @param password 未加密密码
+     * @param encodedPassword 已加密密码
+     * @return 用户密码是否正确
+     */
+    @Override
+    public boolean matchesUserPassword(String username, String password, String encodedPassword) {
+        return passwordEncoder.matches(username + password, encodedPassword);
+    }
+
+    /**
      * 校验用户
      *
      * @param user 用户
@@ -502,17 +539,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         if (isUpdate) {
             // 密码加密
             if (StrUtil.isNotBlank(user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
+                user.setPassword(encodeUserPassword(user.getUsername(), user.getPassword()));
             }
             count = super.lambdaQuery().eq(User::getUsername, user.getUsername()).ne(User::getId, user.getId()).count();
         } else {
             ValidatorUtil.validateEntity(user, AddValidGroup.class);
             // 密码加密
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setPassword(encodeUserPassword(user.getUsername(), user.getPassword()));
             count = super.lambdaQuery().eq(User::getUsername, user.getUsername()).count();
         }
         if (count > 0) {
             throw new BadRequestException("该用户已存在");
         }
     }
+
 }
