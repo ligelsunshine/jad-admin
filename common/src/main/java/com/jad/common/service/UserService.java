@@ -10,7 +10,7 @@ import com.jad.common.entity.Dept;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.SearchResult;
-import com.jad.common.model.dto.UserBaseInfo;
+import com.jad.common.model.dto.UserBaseInfoDto;
 
 import java.util.List;
 
@@ -49,10 +49,19 @@ public interface UserService extends BaseService<User> {
     /**
      * 更新当前登录用户基础信息
      *
-     * @param userBaseInfo 用户
+     * @param userBaseInfoDto 用户
      * @return 是否更新成功
      */
-    boolean updateBaseInfo(UserBaseInfo userBaseInfo);
+    boolean updateBaseInfo(UserBaseInfoDto userBaseInfoDto);
+
+    /**
+     * 更新当前登录用户的密码
+     *
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return 是否更新成功
+     */
+    boolean updatePassword(String oldPassword, String newPassword);
 
     /**
      * 获取用户

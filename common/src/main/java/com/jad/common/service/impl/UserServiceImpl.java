@@ -21,7 +21,7 @@ import com.jad.common.exception.BadRequestException;
 import com.jad.common.function.PropertyFunc;
 import com.jad.common.lang.SearchResult;
 import com.jad.common.mapper.UserMapper;
-import com.jad.common.model.dto.UserBaseInfo;
+import com.jad.common.model.dto.UserBaseInfoDto;
 import com.jad.common.service.DeptService;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
@@ -187,19 +187,38 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     /**
      * 更新当前登录用户基础信息
      *
-     * @param userBaseInfo 用户
+     * @param userBaseInfoDto 用户
      * @return 是否更新成功
      */
     @Override
-    public boolean updateBaseInfo(UserBaseInfo userBaseInfo) {
+    public boolean updateBaseInfo(UserBaseInfoDto userBaseInfoDto) {
         final User user = getCurrentAuthUser();
-        BeanUtil.copyProperties(userBaseInfo, user);
+        BeanUtil.copyProperties(userBaseInfoDto, user);
         if (!super.updateById(user)) {
             throw new BadRequestException("修改用户失败");
         }
         // 清空缓存的用户
         clearUserAuthorityByUsername(user.getUsername());
         return true;
+    }
+
+    /**
+     * 更新当前登录用户的密码
+     *
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return 是否更新成功
+     */
+    @Override
+    public boolean updatePassword(String oldPassword, String newPassword) {
+        User authUser = this.getCurrentAuthUser();
+        final String username = authUser.getUsername();
+        User user = this.getByUsername(username);
+        Assert.notNull(user, () -> new BadRequestException("更新密码错误，用户不存在"));
+        boolean match = this.matchesUserPassword(username, oldPassword, user.getPassword());
+        Assert.isTrue(match, () -> new BadRequestException("旧密码不正确"));
+        String encodePassword = this.encodeUserPassword(username, newPassword);
+        return super.lambdaUpdate().set(User::getPassword, encodePassword).eq(User::getId, user.getId()).update();
     }
 
     /**
@@ -381,9 +400,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         final String username = authentication.getName();
         final User user = this.getByUsername(username);
         if (user != null) {
-            user.setPassword(null);
+            final User authUser = new User();
+            BeanUtil.copyProperties(user, authUser);
+            authUser.setPassword(null);
+            return authUser;
         }
-        return user;
+        return null;
     }
 
     /**

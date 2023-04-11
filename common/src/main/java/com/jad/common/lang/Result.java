@@ -30,6 +30,11 @@ public class Result<T> implements Serializable {
     @ApiModelProperty(value = "响应数据")
     private T data;
 
+    public static ResultProcessor<?> with(boolean success) {
+        final Result<?> result = success ? success() : failed();
+        return new ResultProcessor<>(success, result);
+    }
+
     public static Result<?> formatFailed(String format, Object... args) {
         return Result.failed(String.format(format, args));
     }
@@ -76,5 +81,44 @@ public class Result<T> implements Serializable {
         result.setMsg(msg);
         result.setData(data);
         return result;
+    }
+
+    public static class ResultProcessor<T> {
+        private final boolean success;
+
+        private final Result<T> result;
+
+        private ResultProcessor(boolean success, Result<T> result) {
+            this.success = success;
+            this.result = result;
+        }
+
+        public ResultProcessor<T> code(int code) {
+            result.setCode(code);
+            return this;
+        }
+
+        public ResultProcessor<T> msgSuccess(String msg) {
+            if (success) {
+                result.setMsg(msg);
+            }
+            return this;
+        }
+
+        public ResultProcessor<T> msgFailed(String msg) {
+            if (!success) {
+                result.setMsg(msg);
+            }
+            return this;
+        }
+
+        public ResultProcessor<T> data(T data) {
+            result.setData(data);
+            return this;
+        }
+
+        public Result<T> process() {
+            return result;
+        }
     }
 }

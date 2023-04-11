@@ -9,7 +9,8 @@ import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.Result;
-import com.jad.common.model.dto.UserBaseInfo;
+import com.jad.common.model.dto.UpdatePasswordDto;
+import com.jad.common.model.dto.UserBaseInfoDto;
 import com.jad.common.service.DeptService;
 import com.jad.common.service.UserService;
 import com.jad.system.modules.system.vo.PermCodeVo;
@@ -82,11 +83,19 @@ public class UserController extends BaseController {
 
     @ApiOperation("修改用户基础信息")
     @PutMapping("/updateBaseInfo")
-    @PreAuthorize("@auth.hasAuthority('sys:user:update')")
     @Transactional
-    public Result<?> updateBaseInfo(@RequestBody @Valid UserBaseInfo userBaseInfo) {
-        userService.updateBaseInfo(userBaseInfo);
+    public Result<?> updateBaseInfo(@RequestBody @Valid UserBaseInfoDto dto) {
+        userService.updateBaseInfo(dto);
         return Result.success("修改成功");
+    }
+
+    @ApiOperation("修改用户密码")
+    @PutMapping("/updatePassword")
+    @Transactional
+    public Result<?> updatePassword(@RequestBody @Valid UpdatePasswordDto dto) {
+        dto.validateConfirm();
+        boolean result = userService.updatePassword(dto.getOldPassword(), dto.getConfirmPassword());
+        return Result.with(result).msgSuccess("修改成功").msgFailed("修改失败").process();
     }
 
     @ApiOperation("获取单个用户")

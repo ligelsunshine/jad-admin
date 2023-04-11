@@ -8,7 +8,6 @@ import com.jad.common.enums.Sex;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 import io.swagger.annotations.ApiModel;
@@ -25,10 +24,7 @@ import lombok.experimental.Accessors;
 @ApiModel("系统用户基础信息")
 @Data
 @Accessors(chain = true)
-public class UserBaseInfo {
-    @NotBlank(message = "ID是必须的")
-    private String id;
-
+public class UserBaseInfoDto {
     @ApiModelProperty(value = "姓名")
     private String name;
 
