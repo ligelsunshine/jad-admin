@@ -83,7 +83,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("修改用户基础信息")
     @PutMapping("/updateBaseInfo")
-    @Transactional
+    @PreAuthorize("@auth.hasAuthority('profile:settings:base')")
     public Result<?> updateBaseInfo(@RequestBody @Valid UserBaseInfoDto dto) {
         userService.updateBaseInfo(dto);
         return Result.success("修改成功");
@@ -91,7 +91,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("修改用户密码")
     @PutMapping("/updatePassword")
-    @Transactional
+    @PreAuthorize("@auth.hasAuthority('profile:settings:security')")
     public Result<?> updatePassword(@RequestBody @Valid UpdatePasswordDto dto) {
         dto.validateConfirm();
         boolean result = userService.updatePassword(dto.getOldPassword(), dto.getConfirmPassword());

@@ -180,7 +180,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
     public FileStore getFileStore(String fileId) {
         final FileStore fileStore = super.getById(fileId);
         if (fileStore == null) {
-            throw new BadRequestException("文件不存在");
+            throw new BadRequestException("文件不存在. fileId: " + fileId);
         }
         // 如文件为私有文件
         if (fileStore.getAccessPolicy() == AccessPolicy.PRIVATE) {
