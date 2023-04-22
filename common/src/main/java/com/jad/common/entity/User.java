@@ -85,6 +85,11 @@ public class User extends BaseEntity {
     @TableField(exist = false)
     private Dept dept;
 
+
+    @ApiModelProperty(value = "用户额外信息")
+    @TableField(exist = false)
+    private Object userExtends;
+
     @ApiModelProperty(value = "角色ID")
     @TableField(exist = false)
     @NotEmpty(message = "至少分配一个角色")

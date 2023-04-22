@@ -21,13 +21,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nl.flotsam.xeger.Xeger;
+
 /**
- * MatchUtil
+ * 正则工具
  *
  * @author cxxwl96
  * @since 2021/11/29 19:12
  */
-public class MatchUtil {
+public class RegexUtil {
 
     /**
      * 获取匹配到的字符串集合
@@ -62,5 +64,45 @@ public class MatchUtil {
         }
         result.trimToSize();
         return result;
+    }
+
+    /**
+     * 根据正则生成随机字符
+     *
+     * @param regex 正则表达式
+     * @return 生成的随机字符串
+     */
+    public static String randomString(String regex) {
+        return randomString(new Xeger(regex), 1).get(0);
+    }
+
+    /**
+     * 根据正则生成随机字符
+     *
+     * @param regex 正则表达式
+     * @param num 生成字符串的数量
+     * @return 生成的随机字符串
+     */
+    public static List<String> randomString(String regex, int num) {
+        return randomString(new Xeger(regex), num);
+    }
+
+    /**
+     * 根据正则生成随机字符
+     *
+     * @param num 生成字符串的数量
+     * @param xeger 生成工具
+     * @return 生成的随机字符串
+     */
+    public static List<String> randomString(Xeger xeger, int num) {
+        final ArrayList<String> list = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            try {
+                list.add(xeger.generate());
+            } catch (StackOverflowError error) {
+                throw new IllegalArgumentException("generating random string error: StackOverflowError");
+            }
+        }
+        return list;
     }
 }

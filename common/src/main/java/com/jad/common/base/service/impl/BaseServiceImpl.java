@@ -5,6 +5,7 @@
 package com.jad.common.base.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -56,7 +57,6 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
     public SearchResult<T> getPageList(SearchForm searchForm) {
         // 生成QueryWrapper条件
         final QueryWrapper<T> qw = generateWrapper(searchForm, new QueryWrapper<>());
-
         // 生成Pager分页
         Page<T> pager = new Page<>(searchForm.getPage(), searchForm.getPageSize());
         // 分页条件查询
@@ -67,7 +67,27 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> exte
         searchResult.setPageSize(pager.getSize());
         searchResult.setTotal(pager.getTotal());
         searchResult.setItems(pager.getRecords());
+        return searchResult;
+    }
 
+    /**
+     * 分页条件查询
+     *
+     * @param page 当前页
+     * @param pageSize 每页数量
+     * @param queryWrapper 查询条件
+     * @return 数据
+     */
+    @Override
+    public SearchResult<T> getPageList(long page, long pageSize, Wrapper<T> queryWrapper) {
+        // 分页条件查询
+        Page<T> pager = super.page(new Page<>(page, pageSize), queryWrapper);
+        // 封装返回数据
+        final SearchResult<T> searchResult = new SearchResult<>();
+        searchResult.setPage(pager.getCurrent());
+        searchResult.setPageSize(pager.getSize());
+        searchResult.setTotal(pager.getTotal());
+        searchResult.setItems(pager.getRecords());
         return searchResult;
     }
 

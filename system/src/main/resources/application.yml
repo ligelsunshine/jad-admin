@@ -19,20 +19,11 @@ spring:
           username: ENC(/eZhUIr+ffsTngGPv9yz/w==)
           password: ENC(MK4ReXTiYz7q0dqyUIO++dx7Botc7KwMl9Ivsg0rf+A=)
           driver-class-name: com.mysql.cj.jdbc.Driver
-        slave:
-          url: jdbc:mysql://localhost:3306/dev_jad_slave?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=true&allowMultiQueries=true&autoReconnect=true&useAffectRows=true
-          username: ENC(H60S7RDrCdLIxrTVM34MGA==)
-          password: ENC(qMmFipiBbgoCmMEVR9KBfiMHrJOp/nQeTn2CED2gElE=)
-          driver-class-name: com.mysql.cj.jdbc.Driver
-  #    url: jdbc:mysql://localhost:3306/dev_jad_admin?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=true&allowMultiQueries=true&autoReconnect=true&useAffectRows=true
-  #    username: root
-  #    password: cxxwl96@sina.com
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
-  #    dbcp2:
-  #      max-idle: 10
-  #      min-idle: 5
-  #      max-wait-millis: 10000
-  #      initial-size: 5
+#        slave:
+#          url: jdbc:mysql://localhost:3306/dev_jad_slave?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&useSSL=true&allowMultiQueries=true&autoReconnect=true&useAffectRows=true
+#          username: ENC(H60S7RDrCdLIxrTVM34MGA==)
+#          password: ENC(qMmFipiBbgoCmMEVR9KBfiMHrJOp/nQeTn2CED2gElE=)
+#          driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     host: localhost
     port: 6379
@@ -53,6 +44,13 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss # 返回json的全局时间格式
     time-zone: GMT+8 # 时区
+  thymeleaf:
+    prefix: classpath:/static
+    suffix: .html
+    servlet:
+      content-type: text/html
+    encoding: UTF-8
+    cache: false
   devtools:
     restart:
       enabled: true # 设置开启热部署
@@ -67,7 +65,7 @@ mybatis-plus:
   type-enums-package: com.jad.**.enums # 枚举转换
   configuration:
     default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler # 使用ordinal处理枚举转换
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志，打印sql
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志，打印sql
 
 # jasypt Configuration
 jasypt:

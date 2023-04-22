@@ -4,11 +4,13 @@
 
 package com.jad.system.modules.system.controller;
 
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.entity.Role;
 import com.jad.common.entity.User;
 import com.jad.common.lang.Result;
+import com.jad.common.lang.SearchResult;
 import com.jad.common.model.dto.UpdatePasswordDto;
 import com.jad.common.model.dto.UserBaseInfoDto;
 import com.jad.common.service.DeptService;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -136,5 +139,18 @@ public class UserController extends BaseController {
         permCodeVo.setSuperRole("ROLE_" + userService.getAdministrator().getCode());
         permCodeVo.setCodeList(Arrays.stream(codes).collect(Collectors.toList()));
         return Result.success(permCodeVo);
+    }
+
+    @ApiOperation("搜索用户")
+    @GetMapping("/searchUser")
+    public Result<?> searchUser(String keyword) {
+        // 后期采用ES
+        final LambdaQueryChainWrapper<User> wrapper = userService.lambdaQuery()
+            .select(User::getId, User::getUsername, User::getName);
+        if (!StrUtil.isBlank(keyword)) {
+            wrapper.like(User::getUsername, keyword).or().like(User::getName, keyword);
+        }
+        final SearchResult<User> result = userService.getPageList(1, 20, wrapper.getWrapper());
+        return Result.success(result.getItems());
     }
 }
