@@ -76,7 +76,7 @@ CREATE TABLE `${model.namespaceLowerCaseUnderline}_${model.lowerCaseUnderline}` 
     `update_time` datetime DEFAULT NULL COMMENT '更新时间',
     `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '更新人',
 <#if model.logic>
-    `enable` bit(1) DEFAULT NULL COMMENT '是否启用【未启用：0,已启用：1】',
+    `enable` bit(1) DEFAULT b'1' COMMENT '是否启用【未启用：0,已启用：1】',
 </#if>
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='${model.title}';

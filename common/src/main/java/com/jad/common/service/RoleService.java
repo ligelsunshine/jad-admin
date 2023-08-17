@@ -69,10 +69,19 @@ public interface RoleService extends BaseService<Role> {
     SearchResult<Role> getPageList(SearchForm searchForm);
 
     /**
+     * 修改默认角色
+     * - 角色列表中只能存在一个默认角色
+     *
+     * @param id 角色ID
+     * @return 是否修改成功
+     */
+    boolean updateDefaultRole(String id);
+
+    /**
      * 修改状态
      * - 修改的角色等级不能高于当前用户角色的最高级别
      *
-     * @param id 角色ID
+     * @param id     角色ID
      * @param status 状态
      * @return 是否修改成功
      */

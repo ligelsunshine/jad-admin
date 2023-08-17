@@ -17,29 +17,18 @@ import com.jad.common.service.RoleMenuService;
 import com.jad.common.service.RoleService;
 import com.jad.common.service.UserService;
 import com.jad.system.modules.system.dto.AssignPermissionsDto;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.validation.Valid;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * 系统管理 - 角色相关接口
@@ -88,6 +77,16 @@ public class RoleController extends BaseController {
             return Result.success("修改成功");
         }
         return Result.failed("修改失败");
+    }
+
+    @ApiOperation("修改默认角色")
+    @PutMapping("/update/defaultRole")
+    @PreAuthorize("@auth.hasAuthority('sys:role:update:defaultRole')")
+    public Result<?> updateDefaultRole(@RequestParam String id) {
+        if (roleService.updateDefaultRole(id)) {
+            return Result.success("已成功修改默认角色");
+        }
+        return Result.failed("修改默认角色失败");
     }
 
     @ApiOperation("修改状态")

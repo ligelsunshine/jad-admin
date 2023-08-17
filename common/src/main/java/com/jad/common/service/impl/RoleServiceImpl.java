@@ -17,9 +17,9 @@ import com.jad.common.lang.SearchResult;
 import com.jad.common.mapper.RoleMapper;
 import com.jad.common.service.RoleService;
 import com.jad.common.service.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -99,9 +99,9 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             if (maxLevelRole != null) {
                 // 添加level <= maxLevel, order by level desc条件
                 return super.lambdaQuery()
-                    .lt(Role::getLevel, maxLevelRole.getLevel())
-                    .orderByDesc(Role::getLevel)
-                    .list();
+                        .lt(Role::getLevel, maxLevelRole.getLevel())
+                        .orderByDesc(Role::getLevel)
+                        .list();
             } else {
                 throw new BadRequestException("您的账号还未分配角色");
             }
@@ -130,7 +130,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             if (maxLevelRole != null) {
                 // 添加level <= maxLevel 条件
                 searchForm.addWhereItem(
-                    new WhereItem().whereItem(Role::getLevel, Condition.LT, maxLevelRole.getLevel()));
+                        new WhereItem().whereItem(Role::getLevel, Condition.LT, maxLevelRole.getLevel()));
                 return super.getPageList(searchForm);
             } else {
                 throw new BadRequestException("您的账号还未分配角色");
@@ -138,11 +138,26 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
         }
     }
 
+    @Override
+    @Transactional
+    public boolean updateDefaultRole(String id) {
+        if (checkRoleLevel(super.getById(id))) {
+            // 先设置所有角色为非默认角色，为避免全表更新，添加条件：只修改默认角色为非默认角色
+            boolean updated = super.lambdaUpdate().set(Role::getDefaultRole, false).eq(Role::getDefaultRole, true).update();
+            if (!updated) {
+                throw new BadRequestException("重置角色信息失败");
+            }
+            // 再设置该角色为默认角色
+            return super.lambdaUpdate().set(Role::getDefaultRole, true).eq(Role::getId, id).update();
+        }
+        throw new BadRequestException(Result.failed("您不能修改角色等级大于您拥有的最大角色等级"));
+    }
+
     /**
      * 修改状态
      * - 修改的角色等级不能高于当前用户角色的最高级别
      *
-     * @param id 角色ID
+     * @param id     角色ID
      * @param status 状态
      * @return 是否修改成功
      */
