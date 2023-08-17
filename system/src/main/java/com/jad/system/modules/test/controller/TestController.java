@@ -75,7 +75,7 @@ public class TestController extends BaseController {
     @ApiOperation("用户密码加密")
     @GetMapping("/encoder")
     public Result<?> encoder(String username, String password) {
-        return Result.success("生成成功", userService.encodeUserPassword(username, password));
+        return Result.success("加密成功", userService.encodeUserPassword(username, password));
     }
 
     @ApiOperation("yaml配置信息加密")
@@ -83,7 +83,7 @@ public class TestController extends BaseController {
     public Result<?> encrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
         BasicTextEncryptor encryptor = new BasicTextEncryptor();
         encryptor.setPassword(salt);
-        return Result.success("生成成功", encryptor.encrypt(text));
+        return Result.success("加密成功", encryptor.encrypt(text));
     }
 
     @ApiOperation("yaml配置信息解密")
@@ -91,6 +91,6 @@ public class TestController extends BaseController {
     public Result<?> decrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
         BasicTextEncryptor encryptor = new BasicTextEncryptor();
         encryptor.setPassword(salt);
-        return Result.success("生成成功", encryptor.decrypt(text));
+        return Result.success("解密成功", encryptor.decrypt(text));
     }
 }
