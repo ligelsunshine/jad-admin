@@ -4,32 +4,29 @@
 
 package com.jad.security.controller;
 
-import com.google.code.kaptcha.Producer;
 import com.jad.common.base.controller.BaseController;
-import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
+import com.jad.security.model.Captcha;
 import com.jad.security.model.LoginForm;
+import com.jad.security.model.RegisterForm;
+import com.jad.security.service.AuthService;
+import com.jad.security.service.CaptchaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import cn.hutool.core.map.MapUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import sun.misc.BASE64Encoder;
 
 /**
  * 身份认证相关接口
@@ -42,46 +39,24 @@ import sun.misc.BASE64Encoder;
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 
-    // yaml中配置的验证码过期时间
-    @Value("${jad.system.auth-config.captcha-timeout}")
-    private long captchaTimeout;
-
-    /**
-     * 验证码生成器
-     */
     @Autowired
-    private Producer producer;
+    private CaptchaService captchaService;
+
+    @Autowired
+    private AuthService authService;
 
     @ApiOperation("获取图片验证码")
     @GetMapping("/captcha")
-    public Result<?> captcha() throws IOException {
-        // 验证码key
-        final String codeKey = UUID.randomUUID().toString();
-        // 验证码
-        final String codeValue = producer.createText();
-
-        // 生成Base64验证码
-        // 生成验证码图片
-        final BufferedImage image = producer.createImage(codeValue);
-        // 将验证码图片写入到output流
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", outputStream);
-        // 将output流转为base64图片码
-        final BASE64Encoder encoder = new BASE64Encoder();
-
-        final String base64Img = "data:image/jpeg;base64," + encoder.encode(outputStream.toByteArray());
-
-        // 将Base64验证码存入Redis
-        redisUtil.set(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey, codeValue, captchaTimeout);
-
+    public Result<?> captcha() {
+        Captcha captcha = captchaService.generate();
         final Map<Object, Object> resultMap = MapUtil.builder()
-            .put("codeKey", codeKey)
-            .put("codeImage", base64Img)
+            .put("codeKey", captcha.getCodeKey())
+            .put("codeImage", captcha.getCodeImage())
             .build();
         return Result.success(resultMap);
     }
 
-    @ApiOperation("登录")
+    @ApiOperation("用户登录")
     @PostMapping("/login")
     public Result<?> login(LoginForm dto, HttpServletRequest request) {
         // 目的是为了在swagger中显示这个接口
@@ -95,10 +70,12 @@ public class AuthController extends BaseController {
         return null;
     }
 
-    @ApiOperation("注册")
+    @ApiOperation("用户注册")
     @PostMapping("/register")
-    public Result<?> register(HttpServletRequest request) {
-        // TODO register
-        return null;
+    public Result<?> register(HttpServletRequest request, @RequestBody @Valid RegisterForm form) {
+        if (authService.register(form)) {
+            return Result.success("注册成功", form.getUsername());
+        }
+        return Result.failed("注册失败");
     }
 }

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.BaseEntity;
 import com.jad.common.enums.Sex;
+import com.jad.common.enums.UserOrigin;
 import com.jad.common.valid.AddValidGroup;
 
 import java.time.LocalDateTime;
@@ -51,6 +52,9 @@ public class User extends BaseEntity {
 
     @ApiModelProperty(value = "姓名")
     private String name;
+
+    @ApiModelProperty(value = "用户账号来源")
+    private UserOrigin origin = UserOrigin.UNKNOWN;
 
     @ApiModelProperty(value = "性别【未设置：0,男：1,女：2】")
     private Sex sex = Sex.UNSET;

@@ -26,6 +26,7 @@ public class KaptchaConfig {
         properties.put("kaptcha.border", "no");
         properties.put("kaptcha.textproducer.font.color", "black");
         properties.put("kaptcha.textproducer.char.space", "4");
+        properties.put("kaptcha.textproducer.char.length", "5");
         properties.put("kaptcha.image.height", "40");
         properties.put("kaptcha.image.width", "120");
         properties.put("kaptcha.textproducer.font.size", "30");

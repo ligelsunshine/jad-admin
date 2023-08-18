@@ -16,8 +16,8 @@
 
 package com.jad.security.model;
 
+import com.jad.common.enums.UserOrigin;
 import com.jad.common.valid.AddValidGroup;
-import com.jad.security.enums.RegisterTypeEnum;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -38,8 +38,8 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class RegisterForm {
-    @NotNull(message = "注册类型不能为空")
-    private RegisterTypeEnum type;
+    @NotNull(message = "注册类型不能为空 []")
+    private UserOrigin type;
 
     @ApiModelProperty(value = "账号")
     @NotBlank(message = "账号不能为空")
@@ -52,7 +52,11 @@ public class RegisterForm {
         groups = {AddValidGroup.class})
     private String password;
 
-    @ApiModelProperty(value = "验证码（手机、邮箱）")
+    @ApiModelProperty(value = "验证码key")
+    @NotBlank(message = "验证码key不能为空")
+    private String codeKey;
+
+    @ApiModelProperty(value = "验证码value")
     @NotBlank(message = "验证码不能为空")
-    private String verifyCode;
+    private String codeValue;
 }

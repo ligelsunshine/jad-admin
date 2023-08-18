@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-package com.jad.security.service;
+package com.jad.security.model;
 
-import com.jad.security.model.RegisterForm;
+import java.io.ByteArrayOutputStream;
+
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
- * AuthService
+ * Captcha
  *
  * @author cxxwl96
- * @since 2023/8/18 22:02
+ * @since 2023/8/18 23:08
  */
-public interface AuthService {
-    /**
-     * 用户注册
-     *
-     * @param form 注册表单
-     * @return 是否注册成功
-     */
-    boolean register(RegisterForm form);
+@ApiModel(value = "图形验证码")
+@Data
+@Accessors(chain = true)
+public class Captcha {
+    private String codeKey;
+
+    private String codeValue;
+
+    private ByteArrayOutputStream codeImageOutputStream;
+
+    // base64 Image
+    private String codeImage;
+
 }

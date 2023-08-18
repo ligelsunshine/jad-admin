@@ -4,12 +4,11 @@
 
 package com.jad.security.filter;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.jad.common.config.UrlConfig;
-import com.jad.common.constant.RedisConst;
 import com.jad.common.exception.CaptchaException;
 import com.jad.common.utils.RedisUtil;
 import com.jad.security.handler.JadAuthenticationFailureHandler;
+import com.jad.security.service.CaptchaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,6 +37,9 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private static final String CODE_VALUE = "codeValue";
 
     @Autowired
+    private CaptchaService captchaService;
+
+    @Autowired
     JadAuthenticationFailureHandler authenticationFailureHandler;
 
     @Autowired
@@ -57,7 +59,6 @@ public class CaptchaFilter extends OncePerRequestFilter {
                 authenticationFailureHandler.onAuthenticationFailure(request, response, e);
             }
         }
-
         chain.doFilter(request, response);
     }
 
@@ -69,13 +70,8 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private void validateCaptcha(HttpServletRequest request) {
         final String codeKey = request.getParameter(CODE_KEY);
         final String codeValue = request.getParameter(CODE_VALUE);
-        // 从redis获取验证码并验证
-        final String redisCodeValue = (String) redisUtil.get(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey);
-        if (StringUtils.isBlank(codeKey) || StringUtils.isBlank(codeValue) || !codeValue.equalsIgnoreCase(
-            redisCodeValue)) {
+        if (!captchaService.validate(codeKey, codeValue)) {
             throw new CaptchaException("验证码错误");
         }
-        // 删除redis中的验证码
-        redisUtil.del(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey);
     }
 }

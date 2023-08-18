@@ -14,26 +14,36 @@
  * limitations under the License.
  */
 
-package com.jad.security.enums;
+package com.jad.security.service;
+
+import com.jad.security.model.RegisterForm;
 
 /**
- * 注册方式枚举
+ * IRegistar
  *
  * @author cxxwl96
- * @since 2023/8/18 22:09
+ * @since 2023/8/18 22:50
  */
-public enum RegisterTypeEnum {
-    NORMAL("正常注册，仅需账号和密码"),
-    PHONE_VERIFICATION_CODE("手机验证码注册，需手机号、密码、手机验证码"),
-    EMAIL_VERIFICATION_CODE("邮箱验证码注册，需邮箱、密码、邮箱验证码");
+public interface IRegistar {
 
-    private final String des;
+    /**
+     * 正常注册，一般不开放给普通用户
+     *
+     * @param form 注册表单
+     */
+    void normalRegist(RegisterForm form);
 
-    RegisterTypeEnum(String des) {
-        this.des = des;
-    }
+    /**
+     * 手机验证码注册
+     *
+     * @param form 注册表单
+     */
+    void phoneVerificationCodeRegist(RegisterForm form);
 
-    public String getDes() {
-        return des;
-    }
+    /**
+     * 邮箱验证码注册
+     *
+     * @param form 注册表单
+     */
+    void emailVerificationCodeRegist(RegisterForm form);
 }
