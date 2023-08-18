@@ -89,6 +89,12 @@ public class RoleController extends BaseController {
         return Result.failed("修改默认角色失败");
     }
 
+    @ApiOperation("获取默认角色")
+    @GetMapping("/get/defaultRole")
+    public Result<?> getDefaultRole() {
+        return Result.success(roleService.getDefaultRole());
+    }
+
     @ApiOperation("修改状态")
     @PutMapping("/update/status")
     @PreAuthorize("@auth.hasAuthority('sys:role:update:status')")

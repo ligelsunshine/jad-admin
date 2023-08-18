@@ -4,10 +4,13 @@
 
 package com.jad.common.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jad.common.base.form.OrderItem;
 import com.jad.common.base.form.SearchForm;
 import com.jad.common.base.form.WhereItem;
 import com.jad.common.base.service.impl.BaseServiceImpl;
+import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Role;
 import com.jad.common.enums.Condition;
 import com.jad.common.enums.Status;
@@ -17,13 +20,18 @@ import com.jad.common.lang.SearchResult;
 import com.jad.common.mapper.RoleMapper;
 import com.jad.common.service.RoleService;
 import com.jad.common.service.UserService;
+import com.jad.common.utils.RedisUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import cn.hutool.core.collection.CollUtil;
 
 /**
  * 角色服务实现类
@@ -33,8 +41,15 @@ import java.util.Optional;
  */
 @Service
 public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implements RoleService {
+    // yaml中配置的超级管理员ID
+    @Value("${jad.system.role.administrator-id}")
+    private String administratorId;
+
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 添加角色
@@ -99,9 +114,9 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             if (maxLevelRole != null) {
                 // 添加level <= maxLevel, order by level desc条件
                 return super.lambdaQuery()
-                        .lt(Role::getLevel, maxLevelRole.getLevel())
-                        .orderByDesc(Role::getLevel)
-                        .list();
+                    .lt(Role::getLevel, maxLevelRole.getLevel())
+                    .orderByDesc(Role::getLevel)
+                    .list();
             } else {
                 throw new BadRequestException("您的账号还未分配角色");
             }
@@ -130,7 +145,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             if (maxLevelRole != null) {
                 // 添加level <= maxLevel 条件
                 searchForm.addWhereItem(
-                        new WhereItem().whereItem(Role::getLevel, Condition.LT, maxLevelRole.getLevel()));
+                    new WhereItem().whereItem(Role::getLevel, Condition.LT, maxLevelRole.getLevel()));
                 return super.getPageList(searchForm);
             } else {
                 throw new BadRequestException("您的账号还未分配角色");
@@ -138,17 +153,33 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
         }
     }
 
+    /**
+     * 修改默认角色
+     * - 角色列表中只能存在一个默认角色
+     *
+     * @param id 角色ID
+     * @return 是否修改成功
+     */
     @Override
     @Transactional
     public boolean updateDefaultRole(String id) {
         if (checkRoleLevel(super.getById(id))) {
             // 先设置所有角色为非默认角色，为避免全表更新，添加条件：只修改默认角色为非默认角色
-            boolean updated = super.lambdaUpdate().set(Role::getDefaultRole, false).eq(Role::getDefaultRole, true).update();
+            boolean updated = super.lambdaUpdate()
+                .set(Role::getDefaultRole, false)
+                .eq(Role::getDefaultRole, true)
+                .update();
             if (!updated) {
                 throw new BadRequestException("重置角色信息失败");
             }
             // 再设置该角色为默认角色
-            return super.lambdaUpdate().set(Role::getDefaultRole, true).eq(Role::getId, id).update();
+            updated = super.lambdaUpdate().set(Role::getDefaultRole, true).eq(Role::getId, id).update();
+            if (!updated) {
+                throw new BadRequestException("修改默认角色失败");
+            }
+            // 删除Redis存放的默认角色
+            redisUtil.hdel(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE);
+            return true;
         }
         throw new BadRequestException(Result.failed("您不能修改角色等级大于您拥有的最大角色等级"));
     }
@@ -157,7 +188,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
      * 修改状态
      * - 修改的角色等级不能高于当前用户角色的最高级别
      *
-     * @param id     角色ID
+     * @param id 角色ID
      * @param status 状态
      * @return 是否修改成功
      */
@@ -167,6 +198,46 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
             return super.lambdaUpdate().set(Role::getStatus, status).eq(Role::getId, id).update();
         }
         throw new BadRequestException(Result.failed("您不能修改角色等级大于您拥有的最大角色等级"));
+    }
+
+    /**
+     * 获取超级管理员角色
+     *
+     * @return 是否拥有超级管理员身份
+     */
+    @Override
+    public Role getAdministrator() {
+        if (redisUtil.hHasKey(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR)) {
+            final String json = (String) redisUtil.hget(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR);
+            return JSONObject.parseObject(json, Role.class);
+        }
+        final Role administrator = this.getById(administratorId);
+        redisUtil.hset(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR, JSON.toJSONString(administrator));
+        return administrator;
+    }
+
+    /**
+     * 获取默认角色
+     *
+     * @return 默认角色
+     */
+    @Override
+    public Role getDefaultRole() {
+        if (redisUtil.hHasKey(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE)) {
+            final String json = (String) redisUtil.hget(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE);
+            return JSONObject.parseObject(json, Role.class);
+        }
+        // 获取状态为Enable的默认角色
+        List<Role> roles = this.lambdaQuery().eq(Role::getDefaultRole, true).eq(Role::getStatus, Status.ENABLE).list();
+        if (CollUtil.isEmpty(roles)) {
+            throw new BadRequestException("默认角色角色不存在");
+        }
+        if (roles.size() > 1) {
+            throw new BadRequestException("存在多个默认角色");
+        }
+        Role role = roles.get(0);
+        redisUtil.hset(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE, JSON.toJSONString(role));
+        return role;
     }
 
     /**

@@ -56,7 +56,8 @@ public class Menu extends TreeNode<Menu> implements Serializable {
     private String redirect;
 
     @ApiModelProperty(value = "菜单标题")
-    @NotBlank(message = "菜单标题不能为空", groups = {DirectoryValidGroup.class, MenuValidGroup.class, ButtonValidGroup.class})
+    @NotBlank(message = "菜单标题不能为空",
+        groups = {DirectoryValidGroup.class, MenuValidGroup.class, ButtonValidGroup.class})
     private String title;
 
     @ApiModelProperty(value = "是否固定标签")

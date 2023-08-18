@@ -22,7 +22,7 @@ import javax.validation.Validator;
  * @since 2021/8/9 23:54
  */
 public class ValidatorUtil {
-    private static Validator validator;
+    private static final Validator validator;
 
     static {
         validator = Validation.buildDefaultValidatorFactory().getValidator();

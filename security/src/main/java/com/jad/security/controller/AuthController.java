@@ -94,4 +94,11 @@ public class AuthController extends BaseController {
         // 目的是为了在swagger中显示这个接口
         return null;
     }
+
+    @ApiOperation("注册")
+    @PostMapping("/register")
+    public Result<?> register(HttpServletRequest request) {
+        // TODO register
+        return null;
+    }
 }

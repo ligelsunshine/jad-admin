@@ -33,20 +33,21 @@ public class UrlConfig {
     // 错误页面
     public static final String ERROR_URL = "/error";
 
+    // 获取验证码URL
+    public static final String CAPTCHA_URL = "/auth/captcha";
+
     // 登录URL
     public static final String LOGIN_URL = "/auth/login";
 
     // 登出URL
     public static final String LOGOUT_URL = "/auth/logout";
 
-    // 获取验证码URL
-    public static final String CAPTCHA_URL = "/auth/captcha";
+    // 注册URL
+    public static final String REGISTER = "/auth/register";
 
     private static final String[] URL_WHITE_LIST = {
-        UrlConfig.HOME_URL, UrlConfig.ERROR_URL, UrlConfig.LOGIN_URL, UrlConfig.LOGOUT_URL, UrlConfig.CAPTCHA_URL,
-        "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js", "/webSocket/**",
-
-        "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
+        UrlConfig.HOME_URL, UrlConfig.ERROR_URL, "/auth/**", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js",
+        "/webSocket/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
     };
 
     @Value("${jad.security.url-white-list}")

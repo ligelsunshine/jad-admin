@@ -141,13 +141,6 @@ public interface UserService extends BaseService<User> {
     boolean Authenticated();
 
     /**
-     * 获取超级管理员角色
-     *
-     * @return 是否拥有超级管理员身份
-     */
-    Role getAdministrator();
-
-    /**
      * 是否拥有超级管理员身份
      *
      * @return 是否拥有超级管理员身份

@@ -81,9 +81,23 @@ public interface RoleService extends BaseService<Role> {
      * 修改状态
      * - 修改的角色等级不能高于当前用户角色的最高级别
      *
-     * @param id     角色ID
+     * @param id 角色ID
      * @param status 状态
      * @return 是否修改成功
      */
     boolean updateStatus(String id, Status status);
+
+    /**
+     * 获取超级管理员角色
+     *
+     * @return 是否拥有超级管理员身份
+     */
+    Role getAdministrator();
+
+    /**
+     * 获取默认角色
+     *
+     * @return 默认角色
+     */
+    Role getDefaultRole();
 }

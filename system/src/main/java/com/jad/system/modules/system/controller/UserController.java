@@ -4,6 +4,7 @@
 
 package com.jad.system.modules.system.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;
@@ -14,31 +15,21 @@ import com.jad.common.lang.SearchResult;
 import com.jad.common.model.dto.UpdatePasswordDto;
 import com.jad.common.model.dto.UserBaseInfoDto;
 import com.jad.common.service.DeptService;
+import com.jad.common.service.RoleService;
 import com.jad.common.service.UserService;
 import com.jad.system.modules.system.vo.PermCodeVo;
 import com.jad.system.modules.system.vo.UserVo;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import cn.hutool.core.util.StrUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 /**
  * 系统用户相关接口
@@ -53,6 +44,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     private DeptService deptService;
@@ -136,7 +130,7 @@ public class UserController extends BaseController {
         final String userAuthority = userService.getUserAuthority(user.getId());
         final String[] codes = userAuthority.split(",");
         PermCodeVo permCodeVo = new PermCodeVo();
-        permCodeVo.setSuperRole("ROLE_" + userService.getAdministrator().getCode());
+        permCodeVo.setSuperRole("ROLE_" + roleService.getAdministrator().getCode());
         permCodeVo.setCodeList(Arrays.stream(codes).collect(Collectors.toList()));
         return Result.success(permCodeVo);
     }
@@ -146,7 +140,7 @@ public class UserController extends BaseController {
     public Result<?> searchUser(String keyword) {
         // 后期采用ES
         final LambdaQueryChainWrapper<User> wrapper = userService.lambdaQuery()
-            .select(User::getId, User::getUsername, User::getName);
+                .select(User::getId, User::getUsername, User::getName);
         if (!StrUtil.isBlank(keyword)) {
             wrapper.like(User::getUsername, keyword).or().like(User::getName, keyword);
         }

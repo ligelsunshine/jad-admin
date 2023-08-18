@@ -4,8 +4,6 @@
 
 package com.jad.common.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.jad.common.base.form.SearchForm;
@@ -33,7 +31,6 @@ import com.jad.common.utils.ValidatorUtil;
 import com.jad.common.valid.AddValidGroup;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -60,11 +57,6 @@ import cn.hutool.core.util.StrUtil;
 @Service
 // @DS("master")
 public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implements UserService {
-
-    // yaml中配置的超级管理员ID
-    @Value("${jad.system.role.administrator-id}")
-    private String administratorId;
-
     @Autowired
     private RoleService roleService;
 
@@ -419,29 +411,13 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
-     * 获取超级管理员角色
-     *
-     * @return 是否拥有超级管理员身份
-     */
-    @Override
-    public Role getAdministrator() {
-        if (redisUtil.hHasKey(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR)) {
-            final String json = (String) redisUtil.hget(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR);
-            return JSONObject.parseObject(json, Role.class);
-        }
-        final Role administrator = roleService.getById(administratorId);
-        redisUtil.hset(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_ADMINISTRATOR, JSON.toJSONString(administrator));
-        return administrator;
-    }
-
-    /**
      * 是否拥有超级管理员身份
      *
      * @return 是否拥有超级管理员身份
      */
     @Override
     public boolean hasAdministrator() {
-        final Role administrator = getAdministrator();
+        final Role administrator = roleService.getAdministrator();
         final User authUser = getCurrentAuthUser();
         final String authority = getUserAuthority(authUser.getId());
         final String[] permCode = authority.split(",");
@@ -459,7 +435,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     public boolean hasAdministrator(String userId) {
-        final Role administrator = getAdministrator();
+        final Role administrator = roleService.getAdministrator();
         final String authority = getUserAuthority(userId);
         final String[] permCode = authority.split(",");
         final Optional<String> first = Arrays.stream(permCode)
