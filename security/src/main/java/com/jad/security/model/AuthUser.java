@@ -2,7 +2,7 @@
  * Copyright (C), 2021-2021, jad
  */
 
-package com.jad.security.entity;
+package com.jad.security.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

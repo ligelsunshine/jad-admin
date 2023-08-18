@@ -8,7 +8,7 @@ import com.google.code.kaptcha.Producer;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
-import com.jad.security.entity.LoginForm;
+import com.jad.security.model.LoginForm;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

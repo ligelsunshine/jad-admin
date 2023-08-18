@@ -18,7 +18,7 @@ package com.jad.security.handler;
 
 import com.jad.common.entity.User;
 import com.jad.common.service.UserService;
-import com.jad.security.entity.AuthUser;
+import com.jad.security.model.AuthUser;
 import com.jad.security.service.AuthorityPermissionService;
 
 import org.springframework.beans.factory.annotation.Autowired;

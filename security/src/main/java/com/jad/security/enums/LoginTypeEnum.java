@@ -2,7 +2,7 @@
  * Copyright (C), 2021-2021, jad
  */
 
-package com.jad.common.enums;
+package com.jad.security.enums;
 
 /**
  * 登录类型枚举
