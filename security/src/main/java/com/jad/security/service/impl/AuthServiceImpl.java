@@ -43,6 +43,9 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public boolean register(RegisterForm form) {
+        if (!form.getPassword().equals(form.getRePassword())) {
+            throw new BadRequestException("两次密码不一致");
+        }
         UserOrigin userOrigin = form.getType();
         switch (userOrigin) {
             case NORMAL: // 正常注册，一般不开放给普通用户

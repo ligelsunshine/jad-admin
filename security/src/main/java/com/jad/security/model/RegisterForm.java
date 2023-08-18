@@ -52,6 +52,12 @@ public class RegisterForm {
         groups = {AddValidGroup.class})
     private String password;
 
+    @ApiModelProperty(value = "确认密码")
+    @NotBlank(message = "密码不能为空", groups = {AddValidGroup.class})
+    @Pattern(message = "密码只能由16位 A-Z a-z 0-9 @ . _ 组成", regexp = "^[A-Za-z0-9@._]{0,16}$",
+        groups = {AddValidGroup.class})
+    private String rePassword;
+
     @ApiModelProperty(value = "验证码key")
     @NotBlank(message = "验证码key不能为空")
     private String codeKey;
