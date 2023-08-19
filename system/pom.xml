@@ -45,6 +45,14 @@
             <artifactId>file-store</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!--DevTools 开发者工具-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -66,9 +74,6 @@
             <!--指定资源的位置（xml放在resources下，可以不用指定）-->
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*Mapper.xml</include>
-                </includes>
             </resource>
         </resources>
     </build>
