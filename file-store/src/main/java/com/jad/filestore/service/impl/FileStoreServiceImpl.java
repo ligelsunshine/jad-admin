@@ -16,6 +16,11 @@
 
 package com.jad.filestore.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
 import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.entity.User;
@@ -34,34 +39,21 @@ import com.jad.filestore.mapper.FileStoreMapper;
 import com.jad.filestore.service.FileStoreService;
 import com.jad.filestore.utils.LocalUtil;
 import com.jad.filestore.utils.MinIoUtil;
-
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletResponse;
-
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.SecureUtil;
-import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 
 /**
  * 对象存储服务实现类
@@ -90,7 +82,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
     /**
      * 文件上传
      *
-     * @param file 文件
+     * @param file         文件
      * @param uploadConfig 上传配置
      * @return 文件信息
      */
@@ -193,7 +185,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             final User authUser = userService.getCurrentAuthUser();
             if (!authUser.getId().equalsIgnoreCase(fileStore.getCreateBy())) {
                 log.error("文件的访问策略为PRIVATE，只能文件所有者才有权限，fileID: {}，requestUserID: {}",
-                    fileStore.getId(), authUser.getId());
+                        fileStore.getId(), authUser.getId());
                 throw new BadRequestException("您没有权限");
             }
         }
@@ -211,19 +203,19 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         final List<FileStore> list = super.lambdaQuery().eq(FileStore::getGroupId, groupId).list();
         // 获取公有的file
         final List<FileStore> stores = list.stream()
-            .filter(item -> item.getAccessPolicy() == AccessPolicy.PUBLIC)
-            .collect(Collectors.toList());
+                .filter(item -> item.getAccessPolicy() == AccessPolicy.PUBLIC)
+                .collect(Collectors.toList());
         // 获取私有的file
         final List<FileStore> privateStores = list.stream()
-            .filter(item -> item.getAccessPolicy() == AccessPolicy.PRIVATE)
-            .collect(Collectors.toList());
+                .filter(item -> item.getAccessPolicy() == AccessPolicy.PRIVATE)
+                .collect(Collectors.toList());
         // 如文件为私有文件需要认证
         if (privateStores.size() > 0 && userService.Authenticated()) {
             final User authUser = userService.getCurrentAuthUser();
             // 获取文件所有者的文件
             final List<FileStore> authedFileStores = privateStores.stream()
-                .filter(item -> authUser.getId().equalsIgnoreCase(item.getCreateBy()))
-                .collect(Collectors.toList());
+                    .filter(item -> authUser.getId().equalsIgnoreCase(item.getCreateBy()))
+                    .collect(Collectors.toList());
             stores.addAll(authedFileStores);
         }
         return stores;
@@ -232,7 +224,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
     /**
      * 文件下载
      *
-     * @param config 下载配置
+     * @param config   下载配置
      * @param response 响应
      * @return 下载结果
      */
@@ -274,7 +266,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         }
         if (is == null) {
             log.error("下载文件失败，获取文件流为null，fileID: {}", fileStore.getId());
-            throw new BadRequestException("下载失败");
+            throw new BadRequestException("下载失败").setNeedPrintStackTrace(false);
         }
         return is;
     }
@@ -293,7 +285,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                 return Result.success("", url);
             default:
                 log.error("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL], fileID: {}",
-                    config.getFileId());
+                        config.getFileId());
                 throw new BadRequestException("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL]");
         }
     }
@@ -302,7 +294,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         OutputStream os = null;
         try {
             String contentDisposition = String.format("attachment;fileName=%s;filename*=utf-8''%s", fileStore.getName(),
-                URLEncoder.encode(fileStore.getName(), "UTF-8"));
+                    URLEncoder.encode(fileStore.getName(), "UTF-8"));
             //响应头设置
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setHeader("content-type", fileStore.getMemi());

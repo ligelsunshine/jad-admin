@@ -51,6 +51,8 @@ spring:
       content-type: text/html
     encoding: UTF-8
     cache: false
+    check-template: false
+    check-template-location: false
   devtools:
     restart:
       enabled: true # 设置开启热部署
@@ -62,7 +64,6 @@ mybatis-plus:
   mapper-locations:
     - classpath*:com/jad/**/mapper/xml/*.xml # 配置mapper xml文件的路径
   type-aliases-package: com.jad.**.mapper
-  type-enums-package: com.jad.**.enums # 枚举转换
   configuration:
     default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler # 使用ordinal处理枚举转换
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # mybatis日志，打印sql
@@ -76,8 +77,7 @@ jasypt:
 # FileStore Configuration
 file-store:
   store: local # local | minio | qiniu | aliyun | tencentyun
-  url: /Users/chengyingkui/FileStore
-  #  url: /Users/chengyingkui/、FileStore/jad-admin
+  url: /Users/chengyingkui/FileStore/jad-admin
   accessKey: ENC(TCZcL15AkbfcPfJuk2brQw==)
   secretKey: ENC(6H416RiFYfeWk1oBptgod97p8FfZ3MVZW7sAZb7cIvY=)
   bucket: jad-admin

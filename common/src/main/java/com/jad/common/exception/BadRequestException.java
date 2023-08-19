@@ -17,10 +17,12 @@
 package com.jad.common.exception;
 
 import com.jad.common.lang.Result;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.util.Locale;
 
-import lombok.Getter;
 
 /**
  * 错误请求异常
@@ -28,9 +30,14 @@ import lombok.Getter;
  * @author cxxwl96
  * @since 2021/6/27 16:27
  */
-@Getter
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 public class BadRequestException extends RuntimeException {
-    private final Result<?> result;
+    private Result<?> result;
+
+    // 是否需要打印栈信息
+    private boolean needPrintStackTrace = true;
 
     public BadRequestException(Result<?> result) {
         super(result.getMsg());

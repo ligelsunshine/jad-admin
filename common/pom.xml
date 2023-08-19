@@ -99,6 +99,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
         </dependency>
         <!--MybatisPlus 持久层-->
         <dependency>
@@ -134,6 +135,7 @@
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
+            <version>2.3.31</version>
         </dependency>
         <!--Swagger2-->
         <dependency>
@@ -170,12 +172,6 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.18</version>
         </dependency>
-        <!-- apache工具类，包含常用的StringUtils、RandomStringUtils、NumberUtils、ArrayUtils、DateUtils -->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.commons</groupId>-->
-<!--            <artifactId>commons-lang3</artifactId>-->
-<!--            <version>3.11</version>-->
-<!--        </dependency>-->
         <!--Pinyin-->
         <dependency>
             <groupId>com.belerweb</groupId>
@@ -205,6 +201,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
