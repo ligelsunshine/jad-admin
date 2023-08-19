@@ -38,7 +38,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class RegisterForm {
-    @NotNull(message = "注册类型不能为空 []")
+    @NotNull(message = "注册类型不能为空")
     private UserOrigin type;
 
     @ApiModelProperty(value = "账号")

@@ -7,8 +7,6 @@ server:
 spring:
   application:
     name: jad-admin
-  #  profiles:
-  #    active: dev # 环境设置：dev、test、prod
   datasource:
     dynamic:
       primary: master
