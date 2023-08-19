@@ -58,7 +58,7 @@ public class UrlConfig {
 
     private static final String[] URL_WHITE_LIST = {
         UrlConfig.HOME_URL, UrlConfig.ERROR_URL, "/auth/**", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js",
-        "/webSocket/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
+        "/webSocket/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
     };
 
     // 白名单

@@ -104,7 +104,7 @@ jad:
     enable: true
     path-mapping: /
     api-info:
-      title: JAD Admin Swagger API
+      title: JAD Admin Swagger API - PRO
       description: JAD 相关接口
       version: 1.0.0
       contact:
