@@ -81,7 +81,7 @@ public class DictServiceImpl extends BaseServiceImpl<DictMapper, Dict> implement
      */
     @Override
     @Transactional
-    public boolean removeByIds(Collection<? extends Serializable> ids) {
+    public boolean removeByIds(Collection<?> ids) {
         // 得到被删除的code
         final List<String> codes = super.lambdaQuery()
             .in(Dict::getId, ids)

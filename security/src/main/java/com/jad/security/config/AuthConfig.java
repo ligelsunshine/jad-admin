@@ -14,34 +14,23 @@
  * limitations under the License.
  */
 
-package com.jad.security.model;
+package com.jad.security.config;
 
-import java.io.ByteArrayOutputStream;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 /**
- * Captcha
+ * AuthConfig
  *
  * @author cxxwl96
- * @since 2023/8/18 23:08
+ * @since 2023/8/19 13:05
  */
-@ApiModel(value = "图形验证码")
 @Data
-@Accessors(chain = true)
-public class Captcha {
-    private String codeKey;
-
-    private String codeValue;
-
-    private ByteArrayOutputStream codeImageOutputStream;
-
-    // base64 Image
-    private String codeImage;
-
+@Configuration
+public class AuthConfig {
     // 验证码过期时间（单位：s）
+    @Value("${jad.security.auth-config.captcha-timeout}")
     private long captchaTimeout;
-
 }

@@ -81,7 +81,8 @@ public class UserController extends BaseController {
     @Transactional
     public Result<?> save(@RequestBody @Valid User user) {
         User authUser = userService.getCurrentAuthUser();
-        String remark = String.format(Locale.ROOT, "来源于'UserController.save 添加用户'接口，添加操作人：%s", authUser.getUsername());
+        String remark = String.format(Locale.ROOT, "来源于'UserController.save 添加用户'接口，添加操作人：%s",
+            authUser.getUsername());
         user.setOrigin(UserOrigin.ADMIN_SAVE).setRemark(remark);
         userService.save(user);
         return Result.success("添加成功");

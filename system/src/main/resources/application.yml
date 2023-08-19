@@ -90,9 +90,9 @@ jad:
     header: Authorization
   security:
     url-white-list: /auth/captcha/generator,/test/**,/sys/file/**
-  system:
     auth-config:
       captcha-timeout: 120 # 验证码过期时间（单位：s）
+  system:
     info:
       app-name: JADAdmin
       version: 1.0.0

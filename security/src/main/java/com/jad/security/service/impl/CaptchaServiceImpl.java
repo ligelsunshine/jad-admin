@@ -20,11 +20,11 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.code.kaptcha.Producer;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.utils.RedisUtil;
+import com.jad.security.config.AuthConfig;
 import com.jad.security.model.Captcha;
 import com.jad.security.service.CaptchaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
@@ -44,9 +44,8 @@ import sun.misc.BASE64Encoder;
  */
 @Component
 public class CaptchaServiceImpl implements CaptchaService {
-    // yaml中配置的验证码过期时间
-    @Value("${jad.system.auth-config.captcha-timeout}")
-    private long captchaTimeout;
+    @Autowired
+    private AuthConfig authConfig;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -82,12 +81,14 @@ public class CaptchaServiceImpl implements CaptchaService {
         final String codeImage = "data:image/jpeg;base64," + encoder.encode(outputStream.toByteArray());
 
         // 将Base64验证码存入Redis
+        long captchaTimeout = authConfig.getCaptchaTimeout();
         redisUtil.set(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey, codeValue, captchaTimeout);
 
         return new Captcha().setCodeKey(codeKey)
             .setCodeValue(codeValue)
             .setCodeImageOutputStream(outputStream)
-            .setCodeImage(codeImage);
+            .setCodeImage(codeImage)
+            .setCaptchaTimeout(captchaTimeout);
     }
 
     /**

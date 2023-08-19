@@ -192,8 +192,8 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             // 只能文件所有者下载
             final User authUser = userService.getCurrentAuthUser();
             if (!authUser.getId().equalsIgnoreCase(fileStore.getCreateBy())) {
-                log.error("文件的访问策略为PRIVATE，只能文件所有者才有权限，fileID: {}，requestUserID: {}", fileStore.getId(),
-                    authUser.getId());
+                log.error("文件的访问策略为PRIVATE，只能文件所有者才有权限，fileID: {}，requestUserID: {}",
+                    fileStore.getId(), authUser.getId());
                 throw new BadRequestException("您没有权限");
             }
         }
@@ -292,7 +292,8 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                 String url = transferUrl(fileStore);
                 return Result.success("", url);
             default:
-                log.error("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL], fileID: {}", config.getFileId());
+                log.error("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL], fileID: {}",
+                    config.getFileId());
                 throw new BadRequestException("下载文件失败，指定下载方式有误，下载方式只能[STREAM,BASE64,URL]");
         }
     }

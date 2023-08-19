@@ -18,6 +18,8 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <mybatis-plus-version>3.5.3.1</mybatis-plus-version>
+        <springfox-swagger-version>3.0.0</springfox-swagger-version>
     </properties>
 
     <dependencies>
@@ -78,7 +80,7 @@
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>3.0.4</version>
+            <version>3.0.5</version>
         </dependency>
         <!--DevTools 开发者工具-->
         <dependency>
@@ -91,7 +93,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.22</version>
+            <version>8.0.33</version>
         </dependency>
         <!--Lombok 用来简化实体类：需要安装lombok插件-->
         <dependency>
@@ -102,7 +104,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.3.4</version>
+            <version>${mybatis-plus-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -110,23 +112,23 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--MybatisPlus 动态数据源-->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>3.4.1</version>
-        </dependency>
         <!--MybatisPlus Generator 代码生成-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
-            <version>3.5.1</version>
+            <version>${mybatis-plus-version}</version>
+        </dependency>
+        <!--MybatisPlus 动态数据源-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>3.6.1</version>
         </dependency>
         <!--Alibaba Druid数据库连接池-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.16</version>
         </dependency>
         <!--Freemarker 模板引擎, MybatisPlus Generator 代码生成器需要-->
         <dependency>
@@ -137,18 +139,18 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.8.0</version>
+            <version>${springfox-swagger-version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.8.0</version>
+            <version>${springfox-swagger-version}</version>
         </dependency>
         <!-- Json -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.76</version>
+            <version>2.0.32</version>
         </dependency>
         <!-- jwt -->
         <dependency>
@@ -166,14 +168,14 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.7.9</version>
+            <version>5.8.18</version>
         </dependency>
         <!-- apache工具类，包含常用的StringUtils、RandomStringUtils、NumberUtils、ArrayUtils、DateUtils -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.commons</groupId>-->
+<!--            <artifactId>commons-lang3</artifactId>-->
+<!--            <version>3.11</version>-->
+<!--        </dependency>-->
         <!--Pinyin-->
         <dependency>
             <groupId>com.belerweb</groupId>

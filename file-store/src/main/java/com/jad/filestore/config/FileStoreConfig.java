@@ -16,11 +16,10 @@
 
 package com.jad.filestore.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
 
 /**
  * FileStoreConfig
@@ -28,19 +27,22 @@ import lombok.extern.log4j.Log4j2;
  * @author cxxwl96
  * @since 2021/11/18 22:08
  */
-@Log4j2
 @Data
-@Component
-@ConfigurationProperties(prefix = "file-store")
+@Configuration
 public class FileStoreConfig {
-    public String bucket = "";
 
+    @Value("${file-store.store}")
     private String store;
 
+    @Value("${file-store.url}")
     private String url = "";
 
+    @Value("${file-store.accessKey}")
     private String accessKey = "";
 
+    @Value("${file-store.secretKey}")
     private String secretKey = "";
 
+    @Value("${file-store.bucket}")
+    public String bucket = "";
 }

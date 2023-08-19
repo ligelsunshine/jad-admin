@@ -48,7 +48,7 @@ public interface DictService extends BaseService<Dict> {
      * @return 是否删除成功
      */
     @Override
-    boolean removeByIds(Collection<? extends Serializable> ids);
+    boolean removeByIds(Collection<?> ids);
 
     /**
      * 修改
