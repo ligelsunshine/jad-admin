@@ -18,7 +18,6 @@ package com.jad.common.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -31,15 +30,18 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum UserOrigin {
-    UNKNOWN(0, "未知来源"),
-    ADMIN_SAVE(1, "管理员添加"),
-    NORMAL(2, "正常注册，需账号、密码、图形验证码"),
-    PHONE_VERIFICATION_CODE(3, "手机验证码注册，需手机号、密码、手机验证码"),
-    EMAIL_VERIFICATION_CODE(4, "邮箱验证码注册，需邮箱、密码、邮箱验证码");
+    UNKNOWN(0, "unknown", "未知来源"),
+    ADMIN_SAVE(1, "adminSave", "管理员添加"),
+    NORMAL(2, "normal", "正常注册，需账号、密码、图形验证码"),
+    PHONE_VERIFICATION_CODE(3, "phoneVerificationCode", "手机验证码注册，需手机号、密码、手机验证码"),
+    EMAIL_VERIFICATION_CODE(4, "emailVerificationCode", "邮箱验证码注册，需邮箱、密码、邮箱验证码");
 
     @EnumValue
     @JsonValue
     private final int index;
+
+    // 编码，用于系统设置字段
+    private final String keyCode;
 
     private final String des;
 }

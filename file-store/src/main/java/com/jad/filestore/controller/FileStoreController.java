@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jad.system.modules.filestore.controller;
+package com.jad.filestore.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.base.form.SearchForm;

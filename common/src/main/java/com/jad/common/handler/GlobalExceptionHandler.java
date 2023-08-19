@@ -17,6 +17,7 @@
 package com.jad.common.handler;
 
 import com.jad.common.exception.BadRequestException;
+import com.jad.common.exception.CaptchaException;
 import com.jad.common.exception.UnauthorizedException;
 import com.jad.common.lang.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +80,18 @@ public class GlobalExceptionHandler {
             return processFailed(HttpStatus.BAD_REQUEST.value(), objectError.getDefaultMessage(), e);
         }
         return processFailed(HttpStatus.BAD_REQUEST.value(), "实体校验异常", e);
+    }
+
+    /**
+     * 验证码错误
+     *
+     * @param e 异常
+     * @return 响应结果 400
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = CaptchaException.class)
+    public Result<?> handler(CaptchaException e) {
+        return processFailed(HttpStatus.BAD_REQUEST.value(), "验证码错误", e);
     }
 
     /**

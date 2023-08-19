@@ -40,7 +40,7 @@ import com.jad.filestore.service.FileStoreService;
 import com.jad.filestore.utils.LocalUtil;
 import com.jad.filestore.utils.MinIoUtil;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
  * @author cxxwl96
  * @since 2021/11/20 21:12
  */
-@Log4j2
+@Slf4j
 @Service
 public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileStore> implements FileStoreService {
     // base64最大限制20M
@@ -359,7 +359,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
                     throw new BadRequestException("获取URL失败");
             }
         } catch (ExecutionException e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
         return url;
     }

@@ -19,10 +19,8 @@ package com.jad.common.handler;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.jad.common.entity.User;
 import com.jad.common.service.UserService;
-
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -35,7 +33,6 @@ import java.time.LocalDateTime;
  */
 @Component
 public class MybatisMetaObjectHandler implements MetaObjectHandler {
-    @Lazy
     @Autowired
     private UserService userService;
 

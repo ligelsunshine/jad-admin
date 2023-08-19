@@ -16,13 +16,18 @@
 
 package com.jad.security.service.impl;
 
+import cn.hutool.core.util.ReflectUtil;
+import com.jad.common.config.settings.RegisterType;
+import com.jad.common.config.settings.SystemSettings;
 import com.jad.common.enums.UserOrigin;
 import com.jad.common.exception.BadRequestException;
 import com.jad.security.model.RegisterForm;
 import com.jad.security.service.AuthService;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Field;
 
 /**
  * AuthServiceImpl
@@ -30,10 +35,14 @@ import org.springframework.stereotype.Service;
  * @author cxxwl96
  * @since 2023/8/18 22:02
  */
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
     private Registar registar;
+
+    @Autowired
+    private SystemSettings systemSettings;
 
     /**
      * 用户注册
@@ -43,10 +52,13 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public boolean register(RegisterForm form) {
+        UserOrigin userOrigin = form.getType();
+        // 校验用户注册方式是否被允许
+        checkUserOrigin(userOrigin);
+        // 校验两次密码是否一致
         if (!form.getPassword().equals(form.getRePassword())) {
             throw new BadRequestException("两次密码不一致");
         }
-        UserOrigin userOrigin = form.getType();
         switch (userOrigin) {
             case NORMAL: // 正常注册，一般不开放给普通用户
                 registar.normalRegist(form);
@@ -61,5 +73,39 @@ public class AuthServiceImpl implements AuthService {
                 throw new BadRequestException("无效的注册类型");
         }
         return true;
+    }
+
+    /**
+     * 校验用户注册方式是否被允许
+     *
+     * @param userOrigin 用户账号来源
+     */
+    private void checkUserOrigin(UserOrigin userOrigin) {
+        // 获取系统设置的注册类型开关
+        RegisterType registerType = systemSettings.getSecurity().getRegisterType();
+        // 判断注册类型是否系统设置里面打开开关
+        for (Field field : registerType.getClass().getDeclaredFields()) {
+            // 只需要字段类型为Boolean
+            if (!field.getType().equals(Boolean.class)) {
+                continue;
+            }
+            // 找到对应的注册类型
+            if (userOrigin.getKeyCode().equals(field.getName())) {
+                boolean enable;
+                try {
+                    // 获取开关的值
+                    enable = (Boolean) ReflectUtil.getFieldValue(registerType, field);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    throw new BadRequestException("系统错误: IllegalAccess");
+                }
+                // 是否允许此注册方式
+                if (!enable) {
+                    throw new BadRequestException("不支持的注册类型：" + userOrigin.getKeyCode());
+                }
+                return;
+            }
+        }
+        throw new BadRequestException("不支持的注册类型：" + userOrigin.getKeyCode());
     }
 }
