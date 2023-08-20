@@ -18,6 +18,7 @@ package com.jad.security.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.lang.Result;
+import com.jad.security.annotations.PermitAuth;
 import com.jad.security.model.Captcha;
 import com.jad.security.model.LoginForm;
 import com.jad.security.model.RegisterForm;
@@ -49,6 +50,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "公共接口 - 身份认证相关接口")
 @RestController
 @RequestMapping("/auth")
+@PermitAuth
 public class AuthController extends BaseController {
 
     @Autowired

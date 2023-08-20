@@ -87,7 +87,9 @@ jad:
     secret: ENC(3A8xvsAiuRAwxoie8pF1LLWpVvUAhR6R5TKEC+Fo81A=) # jwt秘钥
     header: Authorization
   security:
-    url-white-list: /auth/captcha/generator,/test/**,/sys/file/**
+    url-white-list:
+      - /**/*.html, /**/*.css, /**/*.js
+      - /swagger-ui/**, /swagger-resources/**, /*/api-docs
     auth-config:
       captcha-timeout: 120 # 验证码过期时间（单位：s）
   system:

@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import cn.hutool.core.collection.CollUtil;
@@ -45,9 +44,6 @@ public class UrlConfig {
     // 错误页面
     public static final String ERROR_URL = "/error";
 
-    // 获取验证码URL
-    public static final String CAPTCHA_URL = "/auth/captcha";
-
     // 登录URL
     public static final String LOGIN_URL = "/auth/login";
 
@@ -57,21 +53,12 @@ public class UrlConfig {
     // 注册URL
     public static final String REGISTER = "/auth/register";
 
-    // 白名单
-    private static final Set<String> PERMIT_URLS = new HashSet<>();
+    // 白名单列表
+    private static final Set<String> PERMIT_URLS = CollUtil.newHashSet(HOME_URL, ERROR_URL, LOGIN_URL, LOGOUT_URL,
+        REGISTER);
 
     // 配置文件配置的白名单
-    private String urlWhiteList;
-
-    static {
-        // 默认白名单
-        String[] urlWhites = {
-            UrlConfig.HOME_URL, UrlConfig.ERROR_URL, "/auth/**", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js",
-            "/webSocket/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
-        };
-        // 添加默认白名单
-        PERMIT_URLS.addAll(Arrays.asList(urlWhites));
-    }
+    private String[] urlWhiteList;
 
     /**
      * 获取所有URL白名单
@@ -81,8 +68,15 @@ public class UrlConfig {
      */
     public String[] getAllPermitUrls() {
         // 添加配置文件配置的白名单
-        if (StrUtil.isNotBlank(urlWhiteList)) {
-            PERMIT_URLS.addAll(Arrays.asList(urlWhiteList.split(",")));
+        if (urlWhiteList != null) {
+            for (String urlsStr : urlWhiteList) {
+                String[] urls = urlsStr.split(",");
+                for (String url : urls) {
+                    if (StrUtil.isNotBlank(url)) {
+                        PERMIT_URLS.add(url.trim());
+                    }
+                }
+            }
         }
         return PERMIT_URLS.toArray(new String[0]);
     }

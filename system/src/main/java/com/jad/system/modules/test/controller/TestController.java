@@ -21,6 +21,7 @@ import com.jad.common.base.controller.BaseController;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
 import com.jad.common.service.UserService;
+import com.jad.security.annotations.PermitAuth;
 
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +48,10 @@ import sun.misc.BASE64Encoder;
  * @author cxxwl96
  * @since 2021/6/18 22:41
  */
-@Api(tags = "测试接口")
+@Api(tags = "公共接口 - 测试接口")
 @RestController
 @RequestMapping("/test")
+@PermitAuth
 public class TestController extends BaseController {
     @Autowired
     private Producer producer;
