@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.jad.common.config.settings;
+
+import com.alibaba.fastjson.JSON;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * 系统设置
@@ -41,6 +45,7 @@ import java.io.IOException;
 public class SystemSettings {
     /*########################### Begin 系统设置字段 ###########################*/
     private Security security;
+
     /*###########################   End 系统设置字段 ###########################*/
     @Value("${jad.system.setting.file-location}")
     private transient String fileLocation;

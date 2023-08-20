@@ -16,25 +16,43 @@
 
 package com.jad.filestore.utils;
 
-import cn.hutool.core.collection.CollUtil;
 import com.jad.common.exception.BadRequestException;
 import com.jad.filestore.config.FileStoreConfig;
 import com.jad.filestore.enums.Store;
-import io.minio.*;
-import io.minio.http.Method;
-import io.minio.messages.Bucket;
-import io.minio.messages.DeleteError;
-import io.minio.messages.DeleteObject;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
+
+import cn.hutool.core.collection.CollUtil;
+import io.minio.BucketExistsArgs;
+import io.minio.CopyObjectArgs;
+import io.minio.CopySource;
+import io.minio.DownloadObjectArgs;
+import io.minio.GetObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveBucketArgs;
+import io.minio.RemoveObjectArgs;
+import io.minio.RemoveObjectsArgs;
+import io.minio.Result;
+import io.minio.StatObjectArgs;
+import io.minio.StatObjectResponse;
+import io.minio.UploadObjectArgs;
+import io.minio.http.Method;
+import io.minio.messages.Bucket;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * MinIo工具类
@@ -56,9 +74,9 @@ public class MinIoUtil {
     public void init() {
         if (Store.valueOfName(config.getStore()) == Store.MINIO) {
             client = MinioClient.builder()
-                    .endpoint(config.getUrl())
-                    .credentials(config.getAccessKey(), config.getSecretKey())
-                    .build();
+                .endpoint(config.getUrl())
+                .credentials(config.getAccessKey(), config.getSecretKey())
+                .build();
             makeBucket(config.getBucket());
         }
     }
@@ -130,7 +148,7 @@ public class MinIoUtil {
      * 上传文件
      *
      * @param filename 文件名，本地文件全路径
-     * @param object   对象，云端文件全路径
+     * @param object 对象，云端文件全路径
      */
     public void upload(String filename, String object) {
         upload(config.getBucket(), filename, object);
@@ -139,9 +157,9 @@ public class MinIoUtil {
     /**
      * 上传文件
      *
-     * @param bucket   文件桶
+     * @param bucket 文件桶
      * @param filename 文件名，本地文件全路径
-     * @param object   对象，云端文件全路径
+     * @param object 对象，云端文件全路径
      */
     public void upload(String bucket, String filename, String object) {
         try {
@@ -157,7 +175,7 @@ public class MinIoUtil {
     /**
      * 上传文件
      *
-     * @param is     文件流
+     * @param is 文件流
      * @param object 对象，云端文件全路径
      */
     public void upload(InputStream is, String object) {
@@ -168,7 +186,7 @@ public class MinIoUtil {
      * 上传文件
      *
      * @param bucket 文件桶
-     * @param is     文件流
+     * @param is 文件流
      * @param object 对象，云端文件全路径
      */
     public void upload(String bucket, InputStream is, String object) {
@@ -183,10 +201,10 @@ public class MinIoUtil {
                 available = -1;
             }
             PutObjectArgs args = PutObjectArgs.builder()
-                    .bucket(bucket)
-                    .stream(is, available, partSize)
-                    .object(object)
-                    .build();
+                .bucket(bucket)
+                .stream(is, available, partSize)
+                .object(object)
+                .build();
             client.putObject(args);
             log.info("upload file to '{}'.", object);
         } catch (Exception e) {
@@ -233,7 +251,7 @@ public class MinIoUtil {
     /**
      * 删除文件
      *
-     * @param bucket     文件桶
+     * @param bucket 文件桶
      * @param collection 对象，云端文件全路径
      */
     public void removeObjects(String bucket, Collection<String> collection) {
@@ -262,7 +280,7 @@ public class MinIoUtil {
      * 下载文件
      *
      * @param filename 文件名，本地文件全路径
-     * @param object   对象，云端文件全路径
+     * @param object 对象，云端文件全路径
      */
     public void download2Local(String filename, String object) {
         download2Local(config.getBucket(), filename, object);
@@ -271,17 +289,17 @@ public class MinIoUtil {
     /**
      * 下载文件
      *
-     * @param bucket   文件桶
+     * @param bucket 文件桶
      * @param filename 文件名，本地文件全路径
-     * @param object   对象，云端文件全路径
+     * @param object 对象，云端文件全路径
      */
     public void download2Local(String bucket, String filename, String object) {
         try {
             DownloadObjectArgs args = DownloadObjectArgs.builder()
-                    .bucket(bucket)
-                    .object(object)
-                    .filename(filename)
-                    .build();
+                .bucket(bucket)
+                .object(object)
+                .filename(filename)
+                .build();
             client.downloadObject(args);
             log.info("download file '{}' to '{}'.", object, filename);
         } catch (Exception e) {
@@ -331,15 +349,15 @@ public class MinIoUtil {
         try {
             CopySource source = CopySource.builder().bucket(sourceBucket).object(sourceObject).build();
             CopyObjectArgs args = CopyObjectArgs.builder()
-                    .bucket(targetBucket)
-                    .object(targetObject)
-                    .source(source)
-                    .build();
+                .bucket(targetBucket)
+                .object(targetObject)
+                .source(source)
+                .build();
             client.copyObject(args);
             return true;
         } catch (Exception e) {
             log.error("copy file [{} {}] to [{} {}] error: ", sourceBucket, sourceObject, targetBucket, targetObject,
-                    e);
+                e);
         }
         return false;
     }
@@ -403,11 +421,11 @@ public class MinIoUtil {
     public String getUrl(String bucket, String object, int expire) {
         try {
             GetPresignedObjectUrlArgs args = GetPresignedObjectUrlArgs.builder()
-                    .method(Method.GET)
-                    .bucket(bucket)
-                    .object(object)
-                    .expiry(expire)
-                    .build();
+                .method(Method.GET)
+                .bucket(bucket)
+                .object(object)
+                .expiry(expire)
+                .build();
             String url = client.getPresignedObjectUrl(args);
             log.info("get url '{}'.", url);
             return url;
@@ -421,8 +439,8 @@ public class MinIoUtil {
      * 二分查找计算最少分片数量的分片大小
      *
      * @param available 总大小
-     * @param left      左边界
-     * @param right     右边界
+     * @param left 左边界
+     * @param right 右边界
      * @return 最大分片大小
      */
     private long deepPartSize(long available, long left, long right) {

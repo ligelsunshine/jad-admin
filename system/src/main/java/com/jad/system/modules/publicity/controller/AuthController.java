@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jad.security.controller;
+package com.jad.system.modules.publicity.controller;
 
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.lang.Result;

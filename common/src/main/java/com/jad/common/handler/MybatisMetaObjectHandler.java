@@ -19,6 +19,7 @@ package com.jad.common.handler;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.jad.common.entity.User;
 import com.jad.common.service.UserService;
+
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -17,12 +17,12 @@
 package com.jad.common.exception;
 
 import com.jad.common.lang.Result;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 import java.util.Locale;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * 错误请求异常

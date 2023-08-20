@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.jad.common.config.settings;
 
 import lombok.Data;
@@ -26,5 +27,6 @@ import lombok.Data;
 @Data
 public class Security {
     private LoginType loginType;
+
     private RegisterType registerType;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jad.system.modules.test.controller;
+package com.jad.system.modules.publicity.controller;
 
 import com.google.code.kaptcha.Producer;
 import com.jad.common.base.controller.BaseController;

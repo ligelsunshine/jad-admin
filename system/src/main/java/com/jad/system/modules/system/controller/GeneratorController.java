@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jad.generator.controller;
+package com.jad.system.modules.system.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.jad.common.base.controller.BaseController;

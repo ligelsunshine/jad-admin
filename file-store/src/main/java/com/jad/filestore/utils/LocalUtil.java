@@ -16,18 +16,25 @@
 
 package com.jad.filestore.utils;
 
-import cn.hutool.core.io.FileUtil;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.exception.ExecutionException;
 import com.jad.filestore.config.FileStoreConfig;
 import com.jad.filestore.enums.Store;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.annotation.PostConstruct;
-import java.io.*;
+
+import cn.hutool.core.io.FileUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Local工具类
@@ -62,7 +69,7 @@ public class LocalUtil {
     /**
      * 上传文件
      *
-     * @param is   文件流
+     * @param is 文件流
      * @param path 路径
      */
     public void upload(InputStream is, String path) {

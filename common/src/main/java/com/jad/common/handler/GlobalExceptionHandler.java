@@ -20,7 +20,7 @@ import com.jad.common.exception.BadRequestException;
 import com.jad.common.exception.CaptchaException;
 import com.jad.common.exception.UnauthorizedException;
 import com.jad.common.lang.Result;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
@@ -40,6 +40,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import java.nio.file.AccessDeniedException;
 import java.sql.SQLSyntaxErrorException;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 全局异常处理
  *
@@ -58,9 +60,9 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {
-            IllegalArgumentException.class, HttpMessageNotReadableException.class,
-            MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class,
-            MethodArgumentConversionNotSupportedException.class, IllegalStateException.class, MultipartException.class
+        IllegalArgumentException.class, HttpMessageNotReadableException.class,
+        MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class,
+        MethodArgumentConversionNotSupportedException.class, IllegalStateException.class, MultipartException.class
     })
     public Result<?> illegalDataHandler(Exception e) {
         return processFailed(HttpStatus.BAD_REQUEST.value(), "非法数据请求", e);

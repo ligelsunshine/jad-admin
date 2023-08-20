@@ -16,18 +16,20 @@
 
 package com.jad.security.service.impl;
 
-import cn.hutool.core.util.ReflectUtil;
 import com.jad.common.config.settings.RegisterType;
 import com.jad.common.config.settings.SystemSettings;
 import com.jad.common.enums.UserOrigin;
 import com.jad.common.exception.BadRequestException;
 import com.jad.security.model.RegisterForm;
 import com.jad.security.service.AuthService;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+
+import cn.hutool.core.util.ReflectUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * AuthServiceImpl

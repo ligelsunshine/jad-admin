@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.jad.common.config.settings;
 
 import lombok.Data;
@@ -27,8 +28,10 @@ import lombok.Data;
 public class RegisterType {
     // 正常注册
     private Boolean normal = false;
+
     // 手机注册
     private Boolean phoneVerificationCode = false;
+
     // 邮箱注册
     private Boolean emailVerificationCode = false;
 }
