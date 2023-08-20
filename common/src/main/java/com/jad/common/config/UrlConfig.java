@@ -16,15 +16,16 @@
 
 package com.jad.common.config;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 
 /**
@@ -56,35 +57,66 @@ public class UrlConfig {
     // 注册URL
     public static final String REGISTER = "/auth/register";
 
-    private static final String[] URL_WHITE_LIST = {
-        UrlConfig.HOME_URL, UrlConfig.ERROR_URL, "/auth/**", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js",
-        "/webSocket/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
-    };
-
     // 白名单
+    private static final Set<String> PERMIT_URLS = new HashSet<>();
+
+    // 配置文件配置的白名单
     private String urlWhiteList;
 
+    static {
+        // 默认白名单
+        String[] urlWhites = {
+            UrlConfig.HOME_URL, UrlConfig.ERROR_URL, "/auth/**", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js",
+            "/webSocket/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
+        };
+        // 添加默认白名单
+        PERMIT_URLS.addAll(Arrays.asList(urlWhites));
+    }
+
     /**
-     * 获取URL白名单
+     * 获取所有URL白名单
+     * - 包括配置文件配置的白名单
      *
      * @return URL白名单
      */
-    public String[] getUrlWhiteList() {
-        if (StringUtils.isBlank(urlWhiteList)) {
-            return URL_WHITE_LIST;
+    public String[] getAllPermitUrls() {
+        // 添加配置文件配置的白名单
+        if (StrUtil.isNotBlank(urlWhiteList)) {
+            PERMIT_URLS.addAll(Arrays.asList(urlWhiteList.split(",")));
         }
-        final Set<String> whiteList = Arrays.stream(URL_WHITE_LIST).collect(Collectors.toSet());
-        whiteList.addAll(Arrays.asList(urlWhiteList.split(",")));
-        // 由于会出现[Ljava.lang.Object; cannot be cast to [Ljava.lang.String;错误
-        // 这里使用传统方式转换为String[]
-        String[] whiteUrls = new String[whiteList.size()];
-        int i = 0;
-        for (String url : whiteList) {
-            if (StringUtils.isBlank(url)) {
-                continue;
-            }
-            whiteUrls[i++] = url;
+        return PERMIT_URLS.toArray(new String[0]);
+    }
+
+    /**
+     * 添加白名单
+     *
+     * @param permitUrls 白名单URL
+     */
+    public static void addPermitUrls(Collection<String> permitUrls) {
+        if (CollUtil.isNotEmpty(permitUrls)) {
+            PERMIT_URLS.addAll(permitUrls);
         }
-        return whiteUrls;
+    }
+
+    /**
+     * 添加白名单
+     *
+     * @param permitUrls 白名单URL
+     */
+    public static void addPermitUrls(String... permitUrls) {
+        if (permitUrls != null) {
+            PERMIT_URLS.addAll(Arrays.asList(permitUrls));
+        }
+    }
+
+    /**
+     * 添加白名单
+     *
+     * @param permitUrl 白名单URL
+     */
+    public static void addPermitUrl(String permitUrl) {
+        if (StrUtil.isNotBlank(permitUrl)) {
+            PERMIT_URLS.add(permitUrl);
+        }
     }
 }

@@ -116,7 +116,7 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
             // 配置拦截规则
             .and()
             .authorizeRequests() // 对请求执行认证与授权
-            .antMatchers(urlConfig.getUrlWhiteList()) // 匹配白名单
+            .antMatchers(urlConfig.getAllPermitUrls()) // 匹配白名单
             .permitAll() // 不需要通过认证即允许访问
             .anyRequest() // 除以上配置过的请求路径以外的所有请求路径
             .authenticated() // 要求是已经通过认证的
