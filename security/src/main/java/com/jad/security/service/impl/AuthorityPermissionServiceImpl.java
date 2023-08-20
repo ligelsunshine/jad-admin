@@ -26,10 +26,11 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.collection.CollUtil;
 
 /**
  * 自定义权限控制
@@ -44,25 +45,29 @@ public class AuthorityPermissionServiceImpl implements AuthorityPermissionServic
 
     /**
      * 判断是否有权限
+     * - 用户权限中有一个权限在权限列表中则拥有权限
      *
-     * @param authority 权限
+     * @param authorities 权限列表
      * @return 是否有权限
      */
     @Override
-    public final boolean hasAuthority(String authority) {
-        if (StrUtil.isBlank(authority)) {
-            return false;
-        }
+    public final boolean hasAuthority(String... authorities) {
         if (userService.hasAdministrator()) {
             return true;
         }
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        if (authorities == null) {
+        ArrayList<String> authorityList = CollUtil.newArrayList(authorities);
+        authorityList = CollUtil.removeBlank(authorityList);
+        if (authorityList.isEmpty()) {
             return false;
         }
-        for (GrantedAuthority authorize : authorities) {
-            if (authority.equals(authorize.getAuthority())) {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Collection<? extends GrantedAuthority> grantedAuthorities = authentication.getAuthorities();
+        if (grantedAuthorities == null) {
+            return false;
+        }
+        for (GrantedAuthority grantedAuthority : grantedAuthorities) {
+            String authority = grantedAuthority.getAuthority();
+            if (authorityList.contains(authority)) {
                 return true;
             }
         }

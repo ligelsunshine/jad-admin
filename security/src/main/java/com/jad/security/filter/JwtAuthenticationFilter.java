@@ -30,10 +30,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.util.AntPathMatcher;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -67,19 +65,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
-    }
-
-    /**
-     * 过滤白名单
-     *
-     * @param request 请求
-     * @return URL白名单
-     */
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        // 过滤白名单
-        return Arrays.stream(urlConfig.getUrlWhiteList())
-            .anyMatch(e -> new AntPathMatcher().match(e, request.getServletPath()));
     }
 
     @Override

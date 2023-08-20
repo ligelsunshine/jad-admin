@@ -28,6 +28,7 @@ import com.jad.common.entity.RoleMenu;
 import com.jad.common.entity.User;
 import com.jad.common.entity.UserRole;
 import com.jad.common.exception.BadRequestException;
+import com.jad.common.exception.UnauthorizedException;
 import com.jad.common.function.PropertyFunc;
 import com.jad.common.lang.SearchResult;
 import com.jad.common.mapper.UserMapper;
@@ -43,6 +44,7 @@ import com.jad.common.utils.ValidatorUtil;
 import com.jad.common.valid.AddValidGroup;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -60,6 +62,7 @@ import java.util.stream.Collectors;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 系统用户服务类
@@ -67,6 +70,7 @@ import cn.hutool.core.util.StrUtil;
  * @author cxxwl96
  * @since 2021-06-18
  */
+@Slf4j
 @Service
 // @DS("master")
 public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implements UserService {
@@ -403,15 +407,19 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @Override
     public User getCurrentAuthUser() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            throw new UnauthorizedException();
+        }
         final String username = authentication.getName();
         final User user = this.getByUsername(username);
-        if (user != null) {
-            final User authUser = new User();
-            BeanUtil.copyProperties(user, authUser);
-            authUser.setPassword(null);
-            return authUser;
+        if (user == null) {
+            log.error("User {} not exist in database.", username);
+            throw new BadRequestException("用户不存在");
         }
-        return null;
+        final User authUser = new User();
+        BeanUtil.copyProperties(user, authUser);
+        authUser.setPassword(null);
+        return authUser;
     }
 
     /**

@@ -29,11 +29,12 @@ import java.util.List;
 public interface AuthorityPermissionService {
     /**
      * 判断是否有权限
+     * - 用户权限中有一个权限在权限列表中则拥有权限
      *
-     * @param authority 权限
+     * @param authorities 权限列表
      * @return 是否有权限
      */
-    boolean hasAuthority(String authority);
+    boolean hasAuthority(String... authorities);
 
     /**
      * 获取用户授权信息

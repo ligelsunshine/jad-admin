@@ -47,7 +47,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -92,6 +92,7 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors()
             .and()
+            // 禁用CSRF（防止伪造的跨域攻击）
             .csrf()
             .disable()
             // 登录配置
@@ -114,11 +115,11 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
 
             // 配置拦截规则
             .and()
-            .authorizeRequests()
-            .antMatchers(urlConfig.getUrlWhiteList())
-            .permitAll()
-            .anyRequest()
-            .authenticated()
+            .authorizeRequests() // 对请求执行认证与授权
+            .antMatchers(urlConfig.getUrlWhiteList()) // 匹配白名单
+            .permitAll() // 不需要通过认证即允许访问
+            .anyRequest() // 除以上配置过的请求路径以外的所有请求路径
+            .authenticated() // 要求是已经通过认证的
 
             // 异常处理器
             .and()
@@ -127,13 +128,12 @@ public class JadSecurityConfig extends WebSecurityConfigurerAdapter {
             .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             // 未授权处理
             .accessDeniedHandler(jwtAccessDeniedHandler)
-
             // 配置自定义过滤器
             .and()
-            // jwt认证过滤器
-            .addFilter(jwtAuthenticationFilter())
             // 在验证用户名、密码之前校验验证码
-            .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(captchaFilter, UsernamePasswordAuthenticationFilter.class)
+            // jwt认证过滤器
+            .addFilter(jwtAuthenticationFilter());
     }
 
     @Override
