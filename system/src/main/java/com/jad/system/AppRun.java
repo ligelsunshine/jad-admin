@@ -16,6 +16,8 @@
 
 package com.jad.system;
 
+import com.jad.security.annotations.PermitAuthScan;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication(scanBasePackages = "com.jad", exclude = {DataSourceAutoConfiguration.class})
 @MapperScan( {"com.jad.**.mapper"})
 @ComponentScan( {"com.jad.**"})
+@PermitAuthScan( {"com.jad.**"})
 public class AppRun {
 
     public static void main(String[] args) {
