@@ -16,82 +16,16 @@
 
 package com.jad.common.config.settings;
 
-import com.alibaba.fastjson.JSON;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.annotation.PostConstruct;
-
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * 系统设置
+ * SystemSettings
  *
  * @author cxxwl96
- * @since 2023/8/19 22:38
+ * @since 2023/8/21 20:35
  */
-@Slf4j
 @Data
-@Configuration("systemSettings")
 public class SystemSettings {
-    /*########################### Begin 系统设置字段 ###########################*/
-    private Security security;
-
-    /*###########################   End 系统设置字段 ###########################*/
-    @Value("${jad.system.setting.file-location}")
-    private transient String fileLocation;
-
-    private transient File file;
-
-    @PostConstruct
-    public void init() {
-        log.info("Initializing System Settings");
-        file = new File(fileLocation);
-        log.info("System setting file location: {}", file.getAbsoluteFile());
-        if (!file.exists() || StrUtil.isBlank(FileUtil.readUtf8String(file))) {
-            try {
-                FileUtil.mkParentDirs(file);
-                file.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to create system setting file. File: " + file.getAbsoluteFile());
-            }
-            // 保存配置到配置文件
-            save();
-        } else {
-            // 从配置文件读取到内存
-            refresh();
-        }
-    }
-
-    /**
-     * 保存配置到配置文件
-     */
-    public void save() {
-        SystemSettings thisSettings = getSystemSettings();
-        String json = JSON.toJSONString(thisSettings);
-        FileUtil.writeUtf8String(json, file);
-    }
-
-    /**
-     * 从配置文件读取到内存
-     */
-    public void refresh() {
-        SystemSettings thisSettings = getSystemSettings();
-        String json = FileUtil.readUtf8String(file);
-        SystemSettings settings = JSON.parseObject(json, SystemSettings.class);
-        BeanUtil.copyProperties(settings, thisSettings);
-    }
-
-    private SystemSettings getSystemSettings() {
-        return SpringUtil.getBean("systemSettings", SystemSettings.class);
-    }
+    // 安全设置
+    private Security security = new Security();
 }

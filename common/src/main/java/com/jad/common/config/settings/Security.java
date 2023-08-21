@@ -26,7 +26,7 @@ import lombok.Data;
  */
 @Data
 public class Security {
-    private LoginType loginType;
+    private LoginType loginType = new LoginType();
 
-    private RegisterType registerType;
+    private RegisterType registerType = new RegisterType();
 }
