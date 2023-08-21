@@ -50,7 +50,7 @@ import sun.misc.BASE64Encoder;
  */
 @Api(tags = "公共接口 - 测试接口")
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/pub/test")
 @PermitAuth
 public class TestController extends BaseController {
     @Autowired
@@ -97,7 +97,11 @@ public class TestController extends BaseController {
     public Result<?> encrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
         BasicTextEncryptor encryptor = new BasicTextEncryptor();
         encryptor.setPassword(salt);
-        return Result.success("加密成功", encryptor.encrypt(text));
+        try {
+            return Result.success("加密成功", encryptor.encrypt(text));
+        } catch (Exception exception) {
+            return Result.failed("加密失败: " + exception.getMessage());
+        }
     }
 
     @ApiOperation("yaml配置信息解密")
@@ -105,6 +109,10 @@ public class TestController extends BaseController {
     public Result<?> decrypt(@RequestParam(defaultValue = "cxxwl96@sina.com") String salt, @RequestParam String text) {
         BasicTextEncryptor encryptor = new BasicTextEncryptor();
         encryptor.setPassword(salt);
-        return Result.success("解密成功", encryptor.decrypt(text));
+        try {
+            return Result.success("解密成功", encryptor.decrypt(text));
+        } catch (Exception exception) {
+            return Result.failed("解密失败: " + exception.getMessage());
+        }
     }
 }

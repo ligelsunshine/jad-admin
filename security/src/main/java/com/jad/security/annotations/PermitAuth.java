@@ -33,5 +33,5 @@ import java.lang.annotation.Target;
 @Target(value = {ElementType.TYPE, ElementType.METHOD})
 public @interface PermitAuth {
     // 是否在不需要登录认证的情况下允许访问
-    boolean permit() default false;
+    boolean permit() default true;
 }

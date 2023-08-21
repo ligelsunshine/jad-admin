@@ -23,6 +23,7 @@ import com.jad.filestore.dto.UploadConfig;
 import com.jad.filestore.entity.FileStore;
 import com.jad.filestore.enums.DownloadType;
 import com.jad.filestore.service.FileStoreService;
+import com.jad.security.annotations.PermitAuth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +52,8 @@ import lombok.SneakyThrows;
  */
 @Api(tags = "公共接口 - 对象存储相关接口")
 @RestController
-@RequestMapping("/sys/file")
+@RequestMapping("/pub/file")
+@PermitAuth
 public class FileController extends BaseController {
     @Autowired
     private FileStoreService service;

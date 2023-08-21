@@ -14,47 +14,37 @@
  * limitations under the License.
  */
 
-package com.jad.system.modules.system.controller;
+package com.jad.system.modules.publicity.controller;
 
 import com.jad.common.config.settings.Settings;
-import com.jad.common.config.settings.SystemSettings;
 import com.jad.common.lang.Result;
+import com.jad.security.annotations.PermitAuth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 系统管理 - 系统设置相关接口
+ * 公共接口 - 系统设置相关接口
  *
  * @author cxxwl96
  * @since 2023/8/20 14:03
  */
-@Api(tags = "系统管理 - 系统设置相关接口")
+@Api(tags = "公共接口 - 系统设置相关接口")
 @RestController
-@RequestMapping("/sys/setting")
-public class SystemSettingController {
+@RequestMapping("/pub/setting")
+@PermitAuth
+public class PublicSettingController {
     @Autowired
     private Settings settings;
 
-    @ApiOperation("保存系统设置")
-    @PutMapping("/save")
-    public Result<?> save(@RequestBody @Valid SystemSettings systemSettings) {
-        settings.save(systemSettings);
-        return Result.success("保存成功");
-    }
-
-    @ApiOperation("获取所有系统设置")
-    @GetMapping("/getAll")
+    @ApiOperation("获取注册方式")
+    @GetMapping("/getRegisterType")
     public Result<?> getAll() {
-        return Result.success(settings.getSystemSettings());
+        return Result.success(settings.getSystemSettings().getSecurity().getRegisterType());
     }
 }
