@@ -43,7 +43,7 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss # 返回json的全局时间格式
     time-zone: GMT+8 # 时区
   thymeleaf:
-    prefix: classpath:/static
+    prefix: classpath:/templates
     suffix: .html
     servlet:
       content-type: text/html
@@ -90,8 +90,15 @@ jad:
     url-white-list:
       - /**/*.html, /**/*.css, /**/*.js
       - /swagger-ui/**, /swagger-resources/**, /*/api-docs
-    auth-config:
-      captcha-timeout: 120 # 验证码过期时间（单位：s）
+  sms:
+    timeout: 120 # 验证码过期时间（单位：s）
+    mail:
+      host: smtp.sina.com
+      username: cxxwl96@sina.com
+      password: ENC(OmbuBKs/KRwv1rME0kZHJ97q7C7+U1lVjoozzyOBal8=)
+      default-encoding: UTF-8
+      subject: 【JAD】验证码
+      sign: ——JAD官方
   system:
     info:
       app-name: JADAdmin

@@ -95,7 +95,7 @@ jad:
     mail:
       host: smtp.sina.com
       username: cxxwl96@sina.com
-      password: 45426c14e07ff25a
+      password: ENC(OmbuBKs/KRwv1rME0kZHJ97q7C7+U1lVjoozzyOBal8=)
       default-encoding: UTF-8
       subject: 【JAD】验证码
       sign: ——JAD官方
