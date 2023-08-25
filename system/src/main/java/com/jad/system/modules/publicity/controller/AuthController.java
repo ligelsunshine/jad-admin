@@ -19,11 +19,11 @@ package com.jad.system.modules.publicity.controller;
 import com.jad.common.base.controller.BaseController;
 import com.jad.common.lang.Result;
 import com.jad.security.annotations.PermitAuth;
-import com.jad.security.model.Captcha;
 import com.jad.security.model.LoginForm;
 import com.jad.security.model.RegisterForm;
 import com.jad.security.service.AuthService;
-import com.jad.security.service.CaptchaService;
+import com.jad.sms.model.Captcha;
+import com.jad.sms.service.impl.CaptchaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

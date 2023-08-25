@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package com.jad.security.model;
+package com.jad.sms.service;
 
-import java.io.ByteArrayOutputStream;
-
-import io.swagger.annotations.ApiModel;
-import lombok.Data;
-import lombok.experimental.Accessors;
+import com.jad.sms.model.Sms;
 
 /**
- * Captcha
+ * 短讯服务
  *
+ * @param <T> 短讯结果
  * @author cxxwl96
- * @since 2023/8/18 23:08
+ * @since 2023/8/23 22:06
  */
-@ApiModel(value = "图形验证码")
-@Data
-@Accessors(chain = true)
-public class Captcha {
-    private String codeKey;
+public interface SmsService<T extends Sms> {
+    /**
+     * 发送短讯
+     *
+     * @param destination 目的地：手机号、邮箱
+     * @return 返回结果
+     */
+    T sendSms(String destination);
 
-    private String codeValue;
-
-    private ByteArrayOutputStream codeImageOutputStream;
-
-    // base64 Image
-    private String codeImage;
-
-    // 验证码过期时间（单位：s）
-    private long captchaTimeout;
-
+    /**
+     * 验证短讯信息
+     *
+     * @param codeKey 短讯的key
+     * @param codeValue 短讯的value
+     * @return 是否验证通过
+     */
+    boolean validate(String codeKey, String codeValue);
 }

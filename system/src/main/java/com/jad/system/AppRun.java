@@ -31,10 +31,10 @@ import org.springframework.context.annotation.ComponentScan;
  * @since 2021/6/17 23:39
  */
 // DataSourceAutoConfiguration：去掉springboot 默认的数据源配置
-@SpringBootApplication(scanBasePackages = "com.jad", exclude = {DataSourceAutoConfiguration.class})
-@MapperScan( {"com.jad.**.mapper"})
-@ComponentScan( {"com.jad.**"})
 @PermitAuthScan( {"com.jad.**"})
+@ComponentScan( {"com.jad.**"})
+@MapperScan( {"com.jad.**.mapper"})
+@SpringBootApplication(scanBasePackages = "com.jad", exclude = {DataSourceAutoConfiguration.class})
 public class AppRun {
 
     public static void main(String[] args) {

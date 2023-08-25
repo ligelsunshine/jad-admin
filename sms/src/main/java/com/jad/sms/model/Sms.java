@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package com.jad.security.config;
+package com.jad.sms.model;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
- * AuthConfig
+ * 短讯实体
  *
  * @author cxxwl96
- * @since 2023/8/19 13:05
+ * @since 2023/8/23 22:11
  */
+@ApiModel(value = "短讯实体")
 @Data
-@Configuration
-public class AuthConfig {
-    // 验证码过期时间（单位：s）
-    @Value("${jad.security.auth-config.captcha-timeout}")
-    private long captchaTimeout;
+@Accessors(chain = true)
+public class Sms {
+    @ApiModelProperty(value = "短讯的key")
+    private String codeKey;
+
+    @ApiModelProperty(value = "短讯的value")
+    private String codeValue;
+
+    @ApiModelProperty(value = "短讯的过期时间（单位：s）")
+    private long timeout;
 }

@@ -55,15 +55,15 @@ public class Result<T> implements Serializable {
         return Result.success(String.format(format, args));
     }
 
-    public static <T> Result<?> success() {
+    public static <T> Result<T> success() {
         return success(CODE_SUCCESS, "操作成功", null);
     }
 
-    public static <T> Result<?> success(String msg) {
+    public static <T> Result<T> success(String msg) {
         return success(CODE_SUCCESS, msg, null);
     }
 
-    public static <T> Result<?> success(T data) {
+    public static <T> Result<T> success(T data) {
         return success(CODE_SUCCESS, "操作成功", data);
     }
 

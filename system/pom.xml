@@ -21,10 +21,22 @@
     </properties>
 
     <dependencies>
-        <!-- common -->
+        <!-- jad common -->
         <dependency>
             <groupId>com.jad</groupId>
             <artifactId>common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- jad file-store -->
+        <dependency>
+            <groupId>com.jad</groupId>
+            <artifactId>file-store</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- jad generator -->
+        <dependency>
+            <groupId>com.jad</groupId>
+            <artifactId>generator</artifactId>
             <version>1.0.0</version>
         </dependency>
         <!-- jad security -->
@@ -33,16 +45,10 @@
             <artifactId>security</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <!-- generator -->
+        <!-- jad sms -->
         <dependency>
             <groupId>com.jad</groupId>
-            <artifactId>generator</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <!-- file-store -->
-        <dependency>
-            <groupId>com.jad</groupId>
-            <artifactId>file-store</artifactId>
+            <artifactId>sms</artifactId>
             <version>1.0.0</version>
         </dependency>
 

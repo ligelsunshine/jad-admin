@@ -23,9 +23,10 @@
 
     <modules>
         <module>common</module>
+        <module>file-store</module>
         <module>generator</module>
         <module>security</module>
-        <module>file-store</module>
+        <module>sms</module>
         <module>system</module>
     </modules>
 </project>

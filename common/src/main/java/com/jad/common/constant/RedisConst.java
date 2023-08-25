@@ -25,7 +25,7 @@ package com.jad.common.constant;
 public class RedisConst {
 
     // Redis中存放验证码的key
-    public static final String SECURITY_LOGIN_CAPTCHA_KEY_PREFIX = "security-login-captcha-";
+    public static final String SECURITY_VERIFY_KEY = "security-verify-key-";
 
     // Redis中存放用户认证的jwt
     public static final String SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX = "security-user-authenticate-token-";

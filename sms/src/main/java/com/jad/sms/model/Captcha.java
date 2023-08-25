@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-package com.jad.security.service;
+package com.jad.sms.model;
 
-import com.jad.security.model.Captcha;
+import java.io.ByteArrayOutputStream;
+
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
- * 图形验证码
+ * Captcha
  *
  * @author cxxwl96
- * @since 2023/8/18 23:07
+ * @since 2023/8/18 23:08
  */
-public interface CaptchaService {
-    /**
-     * 生成图片验证码
-     *
-     * @return 图片验证码
-     */
-    Captcha generate();
+@ApiModel(value = "图形验证码")
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+public class Captcha extends Sms {
+    private ByteArrayOutputStream codeImageOutputStream;
 
-    /**
-     * 验证图片验证码
-     *
-     * @param codeKey 验证码的key
-     * @param codeValue 验证码的value
-     * @return 是否验证通过
-     */
-    boolean validate(String codeKey, String codeValue);
+    // base64 Image
+    private String codeImage;
 }

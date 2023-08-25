@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package com.jad.security.service.impl;
+package com.jad.sms.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.code.kaptcha.Producer;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.utils.RedisUtil;
-import com.jad.security.config.AuthConfig;
-import com.jad.security.model.Captcha;
-import com.jad.security.service.CaptchaService;
+import com.jad.sms.config.SmsConfig;
+import com.jad.sms.model.Captcha;
+import com.jad.sms.service.SmsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -37,15 +36,18 @@ import lombok.SneakyThrows;
 import sun.misc.BASE64Encoder;
 
 /**
- * CaptchaServiceImpl
+ * 图形验证码服务
  *
  * @author cxxwl96
  * @since 2023/8/18 23:07
  */
-@Component
-public class CaptchaServiceImpl implements CaptchaService {
+@Service
+public class CaptchaService implements SmsService<Captcha> {
+    // Redis中存放验证码的key
+    private static final String CODE_KEY_PREFIX = RedisConst.SECURITY_VERIFY_KEY + "CAPTCHA-";
+
     @Autowired
-    private AuthConfig authConfig;
+    private SmsConfig smsConfig;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -62,7 +64,6 @@ public class CaptchaServiceImpl implements CaptchaService {
      * @return 图片验证码
      */
     @SneakyThrows
-    @Override
     public Captcha generate() {
         // 验证码key
         final String codeKey = UUID.randomUUID().toString();
@@ -81,14 +82,27 @@ public class CaptchaServiceImpl implements CaptchaService {
         final String codeImage = "data:image/jpeg;base64," + encoder.encode(outputStream.toByteArray());
 
         // 将Base64验证码存入Redis
-        long captchaTimeout = authConfig.getCaptchaTimeout();
-        redisUtil.set(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey, codeValue, captchaTimeout);
+        long timeout = smsConfig.getTimeout();
+        redisUtil.set(CODE_KEY_PREFIX + codeKey, codeValue, timeout);
 
-        return new Captcha().setCodeKey(codeKey)
-            .setCodeValue(codeValue)
-            .setCodeImageOutputStream(outputStream)
-            .setCodeImage(codeImage)
-            .setCaptchaTimeout(captchaTimeout);
+        Captcha captcha = new Captcha();
+        captcha.setCodeKey(codeKey);
+        captcha.setCodeValue(codeValue);
+        captcha.setTimeout(timeout);
+        captcha.setCodeImageOutputStream(outputStream);
+        captcha.setCodeImage(codeImage);
+        return captcha;
+    }
+
+    /**
+     * 发送短讯
+     *
+     * @param destination 目的地：手机号、邮箱
+     * @return 返回结果
+     */
+    @Override
+    public Captcha sendSms(String destination) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -101,13 +115,12 @@ public class CaptchaServiceImpl implements CaptchaService {
     @Override
     public boolean validate(String codeKey, String codeValue) {
         // 从redis获取验证码并验证
-        final String redisCodeValue = (String) redisUtil.get(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey);
-        if (StringUtils.isBlank(codeKey) || StringUtils.isBlank(codeValue) || !codeValue.equalsIgnoreCase(
-            redisCodeValue)) {
+        final String redisCodeValue = (String) redisUtil.get(CODE_KEY_PREFIX + codeKey);
+        if (codeKey == null || !codeValue.equalsIgnoreCase(redisCodeValue)) {
             return false;
         }
         // 删除redis中的验证码
-        redisUtil.del(RedisConst.SECURITY_LOGIN_CAPTCHA_KEY_PREFIX + codeKey);
+        redisUtil.del(CODE_KEY_PREFIX + codeKey);
         return true;
     }
 }

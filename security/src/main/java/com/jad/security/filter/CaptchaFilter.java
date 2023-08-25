@@ -20,7 +20,7 @@ import com.jad.common.config.UrlConfig;
 import com.jad.common.exception.CaptchaException;
 import com.jad.common.utils.RedisUtil;
 import com.jad.security.handler.JadAuthenticationFailureHandler;
-import com.jad.security.service.CaptchaService;
+import com.jad.sms.service.impl.CaptchaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.hutool.core.util.StrUtil;
 import nl.flotsam.xeger.Xeger;
 
 /**
@@ -67,34 +68,60 @@ public class RegexUtil {
     }
 
     /**
-     * 根据正则生成随机字符
+     * 根据正则生成随机数字字符串
+     *
+     * @param length 字符长度
+     * @return 生成的随机字符串
+     */
+    public static String randomIntegerString(int length) {
+        if (length < 0) {
+            return StrUtil.EMPTY;
+        }
+        return randomString("[0-9]{" + length + "}");
+    }
+
+    /**
+     * 根据正则生成随机字符串
+     *
+     * @param length 字符长度
+     * @return 生成的随机字符串
+     */
+    public static String randomString(int length) {
+        if (length < 0) {
+            return StrUtil.EMPTY;
+        }
+        return randomString("[a-zA-Z0-9]{" + length + "}");
+    }
+
+    /**
+     * 根据正则生成随机字符串
      *
      * @param regex 正则表达式
      * @return 生成的随机字符串
      */
     public static String randomString(String regex) {
-        return randomString(new Xeger(regex), 1).get(0);
+        return randomStrings(new Xeger(regex), 1).get(0);
     }
 
     /**
-     * 根据正则生成随机字符
+     * 根据正则生成随机字符串
      *
      * @param regex 正则表达式
      * @param num 生成字符串的数量
      * @return 生成的随机字符串
      */
-    public static List<String> randomString(String regex, int num) {
-        return randomString(new Xeger(regex), num);
+    public static List<String> randomStrings(String regex, int num) {
+        return randomStrings(new Xeger(regex), num);
     }
 
     /**
-     * 根据正则生成随机字符
+     * 根据正则生成随机字符串
      *
      * @param num 生成字符串的数量
      * @param xeger 生成工具
      * @return 生成的随机字符串
      */
-    public static List<String> randomString(Xeger xeger, int num) {
+    public static List<String> randomStrings(Xeger xeger, int num) {
         final ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < num; i++) {
             try {
