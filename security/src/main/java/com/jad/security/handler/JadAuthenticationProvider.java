@@ -30,6 +30,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -68,6 +69,8 @@ public class JadAuthenticationProvider implements AuthenticationProvider {
             UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser,
                 authentication.getCredentials(), authUser.getAuthorities());
             result.setDetails(authentication.getDetails());
+            // 处理登录成功后的事件
+            loginSuccessProcessor(user);
             return result;
         }
     }
@@ -75,5 +78,15 @@ public class JadAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return true;
+    }
+
+    /**
+     * 处理登录成功后的事件
+     *
+     * @param user 登录用户
+     */
+    private void loginSuccessProcessor(User user) {
+        // 更新登录时间
+        userService.lambdaUpdate().set(User::getLastLogin, LocalDateTime.now()).eq(User::getId, user.getId()).update();
     }
 }
