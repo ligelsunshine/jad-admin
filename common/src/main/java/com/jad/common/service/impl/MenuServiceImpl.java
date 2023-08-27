@@ -28,6 +28,7 @@ import com.jad.common.entity.Tree;
 import com.jad.common.entity.User;
 import com.jad.common.entity.UserRole;
 import com.jad.common.enums.MenuType;
+import com.jad.common.enums.Status;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.lang.Result;
 import com.jad.common.mapper.MenuMapper;
@@ -99,6 +100,7 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, Menu> implement
      * @return 是否添加成功
      */
     @Override
+    @Transactional
     public boolean saveAuthButton(String pid, String modelName, String authPrefix) {
         String[] authArray = new String[] {"save", "delete", "deleteArr", "update", "get", "get:page"};
         String[] titleArray = new String[] {"添加", "删除", "批量删除", "修改", "获取单个", "分页获取"};
@@ -213,7 +215,11 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, Menu> implement
             return menus;
         }
         // 获取menu
-        return this.lambdaQuery().in(Menu::getId, menuIds).orderByAsc(Menu::getCreateTime).list();
+        return this.lambdaQuery()
+            .in(Menu::getId, menuIds)
+            .eq(Menu::getStatus, Status.ENABLE)
+            .orderByAsc(Menu::getCreateTime)
+            .list();
     }
 
     /**
@@ -288,8 +294,7 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, Menu> implement
      */
     @Override
     public void clearUserMenuList() {
-        final User curUser = userService.getCurrentAuthUser();
-        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername());
+        redisUtil.del(RedisConst.SYSTEM_USER_MENU_LIST);
     }
 
     /**
@@ -297,8 +302,7 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, Menu> implement
      */
     @Override
     public void clearUserMenuTree() {
-        final User curUser = userService.getCurrentAuthUser();
-        redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername());
+        redisUtil.del(RedisConst.SYSTEM_USER_MENU_TREE);
     }
 
     /**

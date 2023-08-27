@@ -78,14 +78,14 @@ public class Menu extends TreeNode<Menu> implements Serializable {
     @ApiModelProperty(value = "如果该路由会携带参数，且需要在tab页上面显示。则需要设置为true")
     private Boolean carryParam = false;
 
-    @ApiModelProperty(value = "是否隐藏所有子菜单")
-    private Boolean hideChildrenInMenu = false;
-
     @ApiModelProperty(value = "当前路由不再标签页显示")
     private Boolean hideTab = false;
 
     @ApiModelProperty(value = "当前路由不再菜单显示")
     private Boolean hideMenu = false;
+
+    @ApiModelProperty(value = "是否隐藏所有子菜单")
+    private Boolean hideChildrenInMenu = false;
 
     @ApiModelProperty(value = "本路由仅用于菜单生成，不会在实际的路由表中出现")
     private Boolean ignoreRoute = false;
