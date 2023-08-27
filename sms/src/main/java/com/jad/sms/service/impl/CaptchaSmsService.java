@@ -42,7 +42,7 @@ import sun.misc.BASE64Encoder;
  * @since 2023/8/18 23:07
  */
 @Service
-public class CaptchaService implements SmsService<Captcha> {
+public class CaptchaSmsService implements SmsService<Captcha> {
     // Redis中存放验证码的key
     private static final String CODE_KEY_PREFIX = RedisConst.SECURITY_VERIFY_KEY + "CAPTCHA-";
 

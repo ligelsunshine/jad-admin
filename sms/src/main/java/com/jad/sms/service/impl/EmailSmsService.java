@@ -41,6 +41,7 @@ import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -51,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class EmailService implements SmsService<Sms> {
+public class EmailSmsService implements SmsService<Sms> {
     // Redis中存放验证码的key
     private static final String CODE_KEY_PREFIX = RedisConst.SECURITY_VERIFY_KEY + "EMAIL-";
 
@@ -77,7 +78,7 @@ public class EmailService implements SmsService<Sms> {
      * @return 返回结果
      */
     @Override
-    public Sms sendSms(String destination) {
+        public Sms sendSms(String destination) {
         // 验证码key
         final String codeKey = UUID.randomUUID().toString();
         // 验证码
@@ -118,6 +119,7 @@ public class EmailService implements SmsService<Sms> {
      * @param destination 目的地：手机号、邮箱
      */
     private void dealSendSms(String codeValue, String destination) {
+        // validateDestination(destination);
         // 发送邮箱验证码
         Context context = new Context(); // 引入Template的Context
         // 设置模板中的变量（分割验证码）
@@ -138,6 +140,16 @@ public class EmailService implements SmsService<Sms> {
         } catch (MessagingException | MailException e) {
             log.error("Error sending email message. {}", e.getMessage(), e);
             throw new BadRequestException("发送验证码失败");
+        }
+    }
+
+    private void validateDestination(String destination) {
+        // 校验邮箱
+        if (StrUtil.isBlank(destination)) {
+            throw new BadRequestException("请输入邮箱地址");
+        }
+        if (!destination.matches("^\\w+@(\\w+\\.)+(\\w+)$")) {
+            throw new BadRequestException("邮箱格式不正确");
         }
     }
 

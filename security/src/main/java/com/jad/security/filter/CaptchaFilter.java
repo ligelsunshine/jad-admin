@@ -20,7 +20,7 @@ import com.jad.common.config.UrlConfig;
 import com.jad.common.exception.CaptchaException;
 import com.jad.common.utils.RedisUtil;
 import com.jad.security.handler.JadAuthenticationFailureHandler;
-import com.jad.sms.service.impl.CaptchaService;
+import com.jad.sms.service.impl.CaptchaSmsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,7 +49,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private static final String CODE_VALUE = "codeValue";
 
     @Autowired
-    private CaptchaService captchaService;
+    private CaptchaSmsService captchaSmsService;
 
     @Autowired
     JadAuthenticationFailureHandler authenticationFailureHandler;
@@ -82,7 +82,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
     private void validateCaptcha(HttpServletRequest request) {
         final String codeKey = request.getParameter(CODE_KEY);
         final String codeValue = request.getParameter(CODE_VALUE);
-        if (!captchaService.validate(codeKey, codeValue)) {
+        if (!captchaSmsService.validate(codeKey, codeValue)) {
             throw new CaptchaException("验证码错误");
         }
     }

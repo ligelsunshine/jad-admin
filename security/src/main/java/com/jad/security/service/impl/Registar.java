@@ -25,7 +25,7 @@ import com.jad.common.service.RoleService;
 import com.jad.common.service.UserService;
 import com.jad.security.model.RegisterForm;
 import com.jad.security.service.IRegistar;
-import com.jad.sms.service.impl.CaptchaService;
+import com.jad.sms.service.impl.CaptchaSmsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class Registar implements IRegistar {
     @Autowired
-    private CaptchaService captchaService;
+    private CaptchaSmsService captchaSmsService;
 
     @Autowired
     private RoleService roleService;
@@ -59,7 +59,7 @@ public class Registar implements IRegistar {
     @Override
     public void normalRegist(RegisterForm form) {
         // 校验验证码
-        if (!captchaService.validate(form.getCodeKey(), form.getCodeValue())) {
+        if (!captchaSmsService.validate(form.getCodeKey(), form.getCodeValue())) {
             throw new CaptchaException("验证码错误");
         }
         // 获取默认角色

@@ -23,7 +23,7 @@ import com.jad.security.model.LoginForm;
 import com.jad.security.model.RegisterForm;
 import com.jad.security.service.AuthService;
 import com.jad.sms.model.Captcha;
-import com.jad.sms.service.impl.CaptchaService;
+import com.jad.sms.service.impl.CaptchaSmsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,7 +54,7 @@ import io.swagger.annotations.ApiOperation;
 public class AuthController extends BaseController {
 
     @Autowired
-    private CaptchaService captchaService;
+    private CaptchaSmsService captchaSmsService;
 
     @Autowired
     private AuthService authService;
@@ -62,7 +62,7 @@ public class AuthController extends BaseController {
     @ApiOperation("获取图片验证码")
     @GetMapping("/captcha")
     public Result<?> captcha() {
-        Captcha captcha = captchaService.generate();
+        Captcha captcha = captchaSmsService.generate();
         final Map<Object, Object> resultMap = MapUtil.builder()
             .put("codeKey", captcha.getCodeKey())
             .put("codeImage", captcha.getCodeImage())

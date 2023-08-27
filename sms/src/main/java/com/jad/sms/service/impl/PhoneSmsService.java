@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
  * @since 2023/8/23 23:33
  */
 @Service
-public class PhoneService implements SmsService<Sms> {
+public class PhoneSmsService implements SmsService<Sms> {
     // Redis中存放验证码的key
     private static final String CODE_KEY_PREFIX = RedisConst.SECURITY_VERIFY_KEY + "PHONE-";
 
