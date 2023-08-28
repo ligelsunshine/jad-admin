@@ -24,7 +24,7 @@
             title="${title}列表"
             ref="treeRef"
             :treeData="treeData"
-            :replaceFields="{ title: 'id', key: 'id' }"
+            :replaceFields="{ key: 'id' }"
             :beforeRightClick="getRightMenuList"
             @select="handleSelect"
             search
