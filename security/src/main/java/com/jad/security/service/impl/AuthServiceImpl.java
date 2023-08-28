@@ -17,7 +17,7 @@
 package com.jad.security.service.impl;
 
 import com.jad.common.config.settings.RegisterType;
-import com.jad.common.config.settings.Settings;
+import com.jad.common.config.settings.LocalConfigUtil;
 import com.jad.common.enums.UserOrigin;
 import com.jad.common.exception.BadRequestException;
 import com.jad.security.model.RegisterForm;
@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     private Registar registar;
 
     @Autowired
-    private Settings settings;
+    private LocalConfigUtil localConfigUtil;
 
     /**
      * 用户注册
@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
      */
     private void checkUserOrigin(UserOrigin userOrigin) {
         // 获取系统设置的注册类型开关
-        RegisterType registerType = settings.getSystemSettings().getSecurity().getRegisterType();
+        RegisterType registerType = localConfigUtil.getSystemSettings().getSecurity().getRegisterType();
         // 判断注册类型是否系统设置里面打开开关
         for (Field field : registerType.getClass().getDeclaredFields()) {
             // 只需要字段类型为Boolean

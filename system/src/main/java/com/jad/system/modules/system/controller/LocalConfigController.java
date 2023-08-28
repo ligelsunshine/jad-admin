@@ -16,8 +16,8 @@
 
 package com.jad.system.modules.system.controller;
 
-import com.jad.common.config.settings.Settings;
-import com.jad.common.config.settings.SystemSettings;
+import com.jad.common.config.settings.LocalConfig;
+import com.jad.common.config.settings.LocalConfigUtil;
 import com.jad.common.lang.Result;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,28 +33,28 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 系统管理 - 系统设置相关接口
+ * 系统管理 - 本地设置相关接口
  *
  * @author cxxwl96
  * @since 2023/8/20 14:03
  */
-@Api(tags = "系统管理 - 系统设置相关接口")
+@Api(tags = "系统管理 - 本地设置相关接口")
 @RestController
-@RequestMapping("/sys/setting")
-public class SystemSettingController {
+@RequestMapping("/sys/localConfig")
+public class LocalConfigController {
     @Autowired
-    private Settings settings;
+    private LocalConfigUtil localConfigUtil;
 
-    @ApiOperation("保存系统设置")
+    @ApiOperation("保存本地设置")
     @PutMapping("/save")
-    public Result<?> save(@RequestBody @Valid SystemSettings systemSettings) {
-        settings.save(systemSettings);
+    public Result<?> save(@RequestBody @Valid LocalConfig localConfig) {
+        localConfigUtil.save(localConfig);
         return Result.success("保存成功");
     }
 
-    @ApiOperation("获取所有系统设置")
+    @ApiOperation("获取所有本地设置")
     @GetMapping("/getAll")
     public Result<?> getAll() {
-        return Result.success(settings.getSystemSettings());
+        return Result.success(localConfigUtil.getSystemSettings());
     }
 }

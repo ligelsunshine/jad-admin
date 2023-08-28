@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, cxxwl96.com (cxxwl96@sina.com).
+ * Copyright (c) 2021-2023, jad (cxxwl96@sina.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package com.jad.common.config.settings;
+package com.jad.common.mapper;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jad.common.entity.Settings;
 
 /**
- * SystemSettings
+ * 系统设置管理 Mapper 接口
  *
  * @author cxxwl96
- * @since 2023/8/21 20:35
+ * @since 2023/08/28 22:24
  */
-@Data
-public class SystemSettings {
-    // 安全设置
-    private Security security = new Security();
+public interface SettingsMapper extends BaseMapper<Settings> {
+
 }

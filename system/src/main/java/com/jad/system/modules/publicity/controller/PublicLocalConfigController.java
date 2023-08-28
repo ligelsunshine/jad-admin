@@ -16,7 +16,7 @@
 
 package com.jad.system.modules.publicity.controller;
 
-import com.jad.common.config.settings.Settings;
+import com.jad.common.config.settings.LocalConfigUtil;
 import com.jad.common.lang.Result;
 import com.jad.security.annotations.PermitAuth;
 
@@ -29,22 +29,22 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 公共接口 - 系统设置相关接口
+ * 公共接口 - 本地设置相关接口
  *
  * @author cxxwl96
  * @since 2023/8/20 14:03
  */
-@Api(tags = "公共接口 - 系统设置相关接口")
+@Api(tags = "公共接口 - 本地设置相关接口")
 @RestController
-@RequestMapping("/pub/setting")
+@RequestMapping("/pub/localConfig")
 @PermitAuth
-public class PublicSettingController {
+public class PublicLocalConfigController {
     @Autowired
-    private Settings settings;
+    private LocalConfigUtil localConfigUtil;
 
     @ApiOperation("获取注册方式")
     @GetMapping("/getRegisterType")
     public Result<?> getAll() {
-        return Result.success(settings.getSystemSettings().getSecurity().getRegisterType());
+        return Result.success(localConfigUtil.getSystemSettings().getSecurity().getRegisterType());
     }
 }

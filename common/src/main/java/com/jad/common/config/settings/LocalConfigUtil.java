@@ -33,36 +33,36 @@ import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 系统设置
+ * 本地设置
  *
  * @author cxxwl96
  * @since 2023/8/19 22:38
  */
 @Slf4j
 @Configuration
-public class Settings {
+public class LocalConfigUtil {
     // 系统设置字段
-    private static final SystemSettings SYSTEM_SETTINGS = new SystemSettings();
+    private static final LocalConfig LOCAL_CONFIG = new LocalConfig();
 
     // 系统设置锁
-    private static final Object SETTING_LOCK = new Object();
+    private static final Object CONFIG_LOCK = new Object();
 
-    @Value("${jad.system.setting.file-location}")
-    private transient String fileLocation;
+    @Value("${jad.system.local-config.location}")
+    private transient String location;
 
     private transient File file;
 
     @PostConstruct
     public void init() {
-        log.info("Initializing System Settings");
-        file = new File(fileLocation);
-        log.info("System setting file location: {}", file.getAbsoluteFile());
+        log.info("Initializing Local Config");
+        file = new File(location);
+        log.info("Local config file location: {}", file.getAbsoluteFile());
         if (!file.exists() || StrUtil.isBlank(FileUtil.readUtf8String(file))) {
             try {
                 FileUtil.mkParentDirs(file);
                 file.createNewFile();
             } catch (IOException e) {
-                throw new RuntimeException("Failed to create system setting file. File: " + file.getAbsoluteFile());
+                throw new RuntimeException("Failed to create local config file. File: " + file.getAbsoluteFile());
             }
             // 保存配置到配置文件
             save(null);
@@ -75,12 +75,12 @@ public class Settings {
     /**
      * 保存配置到配置文件
      */
-    public void save(@Nullable SystemSettings settings) {
-        synchronized (SETTING_LOCK) {
+    public void save(@Nullable LocalConfig settings) {
+        synchronized (CONFIG_LOCK) {
             if (settings != null) {
-                BeanUtil.copyProperties(settings, SYSTEM_SETTINGS);
+                BeanUtil.copyProperties(settings, LOCAL_CONFIG);
             }
-            String json = JSON.toJSONString(SYSTEM_SETTINGS);
+            String json = JSON.toJSONString(LOCAL_CONFIG);
             FileUtil.writeUtf8String(json, file);
         }
     }
@@ -89,10 +89,10 @@ public class Settings {
      * 从配置文件读取到内存
      */
     public void refresh() {
-        synchronized (SETTING_LOCK) {
+        synchronized (CONFIG_LOCK) {
             String json = FileUtil.readUtf8String(file);
-            Settings settings = JSON.parseObject(json, Settings.class);
-            BeanUtil.copyProperties(settings, SYSTEM_SETTINGS);
+            LocalConfigUtil localConfigUtil = JSON.parseObject(json, LocalConfigUtil.class);
+            BeanUtil.copyProperties(localConfigUtil, LOCAL_CONFIG);
         }
     }
 
@@ -101,7 +101,7 @@ public class Settings {
      *
      * @return 系统设置
      */
-    public SystemSettings getSystemSettings() {
-        return SYSTEM_SETTINGS;
+    public LocalConfig getSystemSettings() {
+        return LOCAL_CONFIG;
     }
 }

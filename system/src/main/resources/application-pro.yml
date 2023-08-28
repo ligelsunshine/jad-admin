@@ -107,8 +107,8 @@ jad:
       email: cxxwl96@sina.com
     role:
       administrator-id: 8288e8e0fc49ec42a6d83d121963af57 # 超级管理员
-    setting:
-      file-location: ./conf/SystemSettings.json # 系统设置文件路径
+    local-config:
+      location: ./conf/LocalConfig.json # 本地设置文件路径
   swagger:
     enable: true
     path-mapping: /
