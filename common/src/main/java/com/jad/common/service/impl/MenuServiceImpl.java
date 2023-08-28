@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.jad.common.base.service.impl.BaseServiceImpl;
+import com.jad.common.base.service.impl.TreeServiceImpl;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.RoleMenu;
@@ -59,7 +59,7 @@ import cn.hutool.core.util.StrUtil;
  * @since 2021-06-18
  */
 @Service
-public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, Menu> implements MenuService {
+public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implements MenuService {
 
     @Autowired
     private RedisUtil redisUtil;
@@ -315,6 +315,8 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, Menu> implement
         if (isUpdate && StrUtil.isBlank(menu.getId())) {
             throw new BadRequestException(Result.failed("id不能为空"));
         }
+        // 编码否是唯一
+        super.checkCode(menu);
         // 分组实体校验
         Class<?> clazzGroup;
         if (menu.getType() == MenuType.DIRECTORY) {

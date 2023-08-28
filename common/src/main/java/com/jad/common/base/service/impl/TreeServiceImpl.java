@@ -16,15 +16,21 @@
 
 package com.jad.common.base.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.jad.common.base.entity.TreeNode;
 import com.jad.common.base.service.TreeService;
 import com.jad.common.entity.Tree;
+import com.jad.common.exception.BadRequestException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 树形数据服务类
@@ -34,6 +40,71 @@ import cn.hutool.core.collection.CollUtil;
  */
 public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> extends BaseServiceImpl<M, T>
     implements TreeService<T> {
+    @Override
+    public boolean save(T entity) {
+        checkCode(entity);
+        return super.save(entity);
+    }
+
+    @Override
+    public boolean saveBatch(Collection<T> entityList, int batchSize) {
+        checkCode(entityList);
+        return super.saveBatch(entityList, batchSize);
+    }
+
+    @Override
+    public boolean saveOrUpdate(T entity) {
+        checkCode(entity);
+        return super.saveOrUpdate(entity);
+    }
+
+    @Override
+    public boolean saveOrUpdateBatch(Collection<T> entityList, int batchSize) {
+        checkCode(entityList);
+        return super.saveOrUpdateBatch(entityList, batchSize);
+    }
+
+    @Override
+    public boolean saveBatch(Collection<T> entityList) {
+        checkCode(entityList);
+        return super.saveBatch(entityList);
+    }
+
+    @Override
+    public boolean saveOrUpdateBatch(Collection<T> entityList) {
+        checkCode(entityList);
+        return super.saveOrUpdateBatch(entityList);
+    }
+
+    @Override
+    public boolean saveOrUpdate(T entity, Wrapper<T> updateWrapper) {
+        checkCode(entity);
+        return super.saveOrUpdate(entity, updateWrapper);
+    }
+
+    @Override
+    public boolean updateBatchById(Collection<T> entityList, int batchSize) {
+        checkCode(entityList);
+        return super.updateBatchById(entityList, batchSize);
+    }
+
+    @Override
+    public boolean updateById(T entity) {
+        checkCode(entity);
+        return super.updateById(entity);
+    }
+
+    @Override
+    public boolean update(T entity, Wrapper<T> updateWrapper) {
+        checkCode(entity);
+        return super.update(entity, updateWrapper);
+    }
+
+    @Override
+    public boolean updateBatchById(Collection<T> entityList) {
+        checkCode(entityList);
+        return super.updateBatchById(entityList);
+    }
 
     /**
      * 获取树实例
@@ -125,5 +196,37 @@ public class TreeServiceImpl<M extends BaseMapper<T>, T extends TreeNode<T>> ext
             success = super.removeByIds(ids);
         }
         return success;
+    }
+
+    /**
+     * 编码是否唯一
+     *
+     * @param treeNode 节点
+     * @return 编码是否唯一
+     */
+    @Override
+    public boolean isUniqueCode(T treeNode) {
+        if (StrUtil.isBlank(treeNode.getCode())) {
+            return true; // 编码为空不检查
+        }
+        // 检查树节点的code是否唯一
+        // 加上.setEntityClass(super.getEntityClass())，防止can not find lambda cache for this entity
+        LambdaQueryChainWrapper<T> wrapper = super.lambdaQuery()
+            .setEntityClass(super.getEntityClass())
+            .eq(T::getCode, treeNode.getCode());
+        if (StrUtil.isNotBlank(treeNode.getId())) {
+            wrapper.ne(T::getId, treeNode.getId());
+        }
+        return wrapper.count() == 0;
+    }
+
+    protected void checkCode(Collection<T> entityList) {
+        for (T entity : entityList) {
+            checkCode(entity);
+        }
+    }
+
+    protected void checkCode(T entity) {
+        Assert.isTrue(isUniqueCode(entity), () -> new BadRequestException("编码" + entity.getCode() + "已经存在"));
     }
 }

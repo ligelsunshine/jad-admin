@@ -105,13 +105,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BadRequestException.class)
     public Result<?> handler(BadRequestException e) {
-        Result<?> result = e.getResult();
         if (e.isNeedPrintStackTrace()) {
-            result = processFailed(HttpStatus.BAD_REQUEST.value(), "错误的请求", e);
+            log.error("错误的请求: {}", e.getMessage(), e);
         } else {
-            log.error(e.getMessage());
+            log.error("错误的请求: {}", e.getMessage());
         }
-        return result != null ? result : Result.failed(e.getMessage());
+        return e.getResult() != null
+            ? e.getResult()
+            : Result.failed(HttpStatus.BAD_REQUEST.value(), "错误的请求", e.getMessage());
     }
 
     /**

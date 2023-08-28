@@ -17,6 +17,7 @@
 package com.jad.common.service;
 
 import com.jad.common.base.service.BaseService;
+import com.jad.common.base.service.TreeService;
 import com.jad.common.entity.Menu;
 
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
  * @author cxxwl96
  * @since 2021-06-18
  */
-public interface MenuService extends BaseService<Menu> {
+public interface MenuService extends TreeService<Menu> {
 
     /**
      * 添加菜单

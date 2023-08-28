@@ -83,4 +83,12 @@ public interface TreeService<T extends TreeNode<T>> extends BaseService<T> {
      * @return 是否删除成功
      */
     boolean removeTree(String id, boolean includeSelf);
+
+    /**
+     * 编码是否唯一。检查树节点的code是否唯一
+     *
+     * @param treeNode 节点
+     * @return true: 该节点的code不存在；false：该节点的code存在
+     */
+    boolean isUniqueCode(T treeNode);
 }
