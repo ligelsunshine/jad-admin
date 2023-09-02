@@ -18,6 +18,10 @@ package com.jad.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jad.common.base.entity.BaseEntity;
 import com.jad.common.enums.Sex;
 import com.jad.common.enums.UserOrigin;
@@ -75,6 +79,8 @@ public class User extends BaseEntity {
     private Integer age;
 
     @ApiModelProperty(value = "出生日期")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime birthday;
 
     @ApiModelProperty(value = "邮箱")
@@ -92,6 +98,8 @@ public class User extends BaseEntity {
     private String city;
 
     @ApiModelProperty(value = "最后登录时间")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime lastLogin;
 
     @ApiModelProperty(value = "部门ID")

@@ -16,11 +16,9 @@
 
 package com.jad.security.handler;
 
-import com.jad.common.constant.RedisConst;
 import com.jad.common.lang.Result;
 import com.jad.common.utils.JsonUtil;
 import com.jad.common.utils.JwtUtil;
-import com.jad.common.utils.RedisUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -46,9 +44,6 @@ public class JadAuthenticationSuccessHandler implements AuthenticationSuccessHan
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private RedisUtil redisUtil;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException {
@@ -59,9 +54,6 @@ public class JadAuthenticationSuccessHandler implements AuthenticationSuccessHan
         final String token = jwtUtil.generateToken(authentication.getName());
         // 放到header里面
         response.setHeader(jwtUtil.getHeader(), token);
-        // 放到redis里面，过期时间为jwt过期时间，需要从ms转为s
-        redisUtil.set(RedisConst.SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX + authentication.getName(), token,
-            jwtUtil.getExpireMilliseconds() / 1000);
 
         final Result<?> result = Result.success(200, "登录成功", token);
         outputStream.write(JsonUtil.toJSONString(result).getBytes(StandardCharsets.UTF_8));

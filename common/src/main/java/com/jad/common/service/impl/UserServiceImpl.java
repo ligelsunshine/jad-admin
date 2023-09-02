@@ -136,7 +136,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         if (hasAdministrator(id)) {
             throw new BadRequestException("不能删除超级管理员");
         }
-        // 清空缓存的用户
+        // 清除用户授权信息
         final User user = super.getById(id);
         if (user != null) {
             clearUserAuthorityByUsername(user.getUsername());
@@ -189,7 +189,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         if (!userRoleService.saveBatch(userRoles)) {
             throw new BadRequestException("分配角色失败");
         }
-        // 清空缓存的用户
+        // 清除用户授权信息
         clearUserAuthorityByUsername(user.getUsername());
         return true;
     }
@@ -207,7 +207,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         if (!super.updateById(user)) {
             throw new BadRequestException("修改用户失败");
         }
-        // 清空缓存的用户
+        // 清除用户授权信息
         clearUserAuthorityByUsername(user.getUsername());
         return true;
     }
@@ -292,8 +292,15 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     public User getByUsername(String username) {
-        // TODO 缓存用户
-        return getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        // 缓存用户
+        if (redisUtil.hHasKey(RedisConst.SYSTEM_USER, username)) {
+            return (User) redisUtil.hget(RedisConst.SYSTEM_USER, username);
+        }
+        User user = getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+        if (user != null) {
+            redisUtil.hset(RedisConst.SYSTEM_USER, user.getUsername(), user);
+        }
+        return user;
     }
 
     /**
@@ -467,6 +474,17 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     /**
+     * 清除用户信息缓存
+     *
+     * @param username 用户名
+     */
+    @Override
+    public void clearUserInfoCacheByUsername(String username) {
+        // 清除用户信息缓存
+        redisUtil.hdel(RedisConst.SYSTEM_USER, username);
+    }
+
+    /**
      * 清除用户授权信息
      *
      * @param username 用户名
@@ -479,6 +497,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_LIST, username);
         // 清除菜单树
         redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, username);
+        // 清除用户信息缓存
+        clearUserInfoCacheByUsername(username);
     }
 
     /**

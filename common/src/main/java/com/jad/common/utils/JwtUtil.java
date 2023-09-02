@@ -16,6 +16,9 @@
 
 package com.jad.common.utils;
 
+import com.jad.common.constant.RedisConst;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -37,14 +40,17 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "jad.jwt")
 public class JwtUtil {
 
-    // 过期时间（单位：ms）
-    private long expireMilliseconds;
+    // 过期时间（单位：s）
+    private long expireSeconds;
 
     // jwt秘钥
     private String secret;
 
     // 请求头名称
     private String header;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 生成token
@@ -54,14 +60,17 @@ public class JwtUtil {
      */
     public String generateToken(String username) {
         Date nowDate = new Date();
-        Date expireDate = new Date(nowDate.getTime() + expireMilliseconds);
-        return Jwts.builder()
+        Date expireDate = new Date(nowDate.getTime() + expireSeconds * 1000);
+        String token = Jwts.builder()
             .setHeaderParam("type", "JWT")
             .setSubject(username)
             .setIssuedAt(nowDate)
             .setExpiration(expireDate)
             .signWith(SignatureAlgorithm.HS512, secret)
             .compact();
+        // 放到redis里面，过期时间为jwt过期时间
+        redisUtil.set(RedisConst.SECURITY_USER_AUTHENTICATE_TOKEN_KEY_PREFIX + username, token, expireSeconds);
+        return token;
     }
 
     /**
@@ -81,10 +90,14 @@ public class JwtUtil {
     /**
      * token是否过期
      *
-     * @param claims claims
+     * @param token token
      * @return token是否过期
      */
-    public boolean isExpired(Claims claims) {
+    public boolean isExpired(String token) {
+        Claims claims = getClaims(token);
+        if (claims == null) {
+            return true;
+        }
         return claims.getExpiration().before(new Date());
     }
 }

@@ -168,6 +168,13 @@ public interface UserService extends BaseService<User> {
     boolean hasAdministrator(String userId);
 
     /**
+     * 清除用户缓存
+     *
+     * @param username 用户名
+     */
+    void clearUserInfoCacheByUsername(String username);
+
+    /**
      * 清除用户授权信息
      *
      * @param username 用户名

@@ -83,12 +83,12 @@ file-store:
 # JAD Configuration
 jad:
   jwt:
-    expire-milliseconds: 86400000 # 过期时间（单位：ms）
+    expire-seconds: 86400 # 过期时间（单位：s），1天
     secret: ENC(3A8xvsAiuRAwxoie8pF1LLWpVvUAhR6R5TKEC+Fo81A=) # jwt秘钥
     header: Authorization
   security:
     url-white-list:
-      - /**/*.html, /**/*.css, /**/*.js
+      - /**/*.html, /**/*.css, /**/*.js, /favicon.ico
       - /swagger-ui/**, /swagger-resources/**, /*/api-docs
   sms:
     timeout: 120 # 验证码过期时间（单位：s）
@@ -110,7 +110,7 @@ jad:
     local-config:
       location: ./conf/LocalConfig.json # 本地设置文件路径
   swagger:
-    enable: true
+    enable: false
     path-mapping: /
     api-info:
       title: JAD Admin Swagger API - PRO

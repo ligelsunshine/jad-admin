@@ -18,9 +18,9 @@ package com.jad.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jad.common.base.entity.TreeNode;
+import com.jad.common.enums.Component;
 import com.jad.common.enums.SettingType;
 import com.jad.common.enums.Status;
-import com.jad.common.enums.Component;
 
 import java.io.Serializable;
 

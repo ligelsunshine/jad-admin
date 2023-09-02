@@ -16,7 +16,6 @@
 
 package com.jad.common.service;
 
-import com.jad.common.base.service.BaseService;
 import com.jad.common.base.service.TreeService;
 import com.jad.common.entity.Menu;
 

@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        if (jwtUtil.isExpired(claims)) {
+        if (jwtUtil.isExpired(token)) {
             request.setAttribute("msg", "登录已过期");
             chain.doFilter(request, response);
             return;
@@ -106,9 +106,10 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
+        // 刷新Token
+        refreshToken(username, response);
 
         final User user = userService.getByUsername(username);
-
         // 将用户的权限等信息保存到security中
         final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             user.getUsername(), user.getPassword(), authorityPermissionService.getUserAuthority(user.getId()));
@@ -116,5 +117,12 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         chain.doFilter(request, response);
+    }
+
+    private void refreshToken(String username, HttpServletResponse response) {
+        // 生成jwt
+        final String token = jwtUtil.generateToken(username);
+        // 放到header里面
+        response.setHeader(jwtUtil.getHeader(), token);
     }
 }
