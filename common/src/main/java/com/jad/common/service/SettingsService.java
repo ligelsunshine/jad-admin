@@ -26,5 +26,10 @@ import com.jad.common.entity.Settings;
  * @since 2023/08/28 22:24
  */
 public interface SettingsService extends TreeService<Settings> {
-
+    /**
+     * 绑定菜单
+     *
+     * @param menuId 菜单ID
+     */
+    void bindMenu(String menuId);
 }

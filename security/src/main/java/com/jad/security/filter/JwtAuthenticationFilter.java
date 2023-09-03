@@ -100,12 +100,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        // 若token与header中token不相同，则表示已经在别处登录
-        if (!redisToken.equals(token)) {
-            request.setAttribute("msg", "您已在别处登录");
-            chain.doFilter(request, response);
-            return;
-        }
         // 刷新Token
         refreshToken(username, response);
 

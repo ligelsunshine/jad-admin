@@ -17,8 +17,8 @@
 package com.jad.system.modules.system.controller;
 
 import com.jad.common.base.controller.BaseController;
-import com.jad.common.lang.Result;
 import com.jad.common.entity.Settings;
+import com.jad.common.lang.Result;
 import com.jad.common.service.SettingsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,16 +87,25 @@ public class SettingsMgrController extends BaseController {
     @PreAuthorize("@auth.hasAuthority('sys:settings:get')")
     public Result<?> get(@PathVariable String id) {
         final Settings settings = settingsService.getById(id);
-        if (settings == null){
+        if (settings == null) {
             return Result.failed("获取数据失败");
         }
         return Result.success(settings);
     }
+
     @ApiOperation("获取系统设置管理树")
     @GetMapping("/getTree")
     @PreAuthorize("@auth.hasAuthority('sys:settings:getTree')")
     public Result<?> getTree() {
         List<Settings> treeList = settingsService.getRootTree();
         return Result.success(treeList);
+    }
+
+    @ApiOperation("设置绑定菜单权限")
+    @PostMapping("/bindMenu/{menuId}")
+    @PreAuthorize("@auth.hasAuthority('sys:settings:bindMenu')")
+    public Result<?> bindMenu(@PathVariable String menuId) {
+        settingsService.bindMenu(menuId);
+        return Result.success("绑定成功");
     }
 }

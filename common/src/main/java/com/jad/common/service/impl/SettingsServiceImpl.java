@@ -17,11 +17,18 @@
 package com.jad.common.service.impl;
 
 import com.jad.common.base.service.impl.TreeServiceImpl;
+import com.jad.common.entity.Menu;
 import com.jad.common.entity.Settings;
+import com.jad.common.exception.BadRequestException;
 import com.jad.common.mapper.SettingsMapper;
+import com.jad.common.service.MenuService;
 import com.jad.common.service.SettingsService;
+import com.jad.common.service.UserService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 系统设置管理服务实现类
@@ -31,5 +38,43 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Settings> implements SettingsService {
+    @Autowired
+    private UserService userService;
 
+    @Autowired
+    private MenuService menuService;
+
+    /**
+     * 绑定菜单
+     *
+     * @param menuId 菜单ID
+     */
+    @Override
+    public void bindMenu(String menuId) {
+        // 1、检查菜单合法性
+        Menu menu = menuService.getById(menuId);
+        if (menu == null) {
+            throw new BadRequestException("您绑定的菜单不存在");
+        }
+        if (StrUtil.isBlank(menu.getCode())) {
+            throw new BadRequestException("您绑定的菜单编码为空");
+        }
+        // 2、检查菜单是否为空菜单，即是否有子菜单，不能绑定非空菜单
+        Long count = menuService.lambdaQuery().eq(Menu::getPId, menuId).count();
+        if (count > 0) {
+            throw new BadRequestException("绑定的菜单不能拥有子菜单，请重新选择");
+        }
+        // 3、检查是否已绑定
+        if (this.exist(menuId)) {
+            throw new BadRequestException("该菜单已被绑定");
+        }
+        // 4、添加设置根节点
+        Settings settings = new Settings();
+        settings.setId(menuId);
+        settings.setTitle("设置根节点");
+        settings.setCode(menu.getCode());
+        if (!this.save(settings)) {
+            throw new BadRequestException("绑定失败");
+        }
+    }
 }
