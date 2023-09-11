@@ -48,19 +48,25 @@ public class Settings extends TreeNode<Settings> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "是否根节点")
+    private boolean origin;
+
     @ApiModelProperty(value = "设置类型")
     @NotNull(message = "设置类型不能为空")
     private SettingType settingType = SettingType.DIRECTORY;
 
-    @ApiModelProperty(value = "授权")
+    @ApiModelProperty(value = "标题")
+    @NotBlank(message = "标题不能为空")
+    private String title;
+
+    @ApiModelProperty(value = "图标")
+    private String icon;
+
+    @ApiModelProperty(value = "授权(多个用逗号分隔，如：user:list,user:create)")
     private String permissions;
 
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
     private Status status = Status.ENABLE;
-
-    @ApiModelProperty(value = "标题")
-    @NotBlank(message = "标题不能为空")
-    private String title;
 
     @ApiModelProperty(value = "提示消息")
     private String helpMessage;
@@ -74,9 +80,6 @@ public class Settings extends TreeNode<Settings> implements Serializable {
 
     @ApiModelProperty(value = "是否必须")
     private boolean required;
-
-    @ApiModelProperty(value = "枚举值")
-    private String enumVal;
 
     @ApiModelProperty(value = "自定义校验规则")
     private String rules;

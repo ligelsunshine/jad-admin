@@ -49,7 +49,7 @@ public class TreeNode<T> extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "排序")
     private Integer orderNo = 0;
 
-    @ApiModelProperty(value = "编码")
+    @ApiModelProperty(value = "编码，用于获取树节点的唯一标识")
     @Pattern(message = "编码仅数字、字母、中横线组成", regexp = "^[a-zA-Z0-9\\-]*$")
     private String code = null;
 

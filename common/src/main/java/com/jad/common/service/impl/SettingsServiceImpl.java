@@ -23,10 +23,12 @@ import com.jad.common.exception.BadRequestException;
 import com.jad.common.mapper.SettingsMapper;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.SettingsService;
-import com.jad.common.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import cn.hutool.core.util.StrUtil;
 
@@ -39,10 +41,32 @@ import cn.hutool.core.util.StrUtil;
 @Service
 public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Settings> implements SettingsService {
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private MenuService menuService;
+
+    @Override
+    public boolean save(Settings entity) {
+        if (StrUtil.isBlank(entity.getPId())) {
+            throw new BadRequestException("必须添加根节点");
+        }
+        return super.save(entity);
+    }
+
+    @Override
+    public boolean updateById(Settings entity) {
+        Settings settings = super.getById(entity.getId());
+        if (settings == null) {
+            throw new BadRequestException("修改失败，数据不存在");
+        }
+        // 设置根节点不允许再添加上级系统设置
+        if (settings.isOrigin() && StrUtil.isNotBlank(entity.getPId())) {
+            throw new BadRequestException("不允许再添加上级系统设置");
+        }
+        // 设置节点必须添加根节点
+        if (!settings.isOrigin() && StrUtil.isBlank(entity.getPId())) {
+            throw new BadRequestException("必须添加根节点");
+        }
+        return super.updateById(entity);
+    }
 
     /**
      * 绑定菜单
@@ -64,16 +88,23 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
         if (count > 0) {
             throw new BadRequestException("绑定的菜单不能拥有子菜单，请重新选择");
         }
-        // 3、检查是否已绑定
-        if (this.exist(menuId)) {
-            throw new BadRequestException("该菜单已被绑定");
+        // 3、清空设置
+        if (super.count() > 0) {
+            List<String> ids = super.lambdaQuery()
+                .select(Settings::getId)
+                .list()
+                .stream()
+                .map(Settings::getId)
+                .collect(Collectors.toList());
+            super.removeByIds(ids);
         }
         // 4、添加设置根节点
         Settings settings = new Settings();
         settings.setId(menuId);
         settings.setTitle("设置根节点");
         settings.setCode(menu.getCode());
-        if (!this.save(settings)) {
+        settings.setOrigin(true);
+        if (!super.save(settings)) {
             throw new BadRequestException("绑定失败");
         }
     }
