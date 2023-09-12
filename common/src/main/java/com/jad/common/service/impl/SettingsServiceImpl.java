@@ -19,6 +19,7 @@ package com.jad.common.service.impl;
 import com.jad.common.base.service.impl.TreeServiceImpl;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.Settings;
+import com.jad.common.enums.SettingType;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.mapper.SettingsMapper;
 import com.jad.common.service.MenuService;
@@ -26,11 +27,13 @@ import com.jad.common.service.SettingsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.Assert;
 
 /**
  * 系统设置管理服务实现类
@@ -43,29 +46,59 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
     @Autowired
     private MenuService menuService;
 
+    /**
+     * 添加设置
+     *
+     * @param entity 实体对象
+     * @return 是否添加成功
+     */
     @Override
+    @Transactional
     public boolean save(Settings entity) {
-        if (StrUtil.isBlank(entity.getPId())) {
-            throw new BadRequestException("必须添加根节点");
+        validateSettings(entity);
+        boolean saveSetting = super.save(entity);
+        Menu menu = createMenuBySetting(entity);
+        boolean saveMenu = menuService.save(menu);
+        if (!saveSetting || !saveMenu) {
+            throw new BadRequestException("添加设置或菜单失败");
         }
-        return super.save(entity);
+        return true;
     }
 
+    /**
+     * 删除子树
+     *
+     * @param id 子树根节点id
+     * @param includeSelf 是否包含子树根节点
+     * @return 是否删除成功
+     */
     @Override
+    @Transactional
+    public boolean removeTree(String id, boolean includeSelf) {
+        if (!menuService.removeTree(id, includeSelf) || !super.removeTree(id, includeSelf)) {
+            throw new BadRequestException("删除设置或菜单失败");
+        }
+        return true;
+    }
+
+    /**
+     * 修改设置
+     *
+     * @param entity 实体对象
+     * @return 是否修改成功
+     */
+    @Override
+    @Transactional
     public boolean updateById(Settings entity) {
-        Settings settings = super.getById(entity.getId());
-        if (settings == null) {
-            throw new BadRequestException("修改失败，数据不存在");
+        Assert.isTrue(super.exist(entity.getId()), () -> new BadRequestException("修改失败，数据不存在"));
+        validateSettings(entity);
+        boolean updateSetting = super.updateById(entity);
+        Menu menu = createMenuBySetting(entity);
+        boolean updateMenu = menuService.updateById(menu);
+        if (!updateSetting || !updateMenu) {
+            throw new BadRequestException("修改设置或菜单失败");
         }
-        // 设置根节点不允许再添加上级系统设置
-        if (settings.isOrigin() && StrUtil.isNotBlank(entity.getPId())) {
-            throw new BadRequestException("不允许再添加上级系统设置");
-        }
-        // 设置节点必须添加根节点
-        if (!settings.isOrigin() && StrUtil.isBlank(entity.getPId())) {
-            throw new BadRequestException("必须添加根节点");
-        }
-        return super.updateById(entity);
+        return true;
     }
 
     /**
@@ -77,17 +110,11 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
     public void bindMenu(String menuId) {
         // 1、检查菜单合法性
         Menu menu = menuService.getById(menuId);
-        if (menu == null) {
-            throw new BadRequestException("您绑定的菜单不存在");
-        }
-        if (StrUtil.isBlank(menu.getCode())) {
-            throw new BadRequestException("您绑定的菜单编码为空");
-        }
+        Assert.notNull(menu, () -> new BadRequestException("您绑定的菜单不存在"));
+        Assert.notBlank(menu.getCode(), () -> new BadRequestException("您绑定的菜单编码为空"));
         // 2、检查菜单是否为空菜单，即是否有子菜单，不能绑定非空菜单
         Long count = menuService.lambdaQuery().eq(Menu::getPId, menuId).count();
-        if (count > 0) {
-            throw new BadRequestException("绑定的菜单不能拥有子菜单，请重新选择");
-        }
+        Assert.isTrue(count <= 0, () -> new BadRequestException("绑定的菜单不能拥有子菜单，请重新选择"));
         // 3、清空设置
         if (super.count() > 0) {
             List<String> ids = super.lambdaQuery()
@@ -104,8 +131,47 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
         settings.setTitle("设置根节点");
         settings.setCode(menu.getCode());
         settings.setOrigin(true);
+        settings.setSettingType(SettingType.DIRECTORY);
         if (!super.save(settings)) {
             throw new BadRequestException("绑定失败");
+        }
+    }
+
+    /**
+     * 创建菜单实体，设置字段同步菜单字段
+     *
+     * @param entity 设置实体
+     * @return 菜单实体
+     */
+    private Menu createMenuBySetting(Settings entity) {
+        Menu menu = new Menu();
+        BeanUtil.copyProperties(entity, menu);
+        return menu;
+    }
+
+    /**
+     * 添加或修改时校验设置字段
+     *
+     * @param entity 设置实体
+     */
+    private void validateSettings(Settings entity) {
+        // 不允许修改跟节点
+        Assert.isTrue(!entity.isOrigin(), () -> new BadRequestException("不允许变更根节点"));
+        // 必须要有父级节点
+        Assert.notBlank(entity.getPId(), () -> new BadRequestException("必须添加父级节点"));
+        Settings parentEntity = super.getById(entity.getPId());
+        Assert.notNull(parentEntity, () -> new BadRequestException("必须添加父级节点"));
+        // 目录下面只能添加目录、设置页
+        if (parentEntity.getSettingType() == SettingType.DIRECTORY) {
+            if (entity.getSettingType() != SettingType.DIRECTORY && entity.getSettingType() != SettingType.PAGE) {
+                throw new BadRequestException("\"目录\"下面只能添加\"目录\"、\"设置页\"");
+            }
+        } else if (parentEntity.getSettingType() == SettingType.PAGE) {
+            if (entity.getSettingType() != SettingType.ITEM) {
+                throw new BadRequestException("\"设置页\"下面只能添加\"设置项\"");
+            }
+        } else {
+            throw new BadRequestException("\"设置项\"不能再添加子设置了");
         }
     }
 }
