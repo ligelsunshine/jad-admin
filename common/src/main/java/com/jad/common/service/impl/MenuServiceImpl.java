@@ -44,6 +44,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -148,19 +149,38 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
         }
         if (CollUtil.isNotEmpty(list)) {
             final List<String> ids = list.stream().map(Menu::getId).collect(Collectors.toList());
-            success = super.removeByIds(ids);
-            // 清空缓存
-            for (String menuId : ids) {
-                userService.clearUserAuthorityByMenuId(menuId);
-            }
-            clearUserMenuList();
-            clearUserMenuTree();
-            // 删除用户菜单
-            final List<RoleMenu> roleMenuIds = roleMenuService.lambdaQuery()
-                .in(RoleMenu::getMenuId, ids)
-                .select(RoleMenu::getId)
-                .list();
-            roleMenuService.removeByIds(roleMenuIds);
+            success = this.removeByIds(ids);
+        }
+        return success;
+    }
+
+    /**
+     * 根据id删除菜单
+     *
+     * @param ids 主键ID或实体列表
+     * @return 是否删除成功
+     */
+    @Override
+    @Transactional
+    public boolean removeByIds(Collection<?> ids) {
+        if (ids.size() <= 0) {
+            return true;
+        }
+        boolean success = super.removeByIds(ids);
+        // 清空缓存
+        for (Object menuId : ids) {
+            String id = (String) menuId;
+            userService.clearUserAuthorityByMenuId(id);
+        }
+        clearUserMenuList();
+        clearUserMenuTree();
+        // 删除用户菜单
+        final List<RoleMenu> roleMenuIds = roleMenuService.lambdaQuery()
+            .in(RoleMenu::getMenuId, ids)
+            .select(RoleMenu::getId)
+            .list();
+        if (roleMenuIds.size() > 0) {
+            success = success && roleMenuService.removeByIds(roleMenuIds);
         }
         return success;
     }

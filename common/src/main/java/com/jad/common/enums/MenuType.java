@@ -19,6 +19,10 @@ package com.jad.common.enums;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Optional;
+
+import lombok.Getter;
+
 /**
  * 菜单类型 [0：目录 1：菜单 2：按钮]
  *
@@ -35,13 +39,25 @@ public enum MenuType {
 
     @EnumValue
     @JsonValue
+    @Getter
     private final int index;
 
     MenuType(int index) {
         this.index = index;
     }
 
-    public int getIndex() {
-        return index;
+    /**
+     * 获取菜单类型
+     *
+     * @param index index
+     * @return 菜单类型
+     */
+    public static Optional<MenuType> getMenuType(int index) {
+        for (MenuType menuType : MenuType.values()) {
+            if (menuType.getIndex() == index) {
+                return Optional.of(menuType);
+            }
+        }
+        return Optional.empty();
     }
 }

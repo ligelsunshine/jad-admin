@@ -19,6 +19,7 @@ package com.jad.common.service.impl;
 import com.jad.common.base.service.impl.TreeServiceImpl;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.Settings;
+import com.jad.common.enums.MenuType;
 import com.jad.common.enums.SettingType;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.mapper.SettingsMapper;
@@ -107,6 +108,7 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
      * @param menuId 菜单ID
      */
     @Override
+    @Transactional
     public void bindMenu(String menuId) {
         // 1、检查菜单合法性
         Menu menu = menuService.getById(menuId);
@@ -115,15 +117,23 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
         // 2、检查菜单是否为空菜单，即是否有子菜单，不能绑定非空菜单
         Long count = menuService.lambdaQuery().eq(Menu::getPId, menuId).count();
         Assert.isTrue(count <= 0, () -> new BadRequestException("绑定的菜单不能拥有子菜单，请重新选择"));
-        // 3、清空设置
+        // 3、清空设置与菜单
         if (super.count() > 0) {
+            // 清空设置
             List<String> ids = super.lambdaQuery()
                 .select(Settings::getId)
                 .list()
                 .stream()
                 .map(Settings::getId)
                 .collect(Collectors.toList());
-            super.removeByIds(ids);
+            if (ids.size() > 0) {
+                super.removeByIds(ids);
+            }
+            // 清空菜单
+            ids.remove(menuId); // 不删除菜单中设置的根菜单
+            if (ids.size() > 0) {
+                menuService.removeByIds(ids);
+            }
         }
         // 4、添加设置根节点
         Settings settings = new Settings();
@@ -146,6 +156,15 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
     private Menu createMenuBySetting(Settings entity) {
         Menu menu = new Menu();
         BeanUtil.copyProperties(entity, menu);
+        // 设置菜单不能为空字段
+        MenuType menuType = MenuType.getMenuType(entity.getSettingType().getIndex())
+            .orElseThrow(() -> new BadRequestException("设置类型错误"));
+        menu.setType(menuType);
+        menu.setTitle(entity.getTitle());
+        menu.setComponent(null);
+        if (menuType == MenuType.DIRECTORY || menuType == MenuType.MENU) {
+            menu.setPath("path" + entity.getId());
+        }
         return menu;
     }
 
