@@ -16,11 +16,14 @@
 
 package com.jad.common.service.impl;
 
+import com.jad.common.base.form.OrderItem;
+import com.jad.common.base.form.SearchForm;
 import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Dict;
 import com.jad.common.entity.DictData;
 import com.jad.common.exception.BadRequestException;
+import com.jad.common.lang.SearchResult;
 import com.jad.common.mapper.DictDataMapper;
 import com.jad.common.service.DictDataService;
 import com.jad.common.service.DictService;
@@ -53,6 +56,7 @@ public class DictDataServiceImpl extends BaseServiceImpl<DictDataMapper, DictDat
      */
     @Override
     public boolean save(DictData entity) {
+        uniqueDictDataWithValue(entity); // 数据值唯一性校验
         if (!super.save(entity)) {
             throw new BadRequestException("添加字典数据失败");
         }
@@ -70,7 +74,7 @@ public class DictDataServiceImpl extends BaseServiceImpl<DictDataMapper, DictDat
      */
     @Override
     public boolean removeById(Serializable id) {
-        final DictData dictData = getById(id);
+        final DictData dictData = super.getById(id);
         if (!super.removeById(id)) {
             throw new BadRequestException("删除字典数据失败");
         }
@@ -88,6 +92,7 @@ public class DictDataServiceImpl extends BaseServiceImpl<DictDataMapper, DictDat
      */
     @Override
     public boolean updateById(DictData entity) {
+        uniqueDictDataWithValue(entity); // 数据值唯一性校验
         if (!super.updateById(entity)) {
             throw new BadRequestException("修改字典数据失败");
         }
@@ -95,5 +100,28 @@ public class DictDataServiceImpl extends BaseServiceImpl<DictDataMapper, DictDat
         // 清空缓存
         redisUtil.hdel(RedisConst.SYSTEM_DICT, dict.getCode());
         return true;
+    }
+
+    /**
+     * 分页条件查询
+     *
+     * @param searchForm 查询表单
+     * @return 数据
+     */
+    @Override
+    public SearchResult<DictData> getPageList(SearchForm searchForm) {
+        searchForm.addOrderItem(new OrderItem().orderItem(DictData::getValue, true)); // 按数据值升序排序
+        return super.getPageList(searchForm);
+    }
+
+    private void uniqueDictDataWithValue(DictData entity) {
+        // 同一个字典下的字典数据的数据值是否唯一
+        boolean exists = super.lambdaQuery()
+            .eq(DictData::getDictId, entity.getDictId())
+            .eq(DictData::getValue, entity.getValue())
+            .exists();
+        if (exists) {
+            throw new BadRequestException("数据值\"" + entity.getValue() + "\"已存在");
+        }
     }
 }

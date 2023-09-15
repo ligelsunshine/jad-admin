@@ -163,7 +163,7 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
     @Override
     @Transactional
     public boolean removeByIds(Collection<?> ids) {
-        if (ids.size() <= 0) {
+        if (ids.size() == 0) {
             return true;
         }
         boolean success = super.removeByIds(ids);

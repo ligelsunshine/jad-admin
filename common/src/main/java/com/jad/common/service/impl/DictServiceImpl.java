@@ -140,7 +140,10 @@ public class DictServiceImpl extends BaseServiceImpl<DictMapper, Dict> implement
             throw new BadRequestException("字典不唯一");
         }
         dict = dictList.get(0);
-        final List<DictData> dictDataList = dictDataService.lambdaQuery().eq(DictData::getDictId, dict.getId()).list();
+        final List<DictData> dictDataList = dictDataService.lambdaQuery()
+            .eq(DictData::getDictId, dict.getId())
+            .orderByAsc(DictData::getValue)
+            .list(); // 按数据值升序排序
         dict.setData(dictDataList);
         // 缓存
         redisUtil.hset(RedisConst.SYSTEM_DICT, code, dict);
