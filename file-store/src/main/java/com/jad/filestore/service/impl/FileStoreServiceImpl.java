@@ -101,7 +101,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
         final FileStore fileStore = createStore(file, uploadConfig);
         // 保存数据库
         if (!super.save(fileStore)) {
-            log.error("上传失败，保存数据库失败");
+            log.error("Upload failed. Failed to save database");
             throw new BadRequestException("上传失败");
         }
         // 上传文件

@@ -179,7 +179,7 @@ public class IpUtil {
                     return null;
             }
         } catch (NumberFormatException e) {
-            log.error("数字格式化异常", e);
+            log.error("Number format exception", e);
             return null;
         }
         return bytes;
@@ -193,7 +193,7 @@ public class IpUtil {
                 addr = InetAddress.getLocalHost();
                 ip = addr.getHostAddress();
             } catch (UnknownHostException e) {
-                log.error("获取失败", e);
+                log.error("Get local IP error", e);
             }
             return ip;
         } else {
@@ -215,7 +215,7 @@ public class IpUtil {
                     }
                 }
             } catch (SocketException e) {
-                log.error("获取失败", e);
+                log.error("Get local IP error", e);
             }
         }
         return "";

@@ -30,6 +30,8 @@ import com.jad.sms.service.impl.CaptchaSmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 import cn.hutool.core.collection.CollUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,11 +65,16 @@ public class Registar implements IRegistar {
             throw new CaptchaException("验证码错误");
         }
         // 获取默认角色
-        Role defaultRole = roleService.getDefaultRole();
+        Optional<Role> roleOptional = roleService.getDefaultRole();
+        if (!roleOptional.isPresent()) {
+            // 注册失败，不存在默认角色，请联系系统人员
+            log.error("Failed to register user. Default role is not exist.");
+            throw new BadRequestException("注册失败，请联系系统人员");
+        }
         // 创建用户
         User user = new User().setUsername(form.getUsername())
             .setPassword(form.getPassword())
-            .setRoleIds(CollUtil.newArrayList(defaultRole.getId()))
+            .setRoleIds(CollUtil.newArrayList(roleOptional.get().getId()))
             .setOrigin(form.getType());
         // 添加用户
         if (!userService.save(user)) {

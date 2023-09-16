@@ -106,9 +106,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = BadRequestException.class)
     public Result<?> handler(BadRequestException e) {
         if (e.isNeedPrintStackTrace()) {
-            log.error("错误的请求: {}", e.getMessage(), e);
+            log.error("Error request: {}", e.getMessage(), e);
         } else {
-            log.error("错误的请求: {}", e.getMessage());
+            log.error("Error request: {}", e.getMessage());
         }
         return e.getResult() != null
             ? e.getResult()
