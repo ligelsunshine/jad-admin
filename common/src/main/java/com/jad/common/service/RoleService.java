@@ -23,6 +23,7 @@ import com.jad.common.enums.Status;
 import com.jad.common.lang.SearchResult;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 角色服务接口类
@@ -111,5 +112,5 @@ public interface RoleService extends BaseService<Role> {
      *
      * @return 默认角色
      */
-    Role getDefaultRole();
+    Optional<Role> getDefaultRole();
 }

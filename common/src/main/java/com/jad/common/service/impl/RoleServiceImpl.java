@@ -175,7 +175,8 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
     @Override
     @Transactional
     public boolean updateDefaultRole(String id) {
-        if (checkRoleLevel(super.getById(id))) {
+        // 是否存在默认角色
+        if (checkRoleLevel(super.getById(id)) && this.getDefaultRole().isPresent()) {
             // 先设置所有角色为非默认角色，为避免全表更新，添加条件：只修改默认角色为非默认角色
             boolean updated = super.lambdaUpdate()
                 .set(Role::getDefaultRole, false)
@@ -234,22 +235,28 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
      * @return 默认角色
      */
     @Override
-    public Role getDefaultRole() {
+    public Optional<Role> getDefaultRole() {
         if (redisUtil.hHasKey(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE)) {
-            final String json = (String) redisUtil.hget(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE);
-            return JSONObject.parseObject(json, Role.class);
+            Role role = (Role) redisUtil.hget(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE);
+            if (role != null) {
+                return Optional.of(role);
+            }
         }
         // 获取状态为Enable的默认角色
         List<Role> roles = this.lambdaQuery().eq(Role::getDefaultRole, true).eq(Role::getStatus, Status.ENABLE).list();
         if (CollUtil.isEmpty(roles)) {
-            throw new BadRequestException("默认角色角色不存在");
+            // 默认角色角色不存在
+            log.warn("默认角色角色不存在");
+            return Optional.empty();
         }
         if (roles.size() > 1) {
-            throw new BadRequestException("存在多个默认角色");
+            // 存在多个默认角色
+            log.warn("存在多个默认角色");
+            return Optional.empty();
         }
         Role role = roles.get(0);
-        redisUtil.hset(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE, JSON.toJSONString(role));
-        return role;
+        redisUtil.hset(RedisConst.SYSTEM_ROLE, RedisConst.SYSTEM_ROLE_DEFAULT_ROLE, role);
+        return Optional.ofNullable(role);
     }
 
     /**

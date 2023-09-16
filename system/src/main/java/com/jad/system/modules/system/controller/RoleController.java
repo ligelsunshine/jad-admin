@@ -115,7 +115,7 @@ public class RoleController extends BaseController {
     @ApiOperation("获取默认角色")
     @GetMapping("/get/defaultRole")
     public Result<?> getDefaultRole() {
-        return Result.success(roleService.getDefaultRole());
+        return Result.success(roleService.getDefaultRole().orElse(null));
     }
 
     @ApiOperation("修改状态")
