@@ -175,18 +175,20 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implement
     @Override
     @Transactional
     public boolean updateDefaultRole(String id) {
-        // 是否存在默认角色
-        if (checkRoleLevel(super.getById(id)) && this.getDefaultRole().isPresent()) {
-            // 先设置所有角色为非默认角色，为避免全表更新，添加条件：只修改默认角色为非默认角色
-            boolean updated = super.lambdaUpdate()
-                .set(Role::getDefaultRole, false)
-                .eq(Role::getDefaultRole, true)
-                .update();
-            if (!updated) {
-                throw new BadRequestException("重置角色信息失败");
+        if (checkRoleLevel(super.getById(id))) {
+            // 是否存在默认角色
+            if (this.getDefaultRole().isPresent()) {
+                // 设置所有角色为非默认角色，为避免全表更新，添加条件：只修改默认角色为非默认角色
+                boolean updated = super.lambdaUpdate()
+                    .set(Role::getDefaultRole, false)
+                    .eq(Role::getDefaultRole, true)
+                    .update();
+                if (!updated) {
+                    throw new BadRequestException("重置角色信息失败");
+                }
             }
-            // 再设置该角色为默认角色
-            updated = super.lambdaUpdate().set(Role::getDefaultRole, true).eq(Role::getId, id).update();
+            // 设置该角色为默认角色
+            boolean updated = super.lambdaUpdate().set(Role::getDefaultRole, true).eq(Role::getId, id).update();
             if (!updated) {
                 throw new BadRequestException("修改默认角色失败");
             }
