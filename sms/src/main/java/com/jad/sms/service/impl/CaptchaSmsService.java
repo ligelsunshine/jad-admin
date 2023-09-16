@@ -28,12 +28,12 @@ import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
 import lombok.SneakyThrows;
-import sun.misc.BASE64Encoder;
 
 /**
  * 图形验证码服务
@@ -77,9 +77,8 @@ public class CaptchaSmsService implements SmsService<Captcha> {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", outputStream);
         // 将output流转为base64图片码
-        final BASE64Encoder encoder = new BASE64Encoder();
-
-        final String codeImage = "data:image/jpeg;base64," + encoder.encode(outputStream.toByteArray());
+        String base64 = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        final String codeImage = "data:image/jpeg;base64," + base64;
 
         // 将Base64验证码存入Redis
         long timeout = smsConfig.getTimeout();
