@@ -18,6 +18,8 @@ package com.jad.common.handler;
 
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.exception.CaptchaException;
+import com.jad.common.exception.FileStoreException;
+import com.jad.common.exception.PermissionDeniedException;
 import com.jad.common.exception.UnauthorizedException;
 import com.jad.common.lang.Result;
 
@@ -25,6 +27,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,7 +40,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import java.nio.file.AccessDeniedException;
 import java.sql.SQLSyntaxErrorException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -105,21 +107,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BadRequestException.class)
     public Result<?> handler(BadRequestException e) {
-        if (e.isNeedPrintStackTrace()) {
-            log.error("Error request: {}", e.getMessage(), e);
-        } else {
-            log.error("Error request: {}", e.getMessage());
-        }
-        return e.getResult() != null
-            ? e.getResult()
-            : Result.failed(HttpStatus.BAD_REQUEST.value(), "错误的请求", e.getMessage());
+        Result<?> result = processFailed(HttpStatus.BAD_REQUEST.value(), "错误的请求", e, e.isNeedPrintStackTrace());
+        return e.getResult() != null ? e.getResult() : result;
     }
 
     /**
      * 错误请求异常
      *
      * @param e 异常
-     * @return 响应结果 400
+     * @return 响应结果 401
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = UnauthorizedException.class)
@@ -134,8 +130,8 @@ public class GlobalExceptionHandler {
      * @return 响应结果 403
      */
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(value = AccessDeniedException.class)
-    public Result<?> handler(AccessDeniedException e) {
+    @ExceptionHandler(value = {AccessDeniedException.class, PermissionDeniedException.class})
+    public Result<?> handler(RuntimeException e) {
         return processFailed(HttpStatus.FORBIDDEN.value(), "权限不足", e);
     }
 
@@ -161,6 +157,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public Result<?> handler(NoHandlerFoundException e) {
         return processFailed(HttpStatus.NOT_FOUND.value(), "您访问的资源不存在", e);
+    }
+
+    /**
+     * 文件不存在
+     *
+     * @param e 异常
+     * @return 响应结果 404
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(FileStoreException.class)
+    public Result<?> handler(FileStoreException e) {
+        return processFailed(HttpStatus.NOT_FOUND.value(), "文件存储错误", e, false);
     }
 
     /**
@@ -224,7 +232,15 @@ public class GlobalExceptionHandler {
     }
 
     private Result<?> processFailed(int httpStatus, String msg, Exception e) {
-        log.error(msg, e);
+        return processFailed(httpStatus, msg, e, true);
+    }
+
+    private Result<?> processFailed(int httpStatus, String msg, Exception e, boolean printStackTrace) {
+        if (printStackTrace) {
+            log.error(msg, e);
+        } else {
+            log.error("{}. Message: \"{}\"", msg, e.getMessage());
+        }
         return Result.failed(httpStatus, msg, e.getMessage());
     }
 

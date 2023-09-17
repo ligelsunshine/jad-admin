@@ -21,6 +21,8 @@ import com.jad.common.base.service.impl.BaseServiceImpl;
 import com.jad.common.entity.User;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.exception.ExecutionException;
+import com.jad.common.exception.FileStoreException;
+import com.jad.common.exception.PermissionDeniedException;
 import com.jad.common.exception.UnauthorizedException;
 import com.jad.common.lang.Result;
 import com.jad.common.service.UserService;
@@ -180,7 +182,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
     public FileStore getFileStore(String fileId) {
         final FileStore fileStore = super.getById(fileId);
         if (fileStore == null) {
-            throw new BadRequestException("文件不存在. fileId: " + fileId);
+            throw new FileStoreException("文件不存在. fileId: " + fileId);
         }
         // 如文件为私有文件
         if (fileStore.getAccessPolicy() == AccessPolicy.PRIVATE) {
@@ -194,7 +196,7 @@ public class FileStoreServiceImpl extends BaseServiceImpl<FileStoreMapper, FileS
             if (!authUser.getId().equalsIgnoreCase(fileStore.getCreateBy())) {
                 log.error("文件的访问策略为PRIVATE，只能文件所有者才有权限，fileID: {}，requestUserID: {}",
                     fileStore.getId(), authUser.getId());
-                throw new BadRequestException("您没有权限");
+                throw new PermissionDeniedException("您没有权限访问此文件");
             }
         }
         return fileStore;

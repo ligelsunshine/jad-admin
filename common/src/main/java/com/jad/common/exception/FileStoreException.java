@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2021, jad (cxxwl96@sina.com).
+ * Copyright (c) 2021-2023, cxxwl96.com (cxxwl96@sina.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,18 @@
 
 package com.jad.common.exception;
 
-import java.util.Locale;
-
 /**
- * 执行失败异常
+ * 文件存储异常
  *
  * @author cxxwl96
- * @since 2021/11/27 11:45
+ * @since 2023/9/17 15:52
  */
-public class ExecutionException extends Exception {
-    public ExecutionException(String msg, Object... obj) {
-        super(String.format(Locale.ROOT, msg, obj));
+public class FileStoreException extends RuntimeException {
+    public FileStoreException(String message) {
+        super(message);
+    }
+
+    public FileStoreException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

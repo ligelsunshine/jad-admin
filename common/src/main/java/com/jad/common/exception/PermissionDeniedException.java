@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2021, jad (cxxwl96@sina.com).
+ * Copyright (c) 2021-2023, cxxwl96.com (cxxwl96@sina.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,24 @@
 
 package com.jad.common.exception;
 
-import java.util.Locale;
+import org.springframework.security.access.AccessDeniedException;
 
 /**
- * 执行失败异常
+ * 未授权、没有权限或拒绝访问异常
  *
  * @author cxxwl96
- * @since 2021/11/27 11:45
+ * @since 2023/9/17 17:15
  */
-public class ExecutionException extends Exception {
-    public ExecutionException(String msg, Object... obj) {
-        super(String.format(Locale.ROOT, msg, obj));
+public class PermissionDeniedException extends AccessDeniedException {
+    public PermissionDeniedException() {
+        super("没有权限或拒绝访问");
+    }
+
+    public PermissionDeniedException(String msg) {
+        super(msg);
+    }
+
+    public PermissionDeniedException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }
