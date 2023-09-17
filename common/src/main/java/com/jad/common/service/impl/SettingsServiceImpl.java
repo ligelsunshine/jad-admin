@@ -17,24 +17,34 @@
 package com.jad.common.service.impl;
 
 import com.jad.common.base.service.impl.TreeServiceImpl;
+import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Menu;
 import com.jad.common.entity.Settings;
+import com.jad.common.entity.Tree;
+import com.jad.common.entity.User;
 import com.jad.common.enums.MenuType;
 import com.jad.common.enums.SettingType;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.mapper.SettingsMapper;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.SettingsService;
+import com.jad.common.service.UserService;
+import com.jad.common.utils.RedisUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 系统设置管理服务实现类
@@ -42,10 +52,17 @@ import cn.hutool.core.lang.Assert;
  * @author cxxwl96
  * @since 2023/08/28 22:24
  */
+@Slf4j
 @Service
 public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Settings> implements SettingsService {
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 添加设置
@@ -63,6 +80,8 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
         if (!saveSetting || !saveMenu) {
             throw new BadRequestException("添加设置或菜单失败");
         }
+        // 清除Redis缓存的设置树
+        this.clearUserSettingTree();
         return true;
     }
 
@@ -79,6 +98,8 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
         if (!menuService.removeTree(id, includeSelf) || !super.removeTree(id, includeSelf)) {
             throw new BadRequestException("删除设置或菜单失败");
         }
+        // 清除Redis缓存的设置树
+        this.clearUserSettingTree();
         return true;
     }
 
@@ -99,6 +120,8 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
         if (!updateSetting || !updateMenu) {
             throw new BadRequestException("修改设置或菜单失败");
         }
+        // 清除Redis缓存的设置树
+        this.clearUserSettingTree();
         return true;
     }
 
@@ -145,6 +168,76 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
         if (!super.save(settings)) {
             throw new BadRequestException("绑定失败");
         }
+        // 清除Redis缓存的设置树
+        this.clearUserSettingTree();
+    }
+
+    /**
+     * 获取用户设置树
+     *
+     * @return 用户设置树
+     */
+    @Override
+    public List<Settings> getUserSettingTree() {
+        // 当前登录的用户
+        User curUser = userService.getCurrentAuthUser();
+        List<Settings> settingTree;
+        if (redisUtil.hHasKey(RedisConst.SYSTEM_USER_SETTING_TREE, curUser.getUsername())) {
+            // 从Redis中获取设置树
+            settingTree = redisUtil.hget(RedisConst.SYSTEM_USER_SETTING_TREE, curUser.getUsername());
+        } else {
+            // 获取当前登录用户菜单权限列表
+            final List<Menu> menuMenuList = menuService.getUserMenuList();
+            List<String> userMenuIds = menuMenuList.stream().map(Menu::getId).collect(Collectors.toList());
+            // 获取设置列表
+            List<Settings> settings = this.list();
+            // 取用户拥有的设置列表
+            ArrayList<Settings> userSettings = new ArrayList<>();
+            for (Settings setting : settings) {
+                // 用户是否拥有此设置
+                if (userMenuIds.contains(setting.getId())) {
+                    // 若pId为空白，则设置pId为null，使用方便前端在编辑根节点时不展示父级
+                    if (StrUtil.isBlank(setting.getId())) {
+                        setting.setPId(null);
+                    }
+                    userSettings.add(setting);
+                }
+            }
+            // 生成设置树
+            final Tree<Settings> tree = new Tree<>(userSettings, null);
+            List<Settings> rootTrees = tree.getRootTree();
+            if (rootTrees.size() == 0) {
+                log.warn("System setting is empty");
+                return CollUtil.empty(Settings.class);
+            }
+            settingTree = rootTrees;
+            redisUtil.hset(RedisConst.SYSTEM_USER_SETTING_TREE, curUser.getUsername(), settingTree);
+        }
+        return settingTree;
+    }
+
+    /**
+     * 清除用户缓存的设置树
+     */
+    @Override
+    public void clearUserSettingTree() {
+        this.clearUserSettingTree(null);
+    }
+
+    /**
+     * 清除用户缓存的设置树
+     *
+     * @param username 用户名
+     */
+    @Override
+    public void clearUserSettingTree(@Nullable String username) {
+        if (username == null) {
+            // 清除Redis缓存的设置树
+            redisUtil.del(RedisConst.SYSTEM_USER_SETTING_TREE);
+        } else {
+            // 清除Redis缓存的设置树
+            redisUtil.hdel(RedisConst.SYSTEM_USER_SETTING_TREE, username);
+        }
     }
 
     /**
@@ -161,9 +254,11 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
             .orElseThrow(() -> new BadRequestException("设置类型错误"));
         menu.setType(menuType);
         menu.setTitle(entity.getTitle());
-        menu.setComponent(null);
         if (menuType == MenuType.DIRECTORY || menuType == MenuType.MENU) {
             menu.setPath("path" + entity.getId());
+            if (menuType == MenuType.MENU) {
+                menu.setComponent("LAYOUT");
+            }
         }
         return menu;
     }

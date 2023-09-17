@@ -75,7 +75,7 @@ public class Settings extends TreeNode<Settings> implements Serializable {
     @NotNull(message = "组件不能为空")
     private Component component = Component.INPUT;
 
-    @ApiModelProperty(value = "默认值")
+    @ApiModelProperty(value = "值")
     private String val;
 
     @ApiModelProperty(value = "是否必须")

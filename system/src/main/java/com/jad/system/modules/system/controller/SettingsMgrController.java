@@ -40,12 +40,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 系统设置管理相关接口
+ * 系统管理 - 系统设置管理相关接口
  *
  * @author cxxwl96
  * @since 2023/08/28 22:24
  */
-@Api(tags = "系统设置管理相关接口")
+@Api(tags = "系统管理 - 系统设置管理相关接口")
 @RestController
 @RequestMapping("/sys/settingsMgr")
 public class SettingsMgrController extends BaseController {
@@ -54,7 +54,7 @@ public class SettingsMgrController extends BaseController {
 
     @ApiOperation("添加系统设置管理")
     @PostMapping("/save")
-    @PreAuthorize("@auth.hasAuthority('sys:settings:save')")
+    @PreAuthorize("@auth.hasAuthority('sys:settings-mgr:save')")
     public Result<?> save(@RequestBody @Valid Settings settings) {
         if (!settingsService.save(settings)) {
             return Result.failed("添加失败");
@@ -64,7 +64,7 @@ public class SettingsMgrController extends BaseController {
 
     @ApiOperation("删除系统设置管理")
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("@auth.hasAuthority('sys:settings:delete')")
+    @PreAuthorize("@auth.hasAuthority('sys:settings-mgr:delete')")
     public Result<?> delete(@PathVariable String id, boolean includeSelf) {
         if (!settingsService.removeTree(id, includeSelf)) {
             return Result.failed("删除失败");
@@ -74,7 +74,7 @@ public class SettingsMgrController extends BaseController {
 
     @ApiOperation("修改系统设置管理")
     @PutMapping("/update")
-    @PreAuthorize("@auth.hasAuthority('sys:settings:update')")
+    @PreAuthorize("@auth.hasAuthority('sys:settings-mgr:update')")
     public Result<?> update(@RequestBody @Valid Settings settings) {
         if (!settingsService.updateById(settings)) {
             return Result.failed("修改失败");
@@ -84,7 +84,7 @@ public class SettingsMgrController extends BaseController {
 
     @ApiOperation("获取单个系统设置管理")
     @GetMapping("/get/{id}")
-    @PreAuthorize("@auth.hasAuthority('sys:settings:get')")
+    @PreAuthorize("@auth.hasAuthority('sys:settings-mgr:get')")
     public Result<?> get(@PathVariable String id) {
         final Settings settings = settingsService.getById(id);
         if (settings == null) {
@@ -95,15 +95,15 @@ public class SettingsMgrController extends BaseController {
 
     @ApiOperation("获取系统设置管理树")
     @GetMapping("/getTree")
-    @PreAuthorize("@auth.hasAuthority('sys:settings:getTree')")
+    @PreAuthorize("@auth.hasAuthority('sys:settings-mgr:getTree', 'sys:settings:getTree')")
     public Result<?> getTree() {
-        List<Settings> treeList = settingsService.getRootTree();
+        List<Settings> treeList = settingsService.getUserSettingTree();
         return Result.success(treeList);
     }
 
     @ApiOperation("设置绑定菜单权限")
     @PostMapping("/bindMenu/{menuId}")
-    @PreAuthorize("@auth.hasAuthority('sys:settings:bindMenu')")
+    @PreAuthorize("@auth.hasAuthority('sys:settings-mgr:bindMenu')")
     public Result<?> bindMenu(@PathVariable String menuId) {
         settingsService.bindMenu(menuId);
         return Result.success("绑定成功");

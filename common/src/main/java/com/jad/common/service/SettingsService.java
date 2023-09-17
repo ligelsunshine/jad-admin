@@ -19,6 +19,10 @@ package com.jad.common.service;
 import com.jad.common.base.service.TreeService;
 import com.jad.common.entity.Settings;
 
+import org.springframework.lang.Nullable;
+
+import java.util.List;
+
 /**
  * 系统设置管理服务接口类
  *
@@ -32,4 +36,23 @@ public interface SettingsService extends TreeService<Settings> {
      * @param menuId 菜单ID
      */
     void bindMenu(String menuId);
+
+    /**
+     * 获取用户设置树
+     *
+     * @return 用户设置树
+     */
+    List<Settings> getUserSettingTree();
+
+    /**
+     * 清除用户缓存的设置树
+     */
+    void clearUserSettingTree();
+
+    /**
+     * 清除用户缓存的设置树
+     *
+     * @param username 用户名
+     */
+    void clearUserSettingTree(@Nullable String username);
 }

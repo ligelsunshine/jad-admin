@@ -37,6 +37,7 @@ import com.jad.common.service.DeptService;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
 import com.jad.common.service.RoleService;
+import com.jad.common.service.SettingsService;
 import com.jad.common.service.UserRoleService;
 import com.jad.common.service.UserService;
 import com.jad.common.utils.RedisUtil;
@@ -87,6 +88,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
     @Autowired
     private DeptService deptService;
+
+    @Autowired
+    private SettingsService settingsService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -482,8 +486,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
         redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_LIST, username);
         // 清除菜单树
         redisUtil.hdel(RedisConst.SYSTEM_USER_MENU_TREE, username);
+
         // 清除用户信息缓存
         clearUserInfoCacheByUsername(username);
+        // 清除用户缓存的设置树
+        settingsService.clearUserSettingTree(username);
     }
 
     /**

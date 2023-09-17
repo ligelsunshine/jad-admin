@@ -53,4 +53,7 @@ public class RedisConst {
 
     // Redis中存放字典
     public static final String SYSTEM_DICT = "system-dict";
+
+    // Redis中存放设置树
+    public static final String SYSTEM_USER_SETTING_TREE = "system-user-setting-tree";
 }

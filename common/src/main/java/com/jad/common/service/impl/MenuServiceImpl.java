@@ -30,6 +30,7 @@ import com.jad.common.lang.Result;
 import com.jad.common.mapper.MenuMapper;
 import com.jad.common.service.MenuService;
 import com.jad.common.service.RoleMenuService;
+import com.jad.common.service.SettingsService;
 import com.jad.common.service.UserRoleService;
 import com.jad.common.service.UserService;
 import com.jad.common.utils.RedisUtil;
@@ -69,6 +70,9 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
 
     @Autowired
     private RoleMenuService roleMenuService;
+
+    @Autowired
+    private SettingsService settingsService;
 
     /**
      * 添加菜单
@@ -305,6 +309,7 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
     @Override
     public void clearUserMenuList() {
         redisUtil.del(RedisConst.SYSTEM_USER_MENU_LIST);
+        settingsService.clearUserSettingTree(); // 清除用户缓存的设置树
     }
 
     /**
@@ -313,6 +318,7 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
     @Override
     public void clearUserMenuTree() {
         redisUtil.del(RedisConst.SYSTEM_USER_MENU_TREE);
+        settingsService.clearUserSettingTree(); // 清除用户缓存的设置树
     }
 
     /**
