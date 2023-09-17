@@ -155,11 +155,10 @@ public class UserController extends BaseController {
     @GetMapping("/getPermCode")
     public Result<?> getPermCode() {
         final User user = userService.getCurrentAuthUser();
-        final String userAuthority = userService.getUserAuthority(user.getId());
-        final String[] codes = userAuthority.split(",");
+        final List<String> authorities = userService.getUserAuthority(user.getId());
         PermCodeVo permCodeVo = new PermCodeVo();
         permCodeVo.setSuperRole("ROLE_" + roleService.getAdministrator().getCode());
-        permCodeVo.setCodeList(Arrays.stream(codes).collect(Collectors.toList()));
+        permCodeVo.setCodeList(authorities);
         return Result.success(permCodeVo);
     }
 

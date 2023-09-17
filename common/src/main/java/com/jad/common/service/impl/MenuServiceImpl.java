@@ -16,10 +16,6 @@
 
 package com.jad.common.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jad.common.base.service.impl.TreeServiceImpl;
 import com.jad.common.constant.RedisConst;
 import com.jad.common.entity.Menu;
@@ -254,9 +250,7 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
         List<Menu> menuList;
         if (redisUtil.hHasKey(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername())) {
             // 从Redis中获取菜单列表
-            final String menuListJson = (String) redisUtil.hget(RedisConst.SYSTEM_USER_MENU_LIST,
-                curUser.getUsername());
-            menuList = JSONArray.parseArray(menuListJson, Menu.class);
+            menuList = redisUtil.hget(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername());
         } else {
             // 如果是超级管理员，则返回所有菜单
             if (userService.hasAdministrator()) {
@@ -265,8 +259,7 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
                 menuList = this.getUserMenuList(curUser.getId());
             }
             // 序列化菜单列表，缓存在Redis中
-            final String menuListJson = JSONObject.toJSONString(menuList);
-            redisUtil.hset(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername(), menuListJson);
+            redisUtil.hset(RedisConst.SYSTEM_USER_MENU_LIST, curUser.getUsername(), menuList);
         }
         // 若pId为空白，则设置pId为null，使用方便前端在编辑根节点时不展示父级
         menuList.forEach(menu -> {
@@ -289,21 +282,18 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuMapper, Menu> implement
         List<Menu> menuTree;
         if (redisUtil.hHasKey(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername())) {
             // 从Redis中获取菜单树
-            final String menuTreeJson = (String) redisUtil.hget(RedisConst.SYSTEM_USER_MENU_TREE,
-                curUser.getUsername());
-            menuTree = JSONArray.parseArray(menuTreeJson, Menu.class);
+            menuTree = redisUtil.hget(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername());
         } else {
             // 获取当前登录用户菜单权限列表
             final List<Menu> menuList = this.getUserMenuList();
             // 生成菜单树
             final Tree<Menu> tree = new Tree<>(menuList, null);
             menuTree = tree.getRootTree();
-
             // 序列化菜单列表，缓存在Redis中
             // 这里不能使用 JSONObject.toJSONString(menuList);
             // 因为会遇到循环引用问题，导致序列化出来的json字符串会出现"$ref"
-            final String menuTreeJson = JSON.toJSONString(menuTree, SerializerFeature.DisableCircularReferenceDetect);
-            redisUtil.hset(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername(), menuTreeJson);
+            // final String menuTreeJson = JSON.toJSONString(menuTree, SerializerFeature.DisableCircularReferenceDetect);
+            redisUtil.hset(RedisConst.SYSTEM_USER_MENU_TREE, curUser.getUsername(), menuTree);
         }
 
         return menuTree;

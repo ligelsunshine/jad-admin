@@ -22,7 +22,7 @@ import com.jad.security.service.AuthorityPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +83,11 @@ public class AuthorityPermissionServiceImpl implements AuthorityPermissionServic
     @Override
     public final List<GrantedAuthority> getUserAuthority(String userId) {
         // 获取用户权限列表
-        return AuthorityUtils.commaSeparatedStringToAuthorityList(userService.getUserAuthority(userId));
+        List<String> authorities = userService.getUserAuthority(userId);
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>(authorities.size());
+        for (String authority : authorities) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(authority));
+        }
+        return grantedAuthorities;
     }
 }

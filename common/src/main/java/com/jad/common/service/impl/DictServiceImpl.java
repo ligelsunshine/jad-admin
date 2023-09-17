@@ -60,13 +60,17 @@ public class DictServiceImpl extends BaseServiceImpl<DictMapper, Dict> implement
     @Transactional
     public boolean removeById(Serializable id) {
         final Dict dict = getById(id);
+        // 删除字典
         if (id == null || !super.removeById(id)) {
             throw new BadRequestException("删除字典失败");
         }
-        final LambdaQueryWrapper<DictData> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(DictData::getDictId, id);
-        if (!dictDataService.remove(wrapper)) {
-            throw new BadRequestException("删除字典数据失败");
+        // 删除字典数据
+        if (dictDataService.lambdaQuery().eq(DictData::getDictId, id).count() > 0) {
+            final LambdaQueryWrapper<DictData> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(DictData::getDictId, id);
+            if (!dictDataService.remove(wrapper)) {
+                throw new BadRequestException("删除字典数据失败");
+            }
         }
         // 清空缓存
         redisUtil.hdel(RedisConst.SYSTEM_DICT, dict.getCode());
@@ -129,7 +133,7 @@ public class DictServiceImpl extends BaseServiceImpl<DictMapper, Dict> implement
     public Dict getDictByCode(String code) {
         Dict dict;
         if (redisUtil.hHasKey(RedisConst.SYSTEM_DICT, code)) {
-            dict = (Dict) redisUtil.hget(RedisConst.SYSTEM_DICT, code);
+            dict = redisUtil.hget(RedisConst.SYSTEM_DICT, code);
             return dict;
         }
         final List<Dict> dictList = this.lambdaQuery().eq(Dict::getCode, code).list();
@@ -158,6 +162,6 @@ public class DictServiceImpl extends BaseServiceImpl<DictMapper, Dict> implement
      */
     @Override
     public List<DictData> getDictDataByCode(String code) {
-        return getDictByCode(code).getData();
+        return this.getDictByCode(code).getData();
     }
 }

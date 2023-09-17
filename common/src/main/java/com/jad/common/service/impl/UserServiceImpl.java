@@ -52,14 +52,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -375,35 +374,31 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      * @return 用户权限列表字符串，用逗号分隔
      */
     @Override
-    public String getUserAuthority(String userId) {
-        String authority;
+    public List<String> getUserAuthority(String userId) {
         final User user = this.getById(userId);
 
         // 在Redis中缓存用户权限信息
         if (redisUtil.hHasKey(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, user.getUsername())) {
-            authority = (String) redisUtil.hget(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, user.getUsername());
-        } else {
-            // 获取角色
-            final List<Role> roles = this.getRoles(userId);
-            if (roles.size() == 0) {
-                return "";
-            }
-            // 获取菜单权限
-            final List<Menu> menus = menuService.getUserMenuList(userId);
-            // 生成security权限列表字符串
-            final List<String> roleAuthorities = roles.stream()
-                .map(role -> "ROLE_" + role.getCode())
-                .collect(Collectors.toList());
-            final List<String> menuAuthorities = menus.stream()
-                .map(Menu::getPermissions)
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.toList());
-            roleAuthorities.addAll(menuAuthorities);
-            authority = String.join(",", roleAuthorities);
-
-            redisUtil.hset(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, user.getUsername(), authority);
+            return redisUtil.hget(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, user.getUsername());
         }
-        return authority;
+        // 获取角色
+        final List<Role> roles = this.getRoles(userId);
+        if (roles.size() == 0) {
+            return CollUtil.empty(String.class);
+        }
+        // 获取菜单权限
+        final List<Menu> menus = menuService.getUserMenuList(userId);
+        // 生成security权限列表字符串
+        final List<String> roleAuthorities = roles.stream()
+            .map(role -> "ROLE_" + role.getCode())
+            .collect(Collectors.toList());
+        final List<String> menuAuthorities = menus.stream()
+            .map(Menu::getPermissions)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+        roleAuthorities.addAll(menuAuthorities);
+        redisUtil.hset(RedisConst.SECURITY_USER_GRANTED_AUTHORITY, user.getUsername(), roleAuthorities);
+        return roleAuthorities;
     }
 
     /**
@@ -446,14 +441,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     public boolean hasAdministrator() {
-        final Role administrator = roleService.getAdministrator();
         final User authUser = getCurrentAuthUser();
-        final String authority = getUserAuthority(authUser.getId());
-        final String[] permCode = authority.split(",");
-        final Optional<String> first = Arrays.stream(permCode)
-            .filter((perm) -> ("ROLE_" + administrator.getCode()).equals(perm))
-            .findFirst();
-        return first.isPresent();
+        return this.hasAdministrator(authUser.getId());
     }
 
     /**
@@ -465,12 +454,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @Override
     public boolean hasAdministrator(String userId) {
         final Role administrator = roleService.getAdministrator();
-        final String authority = getUserAuthority(userId);
-        final String[] permCode = authority.split(",");
-        final Optional<String> first = Arrays.stream(permCode)
-            .filter((perm) -> ("ROLE_" + administrator.getCode()).equals(perm))
-            .findFirst();
-        return first.isPresent();
+        final List<String> authorities = getUserAuthority(userId);
+        return authorities.contains("ROLE_" + administrator.getCode());
     }
 
     /**

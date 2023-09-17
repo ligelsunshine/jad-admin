@@ -136,7 +136,7 @@ public interface UserService extends BaseService<User> {
      * @param userId 用户id
      * @return 用户权限列表字符串，用逗号分隔
      */
-    String getUserAuthority(String userId);
+    List<String> getUserAuthority(String userId);
 
     /**
      * 获取当前登录的用户

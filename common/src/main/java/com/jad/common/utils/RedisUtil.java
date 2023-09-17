@@ -189,8 +189,8 @@ public class RedisUtil {
      * @param item 项 不能为null
      * @return 值
      */
-    public Object hget(String key, String item) {
-        return redisTemplate.opsForHash().get(key, item);
+    public<T> T hget(String key, String item) {
+        return (T) redisTemplate.opsForHash().get(key, item);
     }
 
     /**
