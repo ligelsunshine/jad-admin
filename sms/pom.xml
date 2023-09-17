@@ -25,7 +25,6 @@
         <dependency>
             <groupId>com.jad</groupId>
             <artifactId>common</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <!--Springboot mail-->
         <dependency>

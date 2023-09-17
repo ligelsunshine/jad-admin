@@ -25,13 +25,11 @@
         <dependency>
             <groupId>com.jad</groupId>
             <artifactId>common</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <!-- jad sms -->
         <dependency>
             <groupId>com.jad</groupId>
             <artifactId>sms</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

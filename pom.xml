@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <jad.version>1.0.0</jad.version>
     </properties>
 
     <modules>
@@ -29,4 +30,44 @@
         <module>sms</module>
         <module>system</module>
     </modules>
+    <dependencyManagement>
+        <dependencies>
+            <!-- jad common -->
+            <dependency>
+                <groupId>com.jad</groupId>
+                <artifactId>common</artifactId>
+                <version>${jad.version}</version>
+            </dependency>
+            <!-- jad file-store -->
+            <dependency>
+                <groupId>com.jad</groupId>
+                <artifactId>file-store</artifactId>
+                <version>${jad.version}</version>
+            </dependency>
+            <!-- jad generator -->
+            <dependency>
+                <groupId>com.jad</groupId>
+                <artifactId>generator</artifactId>
+                <version>${jad.version}</version>
+            </dependency>
+            <!-- jad security -->
+            <dependency>
+                <groupId>com.jad</groupId>
+                <artifactId>security</artifactId>
+                <version>${jad.version}</version>
+            </dependency>
+            <!-- jad sms -->
+            <dependency>
+                <groupId>com.jad</groupId>
+                <artifactId>sms</artifactId>
+                <version>${jad.version}</version>
+            </dependency>
+            <!-- jad system -->
+            <dependency>
+                <groupId>com.jad</groupId>
+                <artifactId>system</artifactId>
+                <version>${jad.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
