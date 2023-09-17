@@ -26,12 +26,15 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Mybatis字段自动填充
  *
  * @author cxxwl96
  * @since 2021/6/28 22:45
  */
+@Slf4j
 @Component
 public class MybatisMetaObjectHandler implements MetaObjectHandler {
     @Autowired
@@ -39,7 +42,12 @@ public class MybatisMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        final User user = userService.getCurrentAuthUser();
+        User user = null;
+        try {
+            user = userService.getCurrentAuthUser();
+        } catch (Exception exception) {
+            log.warn("Warn inserting. {}", exception.getMessage());
+        }
         String userId = user != null ? user.getId() : null;
         this.strictInsertFill(metaObject, "createTime", LocalDateTime::now, LocalDateTime.class);
         this.strictInsertFill(metaObject, "createBy", () -> userId, String.class);
@@ -49,7 +57,12 @@ public class MybatisMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        final User user = userService.getCurrentAuthUser();
+        User user = null;
+        try {
+            user = userService.getCurrentAuthUser();
+        } catch (Exception exception) {
+            log.warn("Warn updating. {}", exception.getMessage());
+        }
         String userId = user != null ? user.getId() : null;
         this.strictUpdateFill(metaObject, "updateTime", LocalDateTime::now, LocalDateTime.class);
         this.strictUpdateFill(metaObject, "updateBy", () -> userId, String.class);
