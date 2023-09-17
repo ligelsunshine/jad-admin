@@ -19,6 +19,7 @@ package com.jad.system;
 import com.jad.security.annotations.PermitAuthScan;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -38,6 +39,8 @@ import org.springframework.context.annotation.ComponentScan;
 public class AppRun {
 
     public static void main(String[] args) {
-        SpringApplication.run(AppRun.class, args);
+        SpringApplication app = new SpringApplication(AppRun.class);
+        app.setBannerMode(Banner.Mode.LOG); // Print the banner to the log file.
+        app.run(args);
     }
 }
