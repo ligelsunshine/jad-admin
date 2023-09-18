@@ -24,6 +24,7 @@ import com.jad.common.entity.Tree;
 import com.jad.common.entity.User;
 import com.jad.common.enums.MenuType;
 import com.jad.common.enums.SettingType;
+import com.jad.common.enums.Status;
 import com.jad.common.exception.BadRequestException;
 import com.jad.common.mapper.SettingsMapper;
 import com.jad.common.service.MenuService;
@@ -194,6 +195,10 @@ public class SettingsServiceImpl extends TreeServiceImpl<SettingsMapper, Setting
             // 取用户拥有的设置列表
             ArrayList<Settings> userSettings = new ArrayList<>();
             for (Settings setting : settings) {
+                // 非超级管理员并且状态为关闭状态，则跳过
+                if (!userService.hasAdministrator() && setting.getStatus() == Status.DISABLE) {
+                    continue;
+                }
                 // 用户是否拥有此设置
                 if (userMenuIds.contains(setting.getId())) {
                     // 若pId为空白，则设置pId为null，使用方便前端在编辑根节点时不展示父级

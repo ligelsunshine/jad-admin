@@ -62,7 +62,7 @@ public class Settings extends TreeNode<Settings> implements Serializable {
     @ApiModelProperty(value = "图标")
     private String icon;
 
-    @ApiModelProperty(value = "授权(多个用逗号分隔，如：user:list,user:create)")
+    @ApiModelProperty(value = "授权(多个用逗号分隔，如：user:list,user:create。不填代表此设置不需要认证和授权即可获取，即公开设置)")
     private String permissions;
 
     @ApiModelProperty(value = "状态【启用：0,停用：1】")
